@@ -1,2 +1,3 @@
 work/
 fastq_pass/
+.nextflow*
