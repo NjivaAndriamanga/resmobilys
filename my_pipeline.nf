@@ -35,7 +35,7 @@ process gzip_fastq {
     script:
     barID = barcode_dir.name
     """
-        while read -r line; do gzip -dc \${line}/*.fastq.gz > output.fastq; done < $barcode_dir
+        while read -r line; do cat \${line}/*.fastq.gz > output.fastq; done < $barcode_dir
     """
 }
 
