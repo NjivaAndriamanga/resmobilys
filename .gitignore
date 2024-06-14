@@ -2,3 +2,4 @@ work/
 fastq_pass/
 .nextflow*
 trimming_output/
+genome_assembly/

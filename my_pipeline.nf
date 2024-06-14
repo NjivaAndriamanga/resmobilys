@@ -28,8 +28,8 @@ process gzip_fastq {
     path barcode_dir
 
     output:
-    path "${barID}.fastq.gz"
     val barID
+    path "${barID}.fastq.gz"
 
     script:
     barID = barcode_dir.getSimpleName()
@@ -47,12 +47,13 @@ process clean_reads {
     publishDir "trimming_output/"
 
     input:
-    path query
     val barID
+    path query
 
     output:
+    val barID
     path "${barID}_trimmed.fastq.gz"
-    path "${barID}_trimmming.html"
+    path "${barID}_trimmming.html" //to save trimming report in publishDir
 
     script:
     """
@@ -62,11 +63,52 @@ process clean_reads {
     """
 }
 
+//With flye
+process assemble_genome { 
+    cpus 12
+    publishDir "genome_assembly/"
+    errorStrategy 'ignore' //ignore flye error du to coverage. 
+
+    input:
+    val barID
+    path fastq
+    
+    output:
+    val barID, emit: id
+    path "${barID}_assembly.fasta", emit: assembly
+    path "${barID}_assembly_info.fasta"
+
+    script:
+    """
+    flye --nano-hq $fastq --threads ${task.cpus} --genome-size 4.2m --threads ${task.cpus} -o .
+    mv assembly.fasta ${barID}_assembly.fasta
+    mv assembly_info.txt ${barID}_assembly_info.fasta
+    """
+}
+
+process after_assemble{
+    input:
+    val barID
+    path assembly
+
+    output:
+    stdout
+
+    script:
+    """
+    echo $barID
+    echo $assembly
+    """
+}
+
 workflow {
     println "Welcome to the Waterisk pipeline. For any questions or remarks, please contact the author \n"
 
     def fastq_pass_ch = Channel.fromPath(params.fastq_pass_dir)
     identified_samples(fastq_pass_ch)
-    (pathtest, id) = gzip_fastq(identified_samples.out.flatten())
-    clean_reads(pathtest, id)
+    (id1, fastq) = gzip_fastq(identified_samples.out.flatten())
+    (id2, fastq_cleaned) = clean_reads(id1, fastq)
+    assemble_genome(id2,fastq_cleaned)
+    after_assemble(assemble_genome.out.id, assemble_genome.out.assembly).view()
+    
 }
