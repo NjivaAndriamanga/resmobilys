@@ -43,6 +43,7 @@ Reads trimming and filtering with fastp: length < 50, headcrop and tailcrop scor
 */
 process clean_reads {
 
+    cpus 10
     publishDir "trimming_output/"
 
     input:
@@ -50,20 +51,14 @@ process clean_reads {
     val barID
 
     output:
-    path "${barID}.txt"
-
+    path "${barID}_trimmed.fastq.gz"
+    path "${barID}_trimmming.html"
 
     script:
     """
-    fastp $query -o ${barID}_output_trimmed.fastq.gz \
+    fastp -i $query -o ${barID}_trimmed.fastq.gz --thread ${task.cpus}\
     -Q --cut_tail --cut_tail_window_size 5 --cut_tail_mean_quality 20 --cut_front --cut_front_window_size 5 \
     --cut_front_mean_quality 20 --length_required 50 --html ${barID}_trimmming.html
-    """
-
-    stub:
-    """
-    echo "test" > ${barID}.txt
-
     """
 }
 
