@@ -43,7 +43,7 @@ Reads trimming and filtering with fastp: length < 50, headcrop and tailcrop scor
 */
 process clean_reads {
 
-    cpus 10
+    cpus 5
     publishDir "trimming_output/"
 
     input:
@@ -65,7 +65,7 @@ process clean_reads {
 
 //With flye
 process assemble_genome { 
-    cpus 12
+    cpus 5
     publishDir "genome_assembly/"
     errorStrategy 'ignore' //ignore flye error du to coverage. 
 
