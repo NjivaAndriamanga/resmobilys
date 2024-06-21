@@ -1,7 +1,7 @@
 work/
 fastq_pass/
 .nextflow*
-trimming_output/
+trimmed_output/
 genome_assembly/
 report*
 dag*

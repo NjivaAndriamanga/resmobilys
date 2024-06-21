@@ -39,12 +39,32 @@ process gzip_fastq {
 }
 
 /*
+Remove barcodes if there is one left (or not processed with guppy during multiplexing)
+*/
+process remove_barcodes {
+    cpus 12
+
+    input:
+    val barID
+    path fastq
+
+    output:
+    val barID
+    path "trimmed_${barID}.fastq.gz"
+
+    script:
+    """
+    porechop --i $fastq -o trimmed_${barID}.fastq.gz -t ${task.cpus}
+    """
+}
+
+/*
 Reads trimming and filtering with fastp: length < 50, headcrop and tailcrop score 20
 */
 process clean_reads {
 
-    cpus 5
-    publishDir "trimming_output/"
+    cpus 2
+    publishDir "trimmed_output/"
 
     input:
     val barID
@@ -63,11 +83,10 @@ process clean_reads {
     """
 }
 
-//With flye
+//assembing genome and identify plasmid with hybracter
 process assemble_genome { 
-    cpus 5
+    cpus 10
     publishDir "genome_assembly/"
-    errorStrategy 'ignore' //ignore flye error du to coverage. 
 
     input:
     val barID
@@ -75,14 +94,29 @@ process assemble_genome {
     
     output:
     val barID, emit: id
-    path "${barID}_assembly.fasta", emit: assembly
-    path "${barID}_assembly_info.fasta"
+    path "${barID}_sample_per_contig_stats.tsv", emit: assembly_summary
+    path "${barID}_sample_chromosome.fasta", emit: assembly_chr_fasta
+    path "${barID}_sample_plasmid.fasta", emit: assembly_pls_fasta
 
     script:
     """
-    flye --nano-hq $fastq --threads ${task.cpus} --genome-size 4.2m --threads ${task.cpus} -o .
-    mv assembly.fasta ${barID}_assembly.fasta
-    mv assembly_info.txt ${barID}_assembly_info.fasta
+    hybracter long-single -l $fastq -t ${task.cpus} --skip_qc --min_length 100 --flyeModel --nano-hq
+    mv hybracter_out/FINAL_OUTPUT/complete ${barID}_assembly.fasta
+    mv assembly_info.txt ${barID}_assembly_info.txt
+    """
+
+    stub:
+    """
+    mkdir hybracter_out
+    mkdir hybracter_out/FINAL_OUTPUT
+    mkdir hybracter_out/FINAL_OUTPUT/complete
+    touch hybracter_out/FINAL_OUTPUT/complete/sample_summary.tsv
+    touch hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta
+    touch hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta
+
+    mv hybracter_out/FINAL_OUTPUT/complete/sample_summary.tsv ${barID}_sample_per_contig_stats.tsv
+    mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
+    mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
     """
 }
 
@@ -106,9 +140,10 @@ workflow {
 
     def fastq_pass_ch = Channel.fromPath(params.fastq_pass_dir)
     identified_samples(fastq_pass_ch)
-    (id1, fastq) = gzip_fastq(identified_samples.out.flatten())
-    (id2, fastq_cleaned) = clean_reads(id1, fastq)
-    assemble_genome(id2,fastq_cleaned)
-    after_assemble(assemble_genome.out.id, assemble_genome.out.assembly).view()
+    (id_fastq, fastq) = gzip_fastq(identified_samples.out.flatten())
+    (id_nobar, fastq_nobar) = remove_barcodes(id_fastq, fastq)
+    (id_fastq_cleaned, fastq_cleaned) = clean_reads(id_nobar, fastq_nobar)
+    assemble_genome(id_fastq_cleaned,fastq_cleaned)
+    //after_assemble(assemble_genome.out.id, assemble_genome.out.assembly).view()
     
 }
