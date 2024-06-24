@@ -42,7 +42,7 @@ process gzip_fastq {
 Remove barcodes if there is one left (or not processed with guppy during multiplexing)
 */
 process remove_barcodes {
-    cpus 12
+    cpus 8
 
     input:
     val barID
@@ -71,8 +71,8 @@ process clean_reads {
     path query
 
     output:
-    val barID
-    path "${barID}_trimmed.fastq.gz"
+    val barID, emit: barID
+    path "${barID}_trimmed.fastq.gz", emit: trimmed_fastq
     path "${barID}_trimmming.html" //to save trimming report in publishDir
 
     script:
@@ -83,9 +83,13 @@ process clean_reads {
     """
 }
 
-//assembing genome and identify plasmid with hybracter
+/*
+Assembling genome and identify plasmid with hybracter
+Hybracter also compare putative plasmid with PLSDD using MASH (see plassember_summary.tsv)
+Remarks: contig with size >= 500kb are considered as chromosome. If you want to change the lower-bound chrm length, modify -c parameters
+*/
 process assemble_genome { 
-    cpus 10
+    cpus 8
     publishDir "genome_assembly/"
 
     input:
@@ -100,11 +104,13 @@ process assemble_genome {
 
     script:
     """
-    hybracter long-single -l $fastq -t ${task.cpus} --skip_qc --min_length 100 --flyeModel --nano-hq
-    mv hybracter_out/FINAL_OUTPUT/complete ${barID}_assembly.fasta
-    mv assembly_info.txt ${barID}_assembly_info.txt
+    hybracter long-single -l $fastq -t ${task.cpus} --skip_qc --min_length 100 --flyeModel --nano-hq -c 500000
+    mv hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
+    mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
+    mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
+    mv hybracter_out/hybracter_out/processing/plassembler/sample/plassember_summary.tsv .
     """
-
+    
     stub:
     """
     mkdir hybracter_out
@@ -113,25 +119,27 @@ process assemble_genome {
     touch hybracter_out/FINAL_OUTPUT/complete/sample_summary.tsv
     touch hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta
     touch hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta
-
+    
     mv hybracter_out/FINAL_OUTPUT/complete/sample_summary.tsv ${barID}_sample_per_contig_stats.tsv
     mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
     mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
     """
 }
 
-process after_assemble{
+/*
+Identify AMR gene on plasmid (chromosome ?)
+*/
+process identify_AMR {
     input:
     val barID
-    path assembly
+    path fasta
 
     output:
-    stdout
+    path "AMR_summary.csv"
 
     script:
     """
-    echo $barID
-    echo $assembly
+    abricate -db ncbi $fasta
     """
 }
 
@@ -142,8 +150,7 @@ workflow {
     identified_samples(fastq_pass_ch)
     (id_fastq, fastq) = gzip_fastq(identified_samples.out.flatten())
     (id_nobar, fastq_nobar) = remove_barcodes(id_fastq, fastq)
-    (id_fastq_cleaned, fastq_cleaned) = clean_reads(id_nobar, fastq_nobar)
-    assemble_genome(id_fastq_cleaned,fastq_cleaned)
-    //after_assemble(assemble_genome.out.id, assemble_genome.out.assembly).view()
+    clean_reads(id_nobar, fastq_nobar)
+    assemble_genome(clean_reads.out.barID,clean_reads.out.trimmed_fastq)
     
 }
