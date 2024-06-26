@@ -77,7 +77,7 @@ process clean_reads {
 
     script:
     """
-    fastp -i $query -o ${barID}_trimmed.fastq.gz --thread ${task.cpus}\
+    fastp -i $query -o ${barID}_trimmed.fastq.gz --thread ${task.cpus} --trim_front1 10 --trim_tail1 10 \
     -Q --cut_tail --cut_tail_window_size 5 --cut_tail_mean_quality 20 --cut_front --cut_front_window_size 5 \
     --cut_front_mean_quality 20 --length_required 50 --html ${barID}_trimmming.html
     """
@@ -89,8 +89,9 @@ Hybracter also compare putative plasmid with PLSDD using MASH (see plassember_su
 Remarks: contig with size >= 500kb are considered as chromosome. If you want to change the lower-bound chrm length, modify -c parameters
 */
 process assemble_genome { 
-    cpus 8
+    cpus 12
     publishDir "genome_assembly/"
+    errorStrategy 'ignore' //impossible assembly (impossible to construct big contigs)
 
     input:
     val barID
@@ -101,16 +102,17 @@ process assemble_genome {
     path "${barID}_sample_per_contig_stats.tsv", emit: assembly_summary
     path "${barID}_sample_chromosome.fasta", emit: assembly_chr_fasta
     path "${barID}_sample_plasmid.fasta", emit: assembly_pls_fasta
+    path "${barID}_plassembler_summary.tsv", emit: plassember_summary
 
     script:
     """
-    hybracter long-single -l $fastq -t ${task.cpus} --skip_qc --min_length 100 --flyeModel --nano-hq -c 500000
+    hybracter long-single -l $fastq -t ${task.cpus} --skip_qc --min_length 50 --flyeModel --nano-hq -c 500000
     mv hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
     mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
     mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
-    mv hybracter_out/hybracter_out/processing/plassembler/sample/plassember_summary.tsv .
+    mv hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ${barID}_plassembler_summary.tsv
     """
-    
+
     stub:
     """
     mkdir hybracter_out
@@ -135,11 +137,18 @@ process identify_AMR {
     path fasta
 
     output:
-    path "AMR_summary.csv"
+    stdout
 
     script:
     """
-    abricate -db ncbi $fasta
+    echo "$fasta"
+    """
+
+    stub:
+    """
+    echo "$barID"
+    echo "$fasta"
+
     """
 }
 
@@ -152,5 +161,5 @@ workflow {
     (id_nobar, fastq_nobar) = remove_barcodes(id_fastq, fastq)
     clean_reads(id_nobar, fastq_nobar)
     assemble_genome(clean_reads.out.barID,clean_reads.out.trimmed_fastq)
-    
+    identify_AMR(assemble_genome.out.id,assemble_genome.out.assembly_chr_fasta).view()
 }
