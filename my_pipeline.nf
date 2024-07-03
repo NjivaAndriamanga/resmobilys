@@ -1,5 +1,3 @@
-// Define the variable for the fastq_pass directory
-params.fastq_pass_dir = 'fastq_pass/'
 
 /*
 List all barcodes from miniON output
@@ -39,10 +37,10 @@ process gzip_fastq {
 }
 
 /*
-Remove barcodes if there is one left (or not processed with guppy during multiplexing)
+Remove barcodes if there is one left (or not processed with guppy during demultiplexing)
 */
 process remove_barcodes {
-    cpus 8
+    label 'many_cpus'
 
     input:
     val barID
@@ -62,7 +60,6 @@ process remove_barcodes {
 Reads trimming and filtering with fastp: length < 50, headcrop and tailcrop score 20
 */
 process clean_reads {
-
     cpus 2
     publishDir "trimmed_output/"
 
@@ -89,7 +86,7 @@ Hybracter also compare putative plasmid with PLSDD using MASH (see plassember_su
 Remarks: contig with size >= 500kb are considered as chromosome. If you want to change the lower-bound chrm length, modify -c parameters
 */
 process assemble_genome { 
-    cpus 12
+    label 'many_cpus'
     publishDir "genome_assembly/"
     errorStrategy 'ignore' //impossible assembly (impossible to construct big contigs)
 
