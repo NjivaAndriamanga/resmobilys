@@ -1,8 +1,21 @@
+log.info "\n"
+log.info "========================================================================================="
+log.info "Welcome to the WATERISK pipeline. For any questions or remarks, please contact the author \n"
+log.info "=========================================================================================="
+log.info "\n"
+
+log.info """\
+Pipeline parameters:\n
+fastq input directory    : ${params.fastq_pass_dir}
+c_size                   : ${params.c_size}
+minimum read lenth       : ${params.read_min_length}
+bases to trim at the end : ${params.trim_end_size}
+"""
 
 /*
 List all barcodes from miniON output
 */
-process identified_samples {
+process IDENTIFIED_SAMPLES {
     input:
     path fastq_dir
 
@@ -21,7 +34,7 @@ process identified_samples {
 /*
 Merge all seprates fastq.gz for each barcodes file into one file
 */
-process gzip_fastq {
+process GZIP_FASTQ {
     input:
     path barcode_dir
 
@@ -39,7 +52,7 @@ process gzip_fastq {
 /*
 Remove barcodes if there is one left (or not processed with guppy during demultiplexing)
 */
-process remove_barcodes {
+process REMOVE_BARCODES {
     label 'many_cpus'
 
     input:
@@ -59,8 +72,7 @@ process remove_barcodes {
 /*
 Reads trimming and filtering with fastp: length < 50, headcrop and tailcrop score 20
 */
-process clean_reads {
-    cpus 2
+process CLEAN_READS {
     publishDir "trimmed_output/"
 
     input:
@@ -74,21 +86,21 @@ process clean_reads {
 
     script:
     """
-    fastp -i $query -o ${barID}_trimmed.fastq.gz --thread ${task.cpus} --trim_front1 10 --trim_tail1 10 \
+    fastp -i $query -o ${barID}_trimmed.fastq.gz --thread ${task.cpus} --trim_front1 ${params.trim_end_size} --trim_tail1 ${params.trim_end_size} \
     -Q --cut_tail --cut_tail_window_size 5 --cut_tail_mean_quality 20 --cut_front --cut_front_window_size 5 \
-    --cut_front_mean_quality 20 --length_required 50 --html ${barID}_trimmming.html
+    --cut_front_mean_quality 20 --length_required ${params.read_min_length} --html ${barID}_trimmming.html
     """
 }
 
 /*
 Assembling genome and identify plasmid with hybracter
-Hybracter also compare putative plasmid with PLSDD using MASH (see plassember_summary.tsv)
+Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_summary.tsv)
 Remarks: contig with size >= 500kb are considered as chromosome. If you want to change the lower-bound chrm length, modify -c parameters
 */
-process assemble_genome { 
+process ASSEMBLE_GENOME { 
     label 'many_cpus'
     publishDir "genome_assembly/"
-    errorStrategy 'ignore' //impossible assembly (impossible to construct big contigs)
+    errorStrategy 'ignore' //ignore if the assembly failed (particularly with fly when depth and coverage are not enought and chromosome are not circularized)
 
     input:
     val barID
@@ -103,7 +115,7 @@ process assemble_genome {
 
     script:
     """
-    hybracter long-single -l $fastq -t ${task.cpus} --skip_qc --min_length 50 --flyeModel --nano-hq -c 500000
+    hybracter long-single -l $fastq -t ${task.cpus} --skip_qc --min_length ${params.read_min_length} --flyeModel --nano-hq -c ${params.c_size}
     mv hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
     mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
     mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
@@ -128,7 +140,7 @@ process assemble_genome {
 /*
 Identify AMR gene on plasmid (chromosome ?)
 */
-process identify_AMR {
+process IDENTIFY_AMR {
     input:
     val barID
     path fasta
@@ -145,18 +157,16 @@ process identify_AMR {
     """
     echo "$barID"
     echo "$fasta"
-
     """
 }
 
 workflow {
-    println "Welcome to the Waterisk pipeline. For any questions or remarks, please contact the author \n"
 
     def fastq_pass_ch = Channel.fromPath(params.fastq_pass_dir)
-    identified_samples(fastq_pass_ch)
-    (id_fastq, fastq) = gzip_fastq(identified_samples.out.flatten())
-    (id_nobar, fastq_nobar) = remove_barcodes(id_fastq, fastq)
-    clean_reads(id_nobar, fastq_nobar)
-    assemble_genome(clean_reads.out.barID,clean_reads.out.trimmed_fastq)
-    identify_AMR(assemble_genome.out.id,assemble_genome.out.assembly_chr_fasta).view()
+    IDENTIFIED_SAMPLES(fastq_pass_ch)
+    (id_fastq, fastq) = GZIP_FASTQ(IDENTIFIED_SAMPLES.out.flatten())
+    (id_nobar, fastq_nobar) = REMOVE_BARCODES(id_fastq, fastq)
+    CLEAN_READS(id_nobar, fastq_nobar)
+    ASSEMBLE_GENOME(CLEAN_READS.out.barID,CLEAN_READS.out.trimmed_fastq)
+    IDENTIFY_AMR(ASSEMBLE_GENOME.out.id,ASSEMBLE_GENOME.out.assembly_chr_fasta).view()
 }
