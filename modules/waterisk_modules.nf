@@ -11,7 +11,6 @@ process IDENTIFIED_SAMPLES {
 
     script:
     """
-    output_prefix="ID"
     find $PWD/$fastq_dir/ -mindepth 1 -type d -name bar* > path_list.txt
     while read -r line; do basename=\$(echo \$line | awk '{n=split(\$0,A,"/"); print A[n]}'); output_file="\${basename}.txt"; echo "\$line" > \$output_file; done < path_list.txt
     rm path_list.txt
@@ -37,7 +36,7 @@ process GZIP_FASTQ {
 }
 
 /*
-Remove barcodes if there is one left (or not processed with guppy during demultiplexing)
+Remove barcodes identifiers (or not processed with guppy during demultiplexing)
 */
 process REMOVE_BARCODES {
     label 'many_cpus'
@@ -51,9 +50,14 @@ process REMOVE_BARCODES {
     path "trimmed_${barID}.fastq.gz"
 
     script:
-    """
-    porechop --i $fastq -o trimmed_${barID}.fastq.gz -t ${task.cpus}
-    """
+    if ( params.remove_barcode == true)
+        """
+        porechop --i $fastq -o trimmed_${barID}.fastq.gz -t ${task.cpus}
+        """
+    else
+        """
+        cp ${fastq} trimmed_${barID}.fastq.gz
+        """
 }
 
 /*
@@ -82,7 +86,6 @@ process CLEAN_READS {
 /*
 Assembling genome and identify plasmid with hybracter
 Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_summary.tsv)
-Remarks: contig with size >= 500kb are considered as chromosome. If you want to change the lower-bound chrm length, modify -c parameters
 */
 process ASSEMBLE_GENOME { 
     label 'many_cpus'
@@ -125,24 +128,36 @@ process ASSEMBLE_GENOME {
 }
 
 /*
-Identify AMR gene on plasmid (chromosome ?)
+Identify AMR gene on plasmid and chromosome using abricate
 */
-process IDENTIFY_AMR {
+process IDENTIFY_AMR_PLASMID {
+    publishDir "plasmid_amr/"
+
     input:
     val barID
-    path fasta
+    path plasmid_fasta
 
     output:
-    stdout
+    path "${barID}_plasmid_amr.txt", emit: plasmid_amr
 
     script:
     """
-    echo "$fasta"
+    abricate -db ${params.amr_db} ${plasmid_fasta} > ${barID}_plasmid_amr.txt
     """
+}
 
-    stub:
+process IDENTIFY_AMR_CRM {
+    publishDir "chrm_amr/"
+
+    input:
+    val barID
+    path chrm_fasta
+
+    output:
+    path "${barID}_chrm_amr.txt", emit: chrm_amr
+    
+    script:
     """
-    echo "$barID"
-    echo "$fasta"
+    abricate -db ${params.amr_db} ${chrm_fasta} > ${barID}_chrm_amr.txt
     """
 }
