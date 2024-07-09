@@ -36,7 +36,28 @@ process GZIP_FASTQ {
 }
 
 /*
-Remove barcodes identifiers (or not processed with guppy during demultiplexing)
+Run only fastqc
+*/
+process FASTQC {
+    input:
+    val barID
+    path fastq
+
+    output: 
+    val barID
+    path fastq
+
+    when:
+    params.only_qc == true
+
+    script:
+    """
+        
+    """
+}
+
+/*
+Remove barcode identifiers (or not processed with guppy during demultiplexing)
 */
 process REMOVE_BARCODES {
     label 'many_cpus'

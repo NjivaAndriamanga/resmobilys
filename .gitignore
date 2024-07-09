@@ -5,3 +5,6 @@ trimmed_output/
 genome_assembly/
 report*
 dag*
+chrm_amr/
+plasmid_amr/
+test/
