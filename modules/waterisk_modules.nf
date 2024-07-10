@@ -5,14 +5,15 @@ List all barcodes from miniON output
 process IDENTIFIED_SAMPLES {
     input:
     path fastq_dir
+    val fastq_path
 
     output:
     path '*.txt'
 
     script:
     """
-    find $PWD/$fastq_dir/ -mindepth 1 -type d -name bar* > path_list.txt
-    while read -r line; do basename=\$(echo \$line | awk '{n=split(\$0,A,"/"); print A[n]}'); output_file="\${basename}.txt"; echo "\$line" > \$output_file; done < path_list.txt
+    ls ${fastq_dir}/ > path_list.txt
+    while read -r line; do basename=\$(echo \$line | awk '{n=split(\$0,A,"/"); print A[n]}'); output_file="\${basename}.txt"; echo "${fastq_path}\$line" > \$output_file; done < path_list.txt
     rm path_list.txt
     """
 }
@@ -52,7 +53,7 @@ process FASTQC {
 
     script:
     """
-        
+        //TODO
     """
 }
 

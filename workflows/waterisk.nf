@@ -7,6 +7,27 @@ log.info "\n"
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    PARAMETERS MANAGMENT
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+include { validateParameters; paramsHelp; paramsSummaryLog; fromSamplesheet } from 'plugin/nf-validation'
+
+//print help message, supply typical command line usage for the pipeline
+if (params.help) {
+    log.info paramsHelp("nextflow run waterisk --profile perso")
+    exit 0
+}
+
+//
+validateParameters()
+
+//Print summary of supplied parameters
+log.info paramsSummaryLog(workflow)
+
+//Check if the input dir exists
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT LOCAL MODULES / SUBWORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
@@ -26,8 +47,8 @@ include { IDENTIFY_AMR_CRM} from '../modules/waterisk_modules.nf'
 */
 
 workflow WATERISK {
-    def fastq_pass_ch = Channel.fromPath(params.fastq_pass_dir)
-    IDENTIFIED_SAMPLES(fastq_pass_ch)
+    
+    IDENTIFIED_SAMPLES(file(params.fastq_pass_dir), params.fastq_pass_dir)
 
     (id_fastq, fastq) = GZIP_FASTQ(IDENTIFIED_SAMPLES.out.flatten())
     

@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://raw.githubusercontent.com/WATERISK/master/nextflow_schema.json",
+  "title": "WATERISK pipeline parameters",
+  "description": "Assemble bacterial genome from Nanopore to detect AMR and MGE association",
+  "type": "object",
+  "definitions": {
+    "inputs_and_parameters": {
+      "title": "Inputs and parameters",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "fastq_pass_dir": {
+          "type": "string",
+          "default": null,
+          "description": "The absolute path of the input directory that contains fastq_pass Nonopore output"
+        },
+        "c_size": {
+          "type": "integer",
+          "default": 1000000
+        },
+        "read_min_length": {
+          "type": "integer",
+          "default": 50
+        },
+        "trim_end_size": {
+          "type": "integer",
+          "default": 10
+        },
+        "amr_db": {
+          "type": "string",
+          "default": "card"
+        },
+        "remove_barcode": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": ["fastq_pass_dir"]
+    },
+    "max_job_request_options": {
+      "title": "Max job request options",
+      "type": "object",
+      "fa_icon": "fab fa-acquisitions-incorporated",
+      "description": "Set the top limit for requested resources for any single job.",
+      "help_text": "If you are running on a smaller system, a pipeline step requesting more resources than are available may cause the Nextflow to stop the run with an error. These options allow you to cap the maximum resources requested by any single job so that the pipeline will run on your system.\n\nNote that you can not _increase_ the resources requested by any job using these options. For that you will need your own configuration file. See [the nf-core website](https://nf-co.re/usage/configuration) for details.",
+      "properties": {
+        "max_cpus": {
+          "type": "integer",
+          "description": "Maximum number of CPUs that can be requested for any single job.",
+          "default": 12,
+          "fa_icon": "fas fa-microchip",
+          "hidden": true,
+          "help_text": "Use to set an upper-limit for the CPU requirement for each process. Should be an integer e.g. `--max_cpus 1`"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "$ref": "#/definitions/inputs_and_parameters"
+    },
+    {
+      "$ref": "#/definitions/max_job_request_options"
+    }
+  ]
+}
