@@ -5,7 +5,7 @@
   "description": "Assemble bacterial genome from Nanopore to detect AMR and MGE association",
   "type": "object",
   "definitions": {
-    "inputs_and_parameters": {
+    "inputs_output_and_parameters": {
       "title": "Inputs and parameters",
       "type": "object",
       "description": "",
@@ -16,25 +16,35 @@
           "default": null,
           "description": "The absolute path of the input directory that contains fastq_pass Nonopore output"
         },
+        "output_dir": {
+          "type": "string",
+          "default": "waterisk_output/",
+          "description": "Output directory for the pipeline"
+        },
         "c_size": {
           "type": "integer",
-          "default": 1000000
+          "default": 1000000,
+          "description": "Estimated chomosome length"
         },
         "read_min_length": {
           "type": "integer",
-          "default": 50
+          "default": 50,
+          "description": "Minimum read length"
         },
         "trim_end_size": {
           "type": "integer",
-          "default": 10
+          "default": 10,
+          "description": "Number of bases to remove at each end of the read"
         },
         "amr_db": {
           "type": "string",
-          "default": "card"
+          "default": "card",
+          "description": "AMR database for AMR detection with ABRICATE"
         },
         "remove_barcode": {
           "type": "boolean",
-          "default": true
+          "default": true,
+          "description": "If true, remove barcodes with Porechop"
         }
       },
       "required": ["fastq_pass_dir"]
@@ -49,7 +59,7 @@
         "max_cpus": {
           "type": "integer",
           "description": "Maximum number of CPUs that can be requested for any single job.",
-          "default": 12,
+          "default": 2,
           "fa_icon": "fas fa-microchip",
           "hidden": true,
           "help_text": "Use to set an upper-limit for the CPU requirement for each process. Should be an integer e.g. `--max_cpus 1`"
@@ -59,7 +69,7 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs_and_parameters"
+      "$ref": "#/definitions/inputs_output_and_parameters"
     },
     {
       "$ref": "#/definitions/max_job_request_options"

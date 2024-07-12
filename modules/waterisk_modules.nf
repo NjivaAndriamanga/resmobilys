@@ -86,7 +86,7 @@ process REMOVE_BARCODES {
 Reads trimming and filtering with fastp: length < 50, headcrop and tailcrop score 20
 */
 process CLEAN_READS {
-    publishDir "trimmed_output/"
+    publishDir "${params.output_dir}trimmed_output/"
 
     input:
     val barID
@@ -111,7 +111,7 @@ Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_su
 */
 process ASSEMBLE_GENOME { 
     label 'many_cpus'
-    publishDir "genome_assembly/"
+    publishDir "${params.output_dir}genome_assembly/"
     errorStrategy 'ignore' //ignore if the assembly failed (particularly with fly when depth and coverage are not enought and chromosome are not circularized)
 
     input:
@@ -153,7 +153,7 @@ process ASSEMBLE_GENOME {
 Identify AMR gene on plasmid and chromosome using abricate
 */
 process IDENTIFY_AMR_PLASMID {
-    publishDir "plasmid_amr/"
+    publishDir "${params.output_dir}plasmid_amr/"
 
     input:
     val barID
@@ -168,8 +168,8 @@ process IDENTIFY_AMR_PLASMID {
     """
 }
 
-process IDENTIFY_AMR_CRM {
-    publishDir "chrm_amr/"
+process IDENTIFY_AMR_CHRM {
+    publishDir "${params.output_dir}chrm_amr/"
 
     input:
     val barID

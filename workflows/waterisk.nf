@@ -38,7 +38,7 @@ include { REMOVE_BARCODES } from '../modules/waterisk_modules.nf'
 include { CLEAN_READS } from '../modules/waterisk_modules.nf'
 include { ASSEMBLE_GENOME } from '../modules/waterisk_modules.nf'
 include { IDENTIFY_AMR_PLASMID} from '../modules/waterisk_modules.nf'
-include { IDENTIFY_AMR_CRM} from '../modules/waterisk_modules.nf'
+include { IDENTIFY_AMR_CHRM} from '../modules/waterisk_modules.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -62,7 +62,7 @@ workflow WATERISK {
     IDENTIFY_AMR_PLASMID(ASSEMBLE_GENOME.out.id,
                         ASSEMBLE_GENOME.out.assembly_pls_fasta)
     
-    IDENTIFY_AMR_CRM(ASSEMBLE_GENOME.out.id,
+    IDENTIFY_AMR_CHRM(ASSEMBLE_GENOME.out.id,
     ASSEMBLE_GENOME.out.assembly_chr_fasta)
 }
 
