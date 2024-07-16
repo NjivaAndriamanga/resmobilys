@@ -61,7 +61,7 @@ process FASTQC {
 Remove barcode identifiers (or not processed with guppy during demultiplexing)
 */
 process REMOVE_BARCODES {
-    label 'many_cpus'
+    label 'process_high'
 
     input:
     val barID
@@ -84,9 +84,15 @@ process REMOVE_BARCODES {
 
 /*
 Reads trimming and filtering with fastp: length < 50, headcrop and tailcrop score 20
+NB: fastp can be ram greedy. 
 */
 process CLEAN_READS {
+    label "process_high"
     publishDir "${params.output_dir}trimmed_output/"
+    maxRetries 5
+    maxForks 2
+    errorStrategy { if (task.attempt <= maxRetries) { sleep(Math.pow(2, task.attempt) * 200 as long); return 'retry'} else { return 'finish'} }
+    
 
     input:
     val barID
@@ -100,7 +106,7 @@ process CLEAN_READS {
     script:
     """
     fastp -i $query -o ${barID}_trimmed.fastq.gz --thread ${task.cpus} --trim_front1 ${params.trim_end_size} --trim_tail1 ${params.trim_end_size} \
-    -Q --cut_tail --cut_tail_window_size 5 --cut_tail_mean_quality 20 --cut_front --cut_front_window_size 5 \
+    -Q -A --cut_tail --cut_tail_window_size 5 --cut_tail_mean_quality 20 --cut_front --cut_front_window_size 5 \
     --cut_front_mean_quality 20 --length_required ${params.read_min_length} --html ${barID}_trimmming.html
     """
 }
@@ -110,7 +116,7 @@ Assembling genome and identify plasmid with hybracter
 Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_summary.tsv)
 */
 process ASSEMBLE_GENOME { 
-    label 'many_cpus'
+    label 'process_high'
     publishDir "${params.output_dir}genome_assembly/"
     errorStrategy 'ignore' //ignore if the assembly failed (particularly with fly when depth and coverage are not enought and chromosome are not circularized)
 
