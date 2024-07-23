@@ -83,17 +83,16 @@ process REMOVE_BARCODES {
 }
 
 /*
-Reads trimming and filtering with fastp: length < 50, headcrop and tailcrop score 20
+Reads trimming by length and quality score and filtering with fastp. FASTP 0.23.4 is not reproductible and some errors have not yet been fixed
 NB: fastp can be ram greedy. 
 */
-process CLEAN_READS {
+/* process CLEAN_READS {
     label "process_high"
     publishDir "${params.output_dir}trimmed_output/"
     maxRetries 5
     maxForks 2
     errorStrategy { if (task.attempt <= maxRetries) { sleep(Math.pow(2, task.attempt) * 200 as long); return 'retry'} else { return 'finish'} }
     
-
     input:
     val barID
     path query
@@ -109,11 +108,36 @@ process CLEAN_READS {
     -Q -A --cut_tail --cut_tail_window_size 5 --cut_tail_mean_quality 20 --cut_front --cut_front_window_size 5 \
     --cut_front_mean_quality 20 --length_required ${params.read_min_length} --html ${barID}_trimmming.html
     """
+} */
+
+process CLEAN_READS {
+    abel "process_high"
+    publishDir "${params.output_dir}trimmed_output/"
+    maxRetries 5
+    
+    input:
+    val barID
+    path query
+
+    output:
+    val barID, emit: barID
+    path "${barID}Trimmed.fastq.gz", emit: trimmed_fastq
+    path "${barID}_report.html" //to save trimming report in publishDir
+
+    script:
+    """
+    fastqc --memory 2000 $query -t 1
+    cutadapt --cut ${params.trim_end_size} -q 20,20 -o ${barID}Trimmed.fastq.gz $query -m ${params.read_min_length}
+    fastqc --memory 2000 ${barID}Trimmed.fastq.gz
+    multiqc .
+    mv multiqc_report.html ${barID}_report.html
+    """
 }
 
 /*
 Assembling genome and identify plasmid with hybracter
 Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_summary.tsv)
+TODO if incomplete assembly, write log info
 */
 process ASSEMBLE_GENOME { 
     label 'process_high'
