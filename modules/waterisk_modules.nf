@@ -110,8 +110,11 @@ NB: fastp can be ram greedy.
     """
 } */
 
+/*
+Reads trimming by length and quality score and filtering with cutadapt. Asses reads quality before and reads filtering with fastqc. The two reports are merged with multiqc
+*/
 process CLEAN_READS {
-    abel "process_high"
+    label "process_high"
     publishDir "${params.output_dir}trimmed_output/"
     maxRetries 5
     
@@ -127,7 +130,7 @@ process CLEAN_READS {
     script:
     """
     fastqc --memory 2000 $query -t 1
-    cutadapt --cut ${params.trim_end_size} -q 20,20 -o ${barID}Trimmed.fastq.gz $query -m ${params.read_min_length}
+    cutadapt --cut ${params.trim_end_size} --cut -${params.trim_end_size} -q 20,20 -o ${barID}Trimmed.fastq.gz $query -m ${params.read_min_length}
     fastqc --memory 2000 ${barID}Trimmed.fastq.gz
     multiqc .
     mv multiqc_report.html ${barID}_report.html
@@ -135,34 +138,51 @@ process CLEAN_READS {
 }
 
 /*
-Assembling genome and identify plasmid with hybracter
+Assembling genome and plasmid with hybracter
 Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_summary.tsv)
 TODO if incomplete assembly, write log info
 */
 process ASSEMBLE_GENOME { 
     label 'process_high'
     publishDir "${params.output_dir}genome_assembly/"
-    errorStrategy 'ignore' //ignore if the assembly failed (particularly with fly when depth and coverage are not enought and chromosome are not circularized)
-
+    
     input:
     val barID
     path fastq
     
     output:
     val barID, emit: id
-    path "${barID}_sample_per_contig_stats.tsv", emit: assembly_summary
-    path "${barID}_sample_chromosome.fasta", emit: assembly_chr_fasta
-    path "${barID}_sample_plasmid.fasta", emit: assembly_pls_fasta
-    path "${barID}_plassembler_summary.tsv", emit: plassember_summary
+    path "${barID}_plassembler_summary.tsv", emit: plassember_summary, optional: true
+    path "${barID}_sample_per_contig_stats.tsv", emit: assembly_summary, optional: true
+    path "${barID}_sample_chromosome.fasta", emit: assembly_chr_fasta, optional: true
+    path "${barID}_sample_plasmid.fasta", emit: assembly_pls_fasta, optional: true
+   
+    path "${barID}_sample.fasta", emit: sample_fasta, optional: true
 
     script:
-    """
-    hybracter long-single -l $fastq -t ${task.cpus} --skip_qc --min_length ${params.read_min_length} --flyeModel --nano-hq -c ${params.c_size}
-    mv hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
-    mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
-    mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
-    mv hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ${barID}_plassembler_summary.tsv
-    """
+    if (params.medaka == true)
+        """
+        hybracter long-single -l $fastq -t ${task.cpus} --skip_qc --min_length ${params.read_min_length} --flyeModel --nano-hq -c ${params.c_size}
+
+        mv hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ${barID}_plassembler_summary.tsv
+        [ -f hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ] && mv hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
+        [ -f hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ] && mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
+        [ -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] && mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
+
+        [ -f hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ] && mv hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
+        [ -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] && mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample.fasta
+        """
+    if (params.medaka == false)
+        """
+        hybracter long-single -l $fastq -t ${task.cpus} --skip_qc --no_medaka --min_length ${params.read_min_length} --flyeModel --nano-hq -c ${params.c_size}
+        mv hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ${barID}_plassembler_summary.tsv
+        [ -f hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ] && mv hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
+        [ -f hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ] && mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
+        [ -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] && mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
+
+        [ -f hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ] && mv hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
+        [ -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] && mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample.fasta
+        """
 
     stub:
     """
