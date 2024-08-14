@@ -50,6 +50,11 @@
           "type": "boolean",
           "default": false,
           "description": "if true, polish the long read assembly with Medaka"
+        },
+        "target_bases": {
+          "type": "integer",
+          "default": "500000000",
+          "description": "Remove the worst reads until only target_bases Mbp remain with Filtlong. If the input read set is less than 500 Mbp, this setting will have no effect."
         }
       },
       "required": ["fastq_pass_dir"]
