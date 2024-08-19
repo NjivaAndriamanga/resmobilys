@@ -21,6 +21,11 @@
           "default": "waterisk_output/",
           "description": "Output directory for the pipeline"
         },
+        "raw": {
+          "type": "boolean",
+          "default": "",
+          "description": "set to true if fastq file are separate in multiple fastq file"
+        },
         "c_size": {
           "type": "integer",
           "default": 1000000,

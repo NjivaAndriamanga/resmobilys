@@ -32,7 +32,8 @@ log.info paramsSummaryLog(workflow)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { IDENTIFIED_SAMPLES } from '../modules/waterisk_modules.nf'
+include { IDENTIFIED_RAW_SAMPLES } from '../modules/waterisk_modules.nf'
+include { IDENTIFIED_SAMPLES} from '../modules/waterisk_modules.nf'
 include { MERGE_SEPARATE_FASTQ } from '../modules/waterisk_modules.nf'
 include { REMOVE_BARCODES } from '../modules/waterisk_modules.nf'
 include { CLEAN_READS } from '../modules/waterisk_modules.nf'
@@ -50,8 +51,16 @@ include { IDENTIFY_AMR_CHRM_COMPLETE} from '../modules/waterisk_modules.nf'
 
 workflow WATERISK {
     
-    IDENTIFIED_SAMPLES(file(params.fastq_pass_dir), params.fastq_pass_dir)
-    (id_fastq, fastq) = MERGE_SEPARATE_FASTQ(IDENTIFIED_SAMPLES.out.flatten())
+    //raw output from MINION
+    if (params.raw == true){
+        IDENTIFIED_RAW_SAMPLES(file(params.fastq_pass_dir), params.fastq_pass_dir)
+        (id_fastq, fastq) = MERGE_SEPARATE_FASTQ(IDENTIFIED_SAMPLES.out.flatten())
+    }
+    else {
+        def fastqs = Channel.fromPath(params.fastq_pass_dir + "*.fastq.gz")
+        (id_fastq, fastq) = IDENTIFIED_SAMPLES(fastqs)
+    }
+    
     
     //if remove barcode is enabled
     if (params.remove_barcode == true){

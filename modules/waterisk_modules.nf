@@ -2,7 +2,7 @@
 /*
 List all barcodes contain in the input directory from miniON output
 */
-process IDENTIFIED_SAMPLES {
+process IDENTIFIED_RAW_SAMPLES {
     input:
     path fastq_dir
     val fastq_path
@@ -15,6 +15,21 @@ process IDENTIFIED_SAMPLES {
     ls ${fastq_dir}/ > path_list.txt
     while read -r line; do basename=\$(echo \$line | awk '{n=split(\$0,A,"/"); print A[n]}'); output_file="\${basename}.txt"; echo "${fastq_path}\$line" > \$output_file; done < path_list.txt
     rm path_list.txt
+    """
+}
+
+process IDENTIFIED_SAMPLES {
+    input:
+    path fastq
+
+    output:
+    val barID
+    path fastq
+
+    script:
+    barID = fastq.getSimpleName()
+    """
+
     """
 }
 
@@ -134,7 +149,7 @@ process COUNT_BP {
 }
 
 /*
-Remove the worst reads until only 500 Mbp remain, useful for very large read sets. If the input read set is less than 500 Mbp, this setting will have no effect.
+Remove the worst reads until only 500 Mbp remain (100x coverage), useful for very large read sets. If the input read set is less than 500 Mbp, this setting will have no effect.
 */
 process SAMPLE_FASTQ {
     publishDir "${params.output_dir}trimmed_output/"
