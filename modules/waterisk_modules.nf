@@ -119,7 +119,7 @@ process CLEAN_READS {
     script:
     """
     fastqc --memory 2000 $query -t 1
-    cutadapt --cut ${params.trim_end_size} --cut -${params.trim_end_size} -q 20,20 -o ${barID}Trimmed.fastq.gz $query -m ${params.read_min_length}
+    cutadapt --cut ${params.trim_end_size} --cut -${params.trim_end_size} -q ${params.quality_trim},${params.quality_trim} -o ${barID}Trimmed.fastq.gz $query -m ${params.read_min_length}
     fastqc --memory 2000 ${barID}Trimmed.fastq.gz
     multiqc .
     mv multiqc_report.html ${barID}_report.html
@@ -130,33 +130,37 @@ process CLEAN_READS {
 Count the number of base
 */
 process COUNT_BP {
-    
+
     input: 
     val barID
     path trimmed_fastq
 
     output:
     val barID, emit: barID
-    env nbp, emit: number_bp
+    path "nbp.txt", emit: number_bp
     path trimmed_fastq, emit: fastq
 
     script:
     """
     gzip -dc $trimmed_fastq > unzip.fastq
     nbp=\$(awk 'NR % 4 == 0' ORS="" unzip.fastq | wc -m)
+    echo \$nbp > nbp.txt
     rm unzip.fastq
     """
+    
+
 }
 
 /*
 Remove the worst reads until only 500 Mbp remain (100x coverage), useful for very large read sets. If the input read set is less than 500 Mbp, this setting will have no effect.
 */
 process SAMPLE_FASTQ {
+    debug true
     publishDir "${params.output_dir}trimmed_output/"
 
     input:
     val barID
-    val nbp
+    path nbp_file
     path query
 
     output:
@@ -165,7 +169,8 @@ process SAMPLE_FASTQ {
 
     script:
     """
-    if [ ${nbp} -gt 50000000]; then
+    nbp=\$(head -n 1 $nbp_file)
+    if [ \$nbp -gt 500000000 ]; then
         filtlong --min_length ${params.read_min_length} --target_bases 500000000 $query | gzip > "${barID}sampleTrimmed.fastq.gz"
     else
         cp $query "${barID}sampleTrimmed.fastq.gz"
@@ -217,7 +222,7 @@ process ASSEMBLE_GENOME {
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
 
-        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || && mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample.fasta
+        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample.fasta
         """
 
 }

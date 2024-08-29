@@ -41,6 +41,11 @@
           "default": 0,
           "description": "Number of bases to remove at each end of the read"
         },
+        "quality_trim": {
+          "type": "integer",
+          "default": 20,
+          "description": "Parameter can be used to trim low-quality ends from reads."
+        },
         "amr_db": {
           "type": "string",
           "default": "card",
