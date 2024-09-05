@@ -37,7 +37,6 @@ include { IDENTIFIED_SAMPLES} from '../modules/waterisk_modules.nf'
 include { MERGE_SEPARATE_FASTQ } from '../modules/waterisk_modules.nf'
 include { REMOVE_BARCODES } from '../modules/waterisk_modules.nf'
 include { CLEAN_READS } from '../modules/waterisk_modules.nf'
-include {COUNT_BP} from '../modules/waterisk_modules.nf'
 include {SAMPLE_FASTQ} from '../modules/waterisk_modules.nf'
 include { ASSEMBLE_GENOME } from '../modules/waterisk_modules.nf'
 include { IDENTIFY_AMR_PLASMID_COMPLETE} from '../modules/waterisk_modules.nf'
@@ -70,14 +69,9 @@ workflow WATERISK {
     else {
         CLEAN_READS(id_fastq, fastq)
     }
-        
-    COUNT_BP(CLEAN_READS.out.barID,
-                    CLEAN_READS.out.trimmed_fastq)
-
     
-    SAMPLE_FASTQ(COUNT_BP.out.barID,
-                    COUNT_BP.out.number_bp,
-                        COUNT_BP.out.fastq)
+    SAMPLE_FASTQ(CLEAN_READS.out.barID,
+                    CLEAN_READS.out.trimmed_fastq)
 
     ASSEMBLE_GENOME(SAMPLE_FASTQ.out.barID,
                         SAMPLE_FASTQ.out.trimmed_fastq)

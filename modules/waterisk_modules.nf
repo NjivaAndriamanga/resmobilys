@@ -128,7 +128,7 @@ process CLEAN_READS {
 
 /*
 Count the number of base
-*/
+*//* 
 process COUNT_BP {
 
     input: 
@@ -150,9 +150,12 @@ process COUNT_BP {
     
 
 }
+ */
+
 
 /*
 Remove the worst reads until only 500 Mbp remain (100x coverage), useful for very large read sets. If the input read set is less than 500 Mbp, this setting will have no effect.
+Alternative Rasusa
 */
 process SAMPLE_FASTQ {
     debug true
@@ -160,7 +163,6 @@ process SAMPLE_FASTQ {
 
     input:
     val barID
-    path nbp_file
     path query
 
     output:
@@ -169,12 +171,7 @@ process SAMPLE_FASTQ {
 
     script:
     """
-    nbp=\$(head -n 1 $nbp_file)
-    if [ \$nbp -gt 500000000 ]; then
-        filtlong --min_length ${params.read_min_length} --target_bases 500000000 $query | gzip > "${barID}sampleTrimmed.fastq.gz"
-    else
-        cp $query "${barID}sampleTrimmed.fastq.gz"
-    fi
+    filtlong --min_length ${params.read_min_length} --target_bases ${params.target_bases} $query | gzip > "${barID}sampleTrimmed.fastq.gz"
     """
 }
 
@@ -183,6 +180,7 @@ Assembling genome and plasmid with hybracter
 Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_summary.tsv)
 */
 process ASSEMBLE_GENOME { 
+    errorStrategy 'ignore' //Error are mainly from medaka. Re run failed sample with no medaka
     label 'process_high'
     publishDir "${params.output_dir}genome_assembly/"
 
@@ -199,21 +197,21 @@ process ASSEMBLE_GENOME {
     path "${barID}_sample_chromosome.fasta", emit: assembly_chr_fasta, optional: true
     path "${barID}_sample_plasmid.fasta", emit: assembly_pls_fasta, optional: true
     //For incomplete assembly. No contig size above the -c (minimal chrm size).
-    path "${barID}_sample.fasta", emit: sample_fasta, optional: true
+    //path "${barID}_sample.fasta", emit: sample_fasta, optional: true
 
     script:
     if (params.medaka == true)
         """
         hybracter long-single -l $fastq -t ${task.cpus} --skip_qc --min_length ${params.read_min_length} --flyeModel --nano-hq -c ${params.c_size}
-
+        
         [ ! -f hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ] || mv hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ${barID}_plassembler_summary.tsv
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
 
-        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample.fasta
+        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample_plasmid.fasta
         """
-    if (params.medaka == false)
+    else if (params.medaka == false)
         """
         hybracter long-single -l $fastq -t ${task.cpus} --skip_qc --no_medaka --min_length ${params.read_min_length} --flyeModel --nano-hq -c ${params.c_size}
         
@@ -222,7 +220,7 @@ process ASSEMBLE_GENOME {
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
 
-        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample.fasta
+        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample_plasmid.fasta
         """
 
 }
