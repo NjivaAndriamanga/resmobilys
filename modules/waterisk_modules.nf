@@ -23,8 +23,7 @@ process IDENTIFIED_SAMPLES {
     path fastq
 
     output:
-    val barID
-    path fastq
+    tuple val(barID), path(fastq)
 
     script:
     barID = fastq.getSimpleName()
@@ -41,8 +40,7 @@ process MERGE_SEPARATE_FASTQ {
     path barcode_dir
 
     output:
-    val barID
-    path "${barID}.fastq.gz"
+    tuple val(barID), path("${barID}.fastq.gz")
 
     script:
     barID = barcode_dir.getSimpleName()
@@ -58,12 +56,10 @@ process REMOVE_BARCODES {
     label 'process_high'
 
     input:
-    val barID
-    path fastq
+    tuple val(barID), path(fastq)
 
     output:
-    val barID
-    path "trimmed_${barID}.fastq.gz"
+    tuple val(barID), path("trimmed_${barID}.fastq.gz")
 
     script:
     """
@@ -105,15 +101,12 @@ Reads trimming by length and quality score and filtering with cutadapt. Asses re
 process CLEAN_READS {
     label "process_high"
     publishDir "${params.output_dir}trimmed_output/"
-    maxRetries 5
     
     input:
-    val barID
-    path query
+    tuple val(barID), path(query)
 
     output:
-    val barID, emit: barID
-    path "${barID}Trimmed.fastq.gz", emit: trimmed_fastq
+    tuple val(barID), path("${barID}Trimmed.fastq.gz"), emit: trimmed_fastq
     path "${barID}_report.html" //to save trimming report in publishDir
 
     script:
@@ -127,33 +120,6 @@ process CLEAN_READS {
 }
 
 /*
-Count the number of base
-*//* 
-process COUNT_BP {
-
-    input: 
-    val barID
-    path trimmed_fastq
-
-    output:
-    val barID, emit: barID
-    path "nbp.txt", emit: number_bp
-    path trimmed_fastq, emit: fastq
-
-    script:
-    """
-    gzip -dc $trimmed_fastq > unzip.fastq
-    nbp=\$(awk 'NR % 4 == 0' ORS="" unzip.fastq | wc -m)
-    echo \$nbp > nbp.txt
-    rm unzip.fastq
-    """
-    
-
-}
- */
-
-
-/*
 Remove the worst reads until only 500 Mbp remain (100x coverage), useful for very large read sets. If the input read set is less than 500 Mbp, this setting will have no effect.
 Alternative Rasusa
 */
@@ -162,12 +128,10 @@ process SAMPLE_FASTQ {
     publishDir "${params.output_dir}trimmed_output/"
 
     input:
-    val barID
-    path query
+    tuple val(barID),path(query)
 
     output:
-    val barID, emit: barID
-    path "${barID}sampleTrimmed.fastq.gz", emit: trimmed_fastq
+    tuple val(barID), path("${barID}sampleTrimmed.fastq.gz")
 
     script:
     """
@@ -178,6 +142,7 @@ process SAMPLE_FASTQ {
 /*
 Assembling genome and plasmid with hybracter
 Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_summary.tsv)
+For incomplete assembly, contigs are written in sample_final.fasta
 */
 process ASSEMBLE_GENOME { 
     errorStrategy 'ignore' //Error are mainly from medaka. Re run failed sample with no medaka
@@ -185,19 +150,11 @@ process ASSEMBLE_GENOME {
     publishDir "${params.output_dir}genome_assembly/"
 
     input:
-    val barID
-    path fastq
+    tuple val(barID), path(fastq)
     
     output:
-    val barID, emit: id
-    
-    //For complete assembly
-    path "${barID}_sample_per_contig_stats.tsv", emit: assembly_summary, optional: true
-    path "${barID}_plassembler_summary.tsv", emit: plassember_summary, optional: true
-    path "${barID}_sample_chromosome.fasta", emit: assembly_chr_fasta, optional: true
-    path "${barID}_sample_plasmid.fasta", emit: assembly_pls_fasta, optional: true
-    //For incomplete assembly. No contig size above the -c (minimal chrm size).
-    //path "${barID}_sample.fasta", emit: sample_fasta, optional: true
+    tuple val(barID), path(fastq),path("${barID}_sample_per_contig_stats.tsv"), path("${barID}_plassembler_summary.tsv"), path("${barID}_sample_chromosome.fasta"), path("${barID}_sample_plasmid.fasta"), optional: true, emit: complete_assembly
+    tuple val(barID), path(fastq),path("${barID}_sample_final.fasta"), optional: true, emit: incomplete_assembly
 
     script:
     if (params.medaka == true)
@@ -209,7 +166,7 @@ process ASSEMBLE_GENOME {
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
 
-        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample_plasmid.fasta
+        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta .
         """
     else if (params.medaka == false)
         """
@@ -220,20 +177,19 @@ process ASSEMBLE_GENOME {
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
 
-        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample_plasmid.fasta
-        """
+        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta .
 
+        """
 }
 
 /*
 Identify AMR gene on plasmid and chromosome using abricate
 */
-process IDENTIFY_AMR_PLASMID_COMPLETE {
+process IDENTIFY_AMR_PLASMID {
     publishDir "${params.output_dir}plasmid_amr/"
 
     input:
-    val barID
-    path plasmid_fasta
+    tuple val(barID) ,path(plasmid_fasta)
 
     output:
     path "${barID}_plasmid_amr.txt", emit: plasmid_amr
@@ -244,12 +200,11 @@ process IDENTIFY_AMR_PLASMID_COMPLETE {
     """
 }
 
-process IDENTIFY_AMR_CHRM_COMPLETE {
+process IDENTIFY_AMR_CHRM {
     publishDir "${params.output_dir}chrm_amr/"
 
     input:
-    val barID
-    path chrm_fasta
+    tuple val(barID), path(chrm_fasta)
 
     output:
     path "${barID}_chrm_amr.txt", emit: chrm_amr
