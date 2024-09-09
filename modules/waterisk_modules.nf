@@ -166,7 +166,7 @@ process ASSEMBLE_GENOME {
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
 
-        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta .
+        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample_final.fasta
         """
     else if (params.medaka == false)
         """
@@ -177,7 +177,7 @@ process ASSEMBLE_GENOME {
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
 
-        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta .
+        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample_final.fasta
 
         """
 }
@@ -212,5 +212,62 @@ process IDENTIFY_AMR_CHRM {
     script:
     """
     abricate -db ${params.amr_db} ${chrm_fasta} > ${barID}_chrm_amr.txt
+    """
+}
+
+//Infer contig from a fasta file
+process PLASME {
+    label 'plasme'
+    publishDir "${params.output_dir}plasme_output/"
+
+    input:
+    tuple val(barID), path(fastq), path(contig_fasta)
+
+    output:
+    tuple val(barID), path("${barID}_plasme.fasta"), path(fastq)
+
+    """
+    python ${params.plasme_py} ${contig_fasta} ${barID}_plasme.fasta -d ${params.plasme_db}
+
+    """
+}
+
+//Align and filtered reads on infered plasmid
+process ALIGN_READS_PLASMID {
+    conda 'samtools'
+
+    input:
+    tuple val(barID), path(inferred_plasmid_fasta), path(fastq)
+
+    output:
+    tuple val(barID), path("${barID}_mapped_reads.fastq")
+
+    script:
+    """
+    minimap2 -ax map-ont ${inferred_plasmid_fasta} ${fastq} > aln.sam
+    samtools view -Sb -o aln.bam aln.sam
+    samtools sort aln.bam -o aln_sorted.bam
+    samtools index aln_sorted.bam
+    samtools view -b -F 4 aln_sorted.bam > mapped_reads.bam
+    samtools fastq mapped_reads.bam > ${barID}_mapped_reads.fastq
+
+    """
+}
+
+//Plasmid assembly with unicycler
+process ASSEMBLY_PLASMID {
+    label 'process_high'
+    conda 'unicycler'
+    publishDir "${params.output_dir}plasme_output/"
+
+    input:
+    tuple val(barID), path(mapped_reads)
+
+    output:
+    tuple val(barID), path("${barID}_plasme_plasmid.fasta")
+
+    script:
+    """
+    unicycler -l ${mapped_reads} -o ${barID}_plasme_plasmid -t 10
     """
 }

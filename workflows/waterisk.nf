@@ -67,15 +67,19 @@ def check_plasmidAllCircular(tsv_file) {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { IDENTIFIED_RAW_SAMPLES } from '../modules/waterisk_modules.nf'
-include { IDENTIFIED_SAMPLES} from '../modules/waterisk_modules.nf'
-include { MERGE_SEPARATE_FASTQ } from '../modules/waterisk_modules.nf'
-include { REMOVE_BARCODES } from '../modules/waterisk_modules.nf'
-include { CLEAN_READS } from '../modules/waterisk_modules.nf'
-include {SAMPLE_FASTQ} from '../modules/waterisk_modules.nf'
-include { ASSEMBLE_GENOME } from '../modules/waterisk_modules.nf'
-include { IDENTIFY_AMR_PLASMID} from '../modules/waterisk_modules.nf'
-include { IDENTIFY_AMR_CHRM} from '../modules/waterisk_modules.nf'
+include { IDENTIFIED_RAW_SAMPLES }  from '../modules/waterisk_modules.nf'
+include { IDENTIFIED_SAMPLES}       from '../modules/waterisk_modules.nf'
+include { MERGE_SEPARATE_FASTQ }    from '../modules/waterisk_modules.nf'
+include { REMOVE_BARCODES }         from '../modules/waterisk_modules.nf'
+include { CLEAN_READS }             from '../modules/waterisk_modules.nf'
+include {SAMPLE_FASTQ}              from '../modules/waterisk_modules.nf'
+include { ASSEMBLE_GENOME }         from '../modules/waterisk_modules.nf'
+include { IDENTIFY_AMR_PLASMID }    from '../modules/waterisk_modules.nf'
+include { IDENTIFY_AMR_CHRM }       from '../modules/waterisk_modules.nf'
+include { PLASME }                  from '../modules/waterisk_modules.nf'
+include { ALIGN_READS_PLASMID }     from '../modules/waterisk_modules.nf'
+include { ASSEMBLY_PLASMID }        from '../modules/waterisk_modules.nf'
+
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -111,7 +115,7 @@ workflow WATERISK {
     //De novo assembly
     ASSEMBLE_GENOME(SAMPLE_FASTQ.out)
 
-    //Filtering complete, complete but with non circular plasmid and incomplete
+    //Filtering complete, complete but with non-circular plasmid and incomplete
     complete_assembly_ch = ASSEMBLE_GENOME.out.complete_assembly
 
     complete_non_circular_ch = ASSEMBLE_GENOME.out.complete_assembly
@@ -123,13 +127,20 @@ workflow WATERISK {
             check_plasmidAllCircular(contig)}
     
     incomplete_assembly_ch = ASSEMBLE_GENOME.out.incomplete_assembly
+    incomplete_assembly_ch.count().view()
 
-    complete_assembly_ch.count().view(it -> "$it sample have complete assembly")
+    complete_circular_ch.count().view(it -> "$it samples have complete assembly")
     complete_non_circular_ch.count().view( it -> "$it have non circular plasmid")
     
     //Merge incomplete and complete non circular channel for plasme before AMR detection
-    // TO DO
+    plasme_input_ch = incomplete_assembly_ch.concat(complete_non_circular_ch.map{ barID, fastq, contig, plassembler, chromosome, plasmid -> [ barID, fastq, plasmid]})
+    PLASME(plasme_input_ch)
 
+    //Align and filterd reads
+    ALIGN_READS_PLASMID(PLASME.out)
+    
+    //Plasmid assembly
+    ASSEMBLY_PLASMID(ALIGN_READS_PLASMID.out)
 
     //AMR detection for complete assembly
     complete_circular_chrm_ch = complete_circular_ch.map{ barID, fastq, contig, plassembler, chromosome, plasmid -> [barID, chromosome]}
