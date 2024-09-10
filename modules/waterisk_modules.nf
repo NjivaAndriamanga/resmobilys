@@ -123,7 +123,7 @@ process CLEAN_READS {
 Remove the worst reads until only 500 Mbp remain (100x coverage), useful for very large read sets. If the input read set is less than 500 Mbp, this setting will have no effect.
 Alternative Rasusa
 */
-process SAMPLE_FASTQ {
+process SAMPLING_FASTQ {
     debug true
     publishDir "${params.output_dir}trimmed_output/"
 
@@ -269,5 +269,6 @@ process ASSEMBLY_PLASMID {
     script:
     """
     unicycler -l ${mapped_reads} -o ${barID}_plasme_plasmid -t 10
+    mv ${barID}_plasme_plasmid/assembly.fasta ${barID}_plasme_plasmid.fasta
     """
 }

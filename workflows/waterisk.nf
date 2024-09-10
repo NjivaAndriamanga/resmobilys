@@ -72,7 +72,7 @@ include { IDENTIFIED_SAMPLES}       from '../modules/waterisk_modules.nf'
 include { MERGE_SEPARATE_FASTQ }    from '../modules/waterisk_modules.nf'
 include { REMOVE_BARCODES }         from '../modules/waterisk_modules.nf'
 include { CLEAN_READS }             from '../modules/waterisk_modules.nf'
-include {SAMPLE_FASTQ}              from '../modules/waterisk_modules.nf'
+include {SAMPLING_FASTQ}              from '../modules/waterisk_modules.nf'
 include { ASSEMBLE_GENOME }         from '../modules/waterisk_modules.nf'
 include { IDENTIFY_AMR_PLASMID }    from '../modules/waterisk_modules.nf'
 include { IDENTIFY_AMR_CHRM }       from '../modules/waterisk_modules.nf'
@@ -110,10 +110,10 @@ workflow WATERISK {
     }
     
     //Sampling fastq
-    SAMPLE_FASTQ(CLEAN_READS.out.trimmed_fastq)
+    SAMPLING_FASTQ(CLEAN_READS.out.trimmed_fastq)
 
     //De novo assembly
-    ASSEMBLE_GENOME(SAMPLE_FASTQ.out)
+    ASSEMBLE_GENOME(SAMPLING_FASTQ.out)
 
     //Filtering complete, complete but with non-circular plasmid and incomplete
     complete_assembly_ch = ASSEMBLE_GENOME.out.complete_assembly
