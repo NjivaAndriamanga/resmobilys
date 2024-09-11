@@ -145,7 +145,7 @@ Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_su
 For incomplete assembly, contigs are written in sample_final.fasta
 */
 process ASSEMBLE_GENOME { 
-    errorStrategy 'ignore' //Error are mainly from medaka. Re run failed sample with no medaka
+    //Error are mainly from medaka. Re run failed sample with no medaka
     label 'process_high'
     publishDir "${params.output_dir}genome_assembly/"
 
@@ -186,6 +186,7 @@ process ASSEMBLE_GENOME {
 Identify AMR gene on plasmid and chromosome using abricate
 */
 process IDENTIFY_AMR_PLASMID {
+    //label 'amr_detection'
     publishDir "${params.output_dir}plasmid_amr/"
 
     input:
@@ -201,6 +202,7 @@ process IDENTIFY_AMR_PLASMID {
 }
 
 process IDENTIFY_AMR_CHRM {
+    //label 'amr_detection'
     publishDir "${params.output_dir}chrm_amr/"
 
     input:
@@ -234,7 +236,6 @@ process PLASME {
 
 //Align and filtered reads on infered plasmid
 process ALIGN_READS_PLASMID {
-    conda 'samtools'
 
     input:
     tuple val(barID), path(inferred_plasmid_fasta), path(fastq)
@@ -257,7 +258,6 @@ process ALIGN_READS_PLASMID {
 //Plasmid assembly with unicycler
 process ASSEMBLY_PLASMID {
     label 'process_high'
-    conda 'unicycler'
     publishDir "${params.output_dir}plasme_output/"
 
     input:

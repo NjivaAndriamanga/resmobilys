@@ -115,18 +115,18 @@ workflow WATERISK {
     //De novo assembly
     ASSEMBLE_GENOME(SAMPLING_FASTQ.out)
 
-    //Filtering complete, complete but with non-circular plasmid and incomplete
+    //Filtering complete (1), complete but with non-circular (2) plasmid and incomplete (3)
     complete_assembly_ch = ASSEMBLE_GENOME.out.complete_assembly
 
-    complete_non_circular_ch = ASSEMBLE_GENOME.out.complete_assembly
+    complete_non_circular_ch = complete_assembly_ch //2
         .filter{ barID, fastq, contig, plassembler, chromosome, plasmid -> 
             check_nonCircularPlasmid(contig)}
 
-    complete_circular_ch = ASSEMBLE_GENOME.out.complete_assembly
+    complete_circular_ch = ASSEMBLE_GENOME.out.complete_assembly //1
         .filter{ barID, fastq, contig, plassembler, chromosome, plasmid -> 
             check_plasmidAllCircular(contig)}
     
-    incomplete_assembly_ch = ASSEMBLE_GENOME.out.incomplete_assembly
+    incomplete_assembly_ch = ASSEMBLE_GENOME.out.incomplete_assembly //3
     incomplete_assembly_ch.count().view()
 
     complete_circular_ch.count().view(it -> "$it samples have complete assembly")
@@ -145,8 +145,10 @@ workflow WATERISK {
     //AMR detection for complete assembly
     complete_circular_chrm_ch = complete_circular_ch.map{ barID, fastq, contig, plassembler, chromosome, plasmid -> [barID, chromosome]}
     complete_circular_plasmid_ch = complete_circular_ch.map{ barID, fastq, contig, plassembler, chromosome, plasmid -> [barID, plasmid]}
-    IDENTIFY_AMR_PLASMID( complete_circular_plasmid_ch)
+    plasmid_amr_ch = complete_circular_plasmid_ch.concat(ASSEMBLY_PLASMID.out)
+    IDENTIFY_AMR_PLASMID( plasmid_amr_ch )
     IDENTIFY_AMR_CHRM( complete_circular_chrm_ch)
+
 }
 
 /*

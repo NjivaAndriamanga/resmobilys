@@ -4,8 +4,9 @@ INTRODUCTION
 
 SET UP
 Git
-Nextflow
-Conda
+
+Nextflow, Conda, hybracter
+
 Container manager (apptainer or docker)
 
 USAGE
