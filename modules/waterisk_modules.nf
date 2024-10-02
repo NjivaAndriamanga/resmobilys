@@ -159,7 +159,7 @@ process ASSEMBLE_GENOME {
     script:
     if (params.medaka == true)
         """
-        hybracter long-single -l $fastq -t ${task.cpus} --skip_qc --min_length ${params.read_min_length} --flyeModel --nano-hq -c ${params.c_size}
+        hybracter long-single -l $fastq -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel --nano-hq -c ${params.c_size}
         
         [ ! -f hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ] || mv hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ${barID}_plassembler_summary.tsv
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
@@ -201,6 +201,8 @@ process IDENTIFY_AMR_PLASMID {
     """
 }
 
+
+
 process IDENTIFY_AMR_CHRM {
     //label 'amr_detection'
     publishDir "${params.output_dir}chrm_amr/"
@@ -217,10 +219,31 @@ process IDENTIFY_AMR_CHRM {
     """
 }
 
+//Filter circular in a fasta file from a tab file
+process FILTER_NON_CIRCULAR {
+    publishDir "${params.output_dir}genome_assembly/"
+
+    input:
+    tuple val(barID), path(fastq), path(tab_file), path(contig_fasta)
+    
+    output:
+    tuple val(barID), path(fastq), path("non_circular_plasmid.fasta"),  emit: non_circular_plasmid
+    path "${bar_id}_circular_plasmid.fasta"
+
+    script: 
+    """
+    awk '$5 == "True" { print $1 }' barcode09_sample_per_contig_stats.tsv > hybracter_circular_plasmid.txt
+    awk '$5 == "False" { print $1 }' barcode09_sample_per_contig_stats.tsv > hybracter_non_circular_plasmid.txt
+    seqkit grep -f hybracter_circular_plasmid.txt barcode09_sample_plasmid.fasta -o ${bar_id}_circular_plasmid.fasta
+    seqkit grep -f hybracter_non_circular_plasmid.txt barcode09_sample_plasmid.fasta -o non_circular_plasmid.fasta
+
+    """    
+}
+
 //Infer contig from a fasta file
 process PLASME {
     label 'plasme'
-    publishDir "${params.output_dir}plasme_output/"
+    //publishDir "${params.output_dir}plasme_output/"
 
     input:
     tuple val(barID), path(fastq), path(contig_fasta)
@@ -241,7 +264,8 @@ process ALIGN_READS_PLASMID {
     tuple val(barID), path(inferred_plasmid_fasta), path(fastq)
 
     output:
-    tuple val(barID), path("${barID}_mapped_reads.fastq")
+    tuple val(barID), path("${barID}_mapped_reads.fastq") , emit: plasmid_reads
+    tuple val(barID), path("${barID}_unmapped_reads.fastq"), emit: chrm_reads
 
     script:
     """
@@ -250,8 +274,9 @@ process ALIGN_READS_PLASMID {
     samtools sort aln.bam -o aln_sorted.bam
     samtools index aln_sorted.bam
     samtools view -b -F 4 aln_sorted.bam > mapped_reads.bam
+    samtools view -b -f 4 aln_sorted.bam > unmapped_reads.bam
     samtools fastq mapped_reads.bam > ${barID}_mapped_reads.fastq
-
+    samtools fastq unmapped_reads.bam > ${barID}_unmapped_reads.fastq
     """
 }
 
@@ -259,6 +284,7 @@ process ALIGN_READS_PLASMID {
 process ASSEMBLY_PLASMID {
     label 'process_high'
     publishDir "${params.output_dir}plasme_output/"
+    errorStrategy "ignore" //When depth is low, assembly is not possible and there is no result
 
     input:
     tuple val(barID), path(mapped_reads)
@@ -268,7 +294,35 @@ process ASSEMBLY_PLASMID {
 
     script:
     """
-    unicycler -l ${mapped_reads} -o ${barID}_plasme_plasmid -t 10
-    mv ${barID}_plasme_plasmid/assembly.fasta ${barID}_plasme_plasmid.fasta
+    if [ ! -s ${mapped_reads} ]
+    then
+        touch ${barID}_plasme_plasmid.fasta
+    else
+        unicycler -l ${mapped_reads} -o ${barID}_plasme_plasmid -t ${task.cpus}
+        mv ${barID}_plasme_plasmid/assembly.fasta ${barID}_plasme_plasmid.fasta
+    fi
     """
 }
+
+//chrm assembly with flye
+process ASSEMBLY_CHRM {
+    label 'process_high'
+    publishDir "${params.output_dir}plasme_output/"
+
+    input:
+    tuple val(barID), path(mapped_reads)
+
+    output:
+    tuple val(barID), path("${barID}_plasme_chrm.fasta")
+
+    script:
+    """
+    if [ ! -s ${mapped_reads} ]
+    then
+        touch ${barID}_plasme_chrm.fasta
+    else
+        flye --nano-hq ${mapped_reads} -t ${task.cpus} -o flye_output
+        mv flye_output/assembly.fasta ${barID}_plasme_chrm.fasta
+    fi
+    """
+} 

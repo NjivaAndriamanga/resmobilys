@@ -72,13 +72,15 @@ include { IDENTIFIED_SAMPLES}       from '../modules/waterisk_modules.nf'
 include { MERGE_SEPARATE_FASTQ }    from '../modules/waterisk_modules.nf'
 include { REMOVE_BARCODES }         from '../modules/waterisk_modules.nf'
 include { CLEAN_READS }             from '../modules/waterisk_modules.nf'
-include {SAMPLING_FASTQ}              from '../modules/waterisk_modules.nf'
+include {SAMPLING_FASTQ}            from '../modules/waterisk_modules.nf'
 include { ASSEMBLE_GENOME }         from '../modules/waterisk_modules.nf'
+include { FILTER_COMPLETE }         from '../modules/waterisk_modules.nf'
 include { IDENTIFY_AMR_PLASMID }    from '../modules/waterisk_modules.nf'
 include { IDENTIFY_AMR_CHRM }       from '../modules/waterisk_modules.nf'
 include { PLASME }                  from '../modules/waterisk_modules.nf'
 include { ALIGN_READS_PLASMID }     from '../modules/waterisk_modules.nf'
 include { ASSEMBLY_PLASMID }        from '../modules/waterisk_modules.nf'
+include { ASSEMBLY_CHRM}            from '../modules/waterisk_modules.nf'
 
 
 /*
@@ -100,7 +102,7 @@ workflow WATERISK {
     }
     
     
-    //Remove barcode and trimming
+    //Remove barcode then trim reads
     if (params.remove_barcode == true){
         (fastq_nobar) = REMOVE_BARCODES(fastq)
         CLEAN_READS(fastq_nobar)
@@ -108,23 +110,20 @@ workflow WATERISK {
     else {
         CLEAN_READS(fastq)
     }
-    
-    //Sampling fastq
-    SAMPLING_FASTQ(CLEAN_READS.out.trimmed_fastq)
 
-    //De novo assembly
-    ASSEMBLE_GENOME(SAMPLING_FASTQ.out)
+    //De novo assembly using Hybracter
+    ASSEMBLE_GENOME(CLEAN_READS.out.trimmed_fastq)
 
-    //Filtering complete (1), complete but with non-circular (2) plasmid and incomplete (3)
+    //Filtering complete where all plasmid is circular (1), complete but with a non-circular plasmid (2) and incomplete (3)
     complete_assembly_ch = ASSEMBLE_GENOME.out.complete_assembly
 
     complete_non_circular_ch = complete_assembly_ch //2
-        .filter{ barID, fastq, contig, plassembler, chromosome, plasmid -> 
-            check_nonCircularPlasmid(contig)}
+        .filter{ barID, fastq, contig_stats, plassembler, chromosome, plasmids -> 
+            check_nonCircularPlasmid(contig_stats)}
 
     complete_circular_ch = ASSEMBLE_GENOME.out.complete_assembly //1
-        .filter{ barID, fastq, contig, plassembler, chromosome, plasmid -> 
-            check_plasmidAllCircular(contig)}
+        .filter{ barID, fastq, contig_stats, plassembler, chromosome, plasmids -> 
+            check_plasmidAllCircular(contig_stats)}
     
     incomplete_assembly_ch = ASSEMBLE_GENOME.out.incomplete_assembly //3
     incomplete_assembly_ch.count().view()
@@ -132,22 +131,28 @@ workflow WATERISK {
     complete_circular_ch.count().view(it -> "$it samples have complete assembly")
     complete_non_circular_ch.count().view( it -> "$it have non circular plasmid")
     
-    //Merge incomplete and complete non circular channel for plasme before AMR detection
-    plasme_input_ch = incomplete_assembly_ch.concat(complete_non_circular_ch.map{ barID, fastq, contig, plassembler, chromosome, plasmid -> [ barID, fastq, plasmid]})
+    //Merge incomplete and complete non circular channel for plasme
+    putitative_plasmid_ch = incomplete_assembly_ch.concat(complete_non_circular_ch.map{ barID, fastq, contig, plassembler, chromosome, plasmids -> [ barID, fastq, contig, plasmids]})
+    plasme_input_ch = FILTER_CIRCULAR_PLASMID(putitative_plasmid_ch)
+
     PLASME(plasme_input_ch)
 
     //Align and filterd reads
     ALIGN_READS_PLASMID(PLASME.out)
     
-    //Plasmid assembly
-    ASSEMBLY_PLASMID(ALIGN_READS_PLASMID.out)
+    //Plasme assembly
+    ASSEMBLY_PLASMID(ALIGN_READS_PLASMID.out.plasmid_reads)
+    ASSEMBLY_CHRM( ALIGN_READS_PLASMID.out.chrm_reads)
 
-    //AMR detection for complete assembly
+    //AMR detection
     complete_circular_chrm_ch = complete_circular_ch.map{ barID, fastq, contig, plassembler, chromosome, plasmid -> [barID, chromosome]}
     complete_circular_plasmid_ch = complete_circular_ch.map{ barID, fastq, contig, plassembler, chromosome, plasmid -> [barID, plasmid]}
+    
+    chrm_amr_ch = complete_circular_chrm_ch.concat(ASSEMBLY_CHRM.out)
     plasmid_amr_ch = complete_circular_plasmid_ch.concat(ASSEMBLY_PLASMID.out)
+
     IDENTIFY_AMR_PLASMID( plasmid_amr_ch )
-    IDENTIFY_AMR_CHRM( complete_circular_chrm_ch)
+    IDENTIFY_AMR_CHRM( chrm_amr_ch)
 
 }
 
