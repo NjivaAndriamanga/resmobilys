@@ -1,3 +1,25 @@
+/*
+This process will download the plasme database from github and unzip it in the same directory as the main script (main.nf)
+But if the directory DB already exist, it will not be re-downloaded
+*/
+process DOWNLOAD_DATABASE {
+    cpus 8
+    label 'plasme'
+
+    output:
+    val 1
+
+    script:
+    """
+    cd ${projectDir}
+    if [ ! -d DB ]; then
+        python PLASMe_db.py
+        unzip DB.zip
+    fi
+
+    """
+}
+
 
 /*
 List all barcodes contain in the input directory from miniON output
@@ -120,7 +142,7 @@ process CLEAN_READS {
 }
 
 /*
-Remove the worst reads until only 500 Mbp remain (100x coverage), useful for very large read sets. If the input read set is less than 500 Mbp, this setting will have no effect.
+Remove the worst reads until only 500 Mbp remain (100x coverage for 5M genome size), useful for very large read sets. If the input read set is less than 500 Mbp, this setting will have no effect.
 Alternative Rasusa
 */
 process SAMPLING_FASTQ {
@@ -170,7 +192,7 @@ process ASSEMBLE_GENOME {
         """
     else if (params.medaka == false)
         """
-        hybracter long-single -l $fastq -t ${task.cpus} --skip_qc --no_medaka --min_length ${params.read_min_length} --flyeModel --nano-hq -c ${params.c_size}
+        hybracter long-single -l $fastq -t ${task.cpus} --no_medaka --min_length ${params.read_min_length} --flyeModel --nano-hq -c ${params.c_size}
         
         [ ! -f hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ] || mv hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ${barID}_plassembler_summary.tsv
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
@@ -232,11 +254,11 @@ process FILTER_NON_CIRCULAR {
 
     script: 
     """
-    awk '$5 == "True" { print $1 }' barcode09_sample_per_contig_stats.tsv > hybracter_circular_plasmid.txt
-    awk '$5 == "False" { print $1 }' barcode09_sample_per_contig_stats.tsv > hybracter_non_circular_plasmid.txt
+    awk '\$5 == "True" { print \$1 }' barcode09_sample_per_contig_stats.tsv > hybracter_circular_plasmid.txt
     seqkit grep -f hybracter_circular_plasmid.txt barcode09_sample_plasmid.fasta -o ${bar_id}_circular_plasmid.fasta
-    seqkit grep -f hybracter_non_circular_plasmid.txt barcode09_sample_plasmid.fasta -o non_circular_plasmid.fasta
 
+    awk '\$5 == "False" { print \$1 }' barcode09_sample_per_contig_stats.tsv > hybracter_non_circular_plasmid.txt
+    seqkit grep -f hybracter_non_circular_plasmid.txt barcode09_sample_plasmid.fasta -o ${bar_id}_non_circular_plasmid.fasta
     """    
 }
 
@@ -247,12 +269,13 @@ process PLASME {
 
     input:
     tuple val(barID), path(fastq), path(contig_fasta)
+    val x
 
     output:
     tuple val(barID), path("${barID}_plasme.fasta"), path(fastq)
 
     """
-    python ${params.plasme_py} ${contig_fasta} ${barID}_plasme.fasta -d ${params.plasme_db}
+    python plasme.py ${contig_fasta} ${barID}_plasme.fasta -d ${params.plasme_db}
 
     """
 }

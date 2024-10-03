@@ -67,6 +67,7 @@ def check_plasmidAllCircular(tsv_file) {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
+include { DOWNLOAD_DATABASE }       from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_RAW_SAMPLES }  from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_SAMPLES}       from '../modules/waterisk_modules.nf'
 include { MERGE_SEPARATE_FASTQ }    from '../modules/waterisk_modules.nf'
@@ -91,7 +92,10 @@ include { ASSEMBLY_CHRM}            from '../modules/waterisk_modules.nf'
 
 workflow WATERISK {
     
-    //raw output from MINION
+    //download database
+    DOWNLOAD_DATABASE()
+
+    //if raw output from MINION
     if (params.raw == true){
         IDENTIFIED_RAW_SAMPLES(file(params.fastq_pass_dir), params.fastq_pass_dir)
         (fastq) = MERGE_SEPARATE_FASTQ(IDENTIFIED_SAMPLES.out.flatten())
@@ -114,7 +118,7 @@ workflow WATERISK {
     //De novo assembly using Hybracter
     ASSEMBLE_GENOME(CLEAN_READS.out.trimmed_fastq)
 
-    //Filtering complete where all plasmid is circular (1), complete but with a non-circular plasmid (2) and incomplete (3)
+    //Filtering complete where all plasmid is circular (1), complete but with non-circular plasmid (2) and incomplete (3)
     complete_assembly_ch = ASSEMBLE_GENOME.out.complete_assembly
 
     complete_non_circular_ch = complete_assembly_ch //2
@@ -126,16 +130,16 @@ workflow WATERISK {
             check_plasmidAllCircular(contig_stats)}
     
     incomplete_assembly_ch = ASSEMBLE_GENOME.out.incomplete_assembly //3
-    incomplete_assembly_ch.count().view()
+    //incomplete_assembly_ch.count().view()
 
-    complete_circular_ch.count().view(it -> "$it samples have complete assembly")
-    complete_non_circular_ch.count().view( it -> "$it have non circular plasmid")
+    //complete_circular_ch.count().view(it -> "$it samples have complete assembly")
+    //complete_non_circular_ch.count().view( it -> "$it have non circular plasmid")
     
-    //Merge incomplete and complete non circular channel for plasme
-    putitative_plasmid_ch = incomplete_assembly_ch.concat(complete_non_circular_ch.map{ barID, fastq, contig, plassembler, chromosome, plasmids -> [ barID, fastq, contig, plasmids]})
-    plasme_input_ch = FILTER_CIRCULAR_PLASMID(putitative_plasmid_ch)
+    //Merge incomplete and assembly with non circular plasmid for plasme
+    putitative_plasmid_ch = incomplete_assembly_ch.concat(complete_non_circular_ch.map{ barID, fastq, contig_stats, plassembler, chromosome, plasmids -> [ barID, fastq, contig_stats, plasmids]})
+    plasme_input_ch = FILTER_CIRCULAR_PLASMID(putitative_plasmid_ch).out.non_circular_plasmid
 
-    PLASME(plasme_input_ch)
+    PLASME(plasme_input_ch, DOWNLOAD_DATABASE.out)
 
     //Align and filterd reads
     ALIGN_READS_PLASMID(PLASME.out)
