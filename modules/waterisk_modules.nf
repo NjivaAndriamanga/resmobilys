@@ -1,23 +1,40 @@
 /*
 This process will download the plasme database from github and unzip it in the same directory as the main script (main.nf)
+Run PLasme.py script to unzip and install the dabatase (avoid conflict when accessing the database during plasme process)
 But if the directory DB already exist, it will not be re-downloaded
+The database can be download manually 
 */
 process DOWNLOAD_DATABASE {
-    cpus 8
     label 'plasme'
+    cpus 8
 
     output:
-    val 1
+    env output
 
     script:
-    """
-    cd ${projectDir}
-    if [ ! -d DB ]; then
-        python PLASMe_db.py
-        unzip DB.zip
-    fi
-
-    """
+    
+    if (params.plasme_download_db == true) {
+        log.info "Downloading plasme database..."
+        """
+        cd ${projectDir}
+        if [ ! -d DB ]; then 
+            wget https://zenodo.org/record/8046934/files/DB.zip
+            unzip DB.zip
+            rm DB.zip
+            touch test.fasta
+            PLASMe.py test.fasta test_plasmid.fasta -d ${params.plasme_db}
+            rm test.fasta
+            rm test_plasmid.fasta
+        else
+            output="DB already exist"
+        fi
+        """
+    }
+    else if (params.plasme_download_db == false) {
+        """
+        output="DB are already provided"
+        """
+    }
 }
 
 
@@ -133,7 +150,7 @@ process CLEAN_READS {
 
     script:
     """
-    fastqc --memory 2000 $query -t 1
+    fastqc --memory 2000 $query
     cutadapt --cut ${params.trim_end_size} --cut -${params.trim_end_size} -q ${params.quality_trim},${params.quality_trim} -o ${barID}Trimmed.fastq.gz $query -m ${params.read_min_length}
     fastqc --memory 2000 ${barID}Trimmed.fastq.gz
     multiqc .
@@ -167,7 +184,7 @@ Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_su
 For incomplete assembly, contigs are written in sample_final.fasta
 */
 process ASSEMBLE_GENOME { 
-    //Error are mainly from medaka. Re run failed sample with no medaka
+    errorStrategy { task.attempt < 2 ? 'retry' : 'terminate'} //Error are mainly from medaka. the process will be re-runed but without medaka
     label 'process_high'
     publishDir "${params.output_dir}genome_assembly/"
 
@@ -179,7 +196,7 @@ process ASSEMBLE_GENOME {
     tuple val(barID), path(fastq),path("${barID}_sample_final.fasta"), optional: true, emit: incomplete_assembly
 
     script:
-    if (params.medaka == true)
+    if (params.medaka == true && task.attempt == 1)
         """
         hybracter long-single -l $fastq -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel --nano-hq -c ${params.c_size}
         
@@ -189,8 +206,9 @@ process ASSEMBLE_GENOME {
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
 
         [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample_final.fasta
+        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
         """
-    else if (params.medaka == false)
+    else if (params.medaka == false || task.attempt > 1)
         """
         hybracter long-single -l $fastq -t ${task.cpus} --no_medaka --min_length ${params.read_min_length} --flyeModel --nano-hq -c ${params.c_size}
         
@@ -200,7 +218,7 @@ process ASSEMBLE_GENOME {
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
 
         [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample_final.fasta
-
+        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
         """
 }
 
@@ -242,23 +260,23 @@ process IDENTIFY_AMR_CHRM {
 }
 
 //Filter circular in a fasta file from a tab file
-process FILTER_NON_CIRCULAR {
+process FILTER_CIRCULAR_PLASMID {
     publishDir "${params.output_dir}genome_assembly/"
 
     input:
     tuple val(barID), path(fastq), path(tab_file), path(contig_fasta)
     
     output:
-    tuple val(barID), path(fastq), path("non_circular_plasmid.fasta"),  emit: non_circular_plasmid
-    path "${bar_id}_circular_plasmid.fasta"
+    tuple val(barID), path(fastq), path("${barID}_non_circular_plasmid.fasta"), optional: true, emit: non_circular_plasmid
+    path "${barID}_circular_plasmid.fasta", optional: true
 
     script: 
     """
-    awk '\$5 == "True" { print \$1 }' barcode09_sample_per_contig_stats.tsv > hybracter_circular_plasmid.txt
-    seqkit grep -f hybracter_circular_plasmid.txt barcode09_sample_plasmid.fasta -o ${bar_id}_circular_plasmid.fasta
+    awk '\$5 == "True" && \$2 == "plasmid" { print \$1 }' ${tab_file} > hybracter_circular_plasmid.txt
+    seqkit grep -f hybracter_circular_plasmid.txt ${contig_fasta} -o ${barID}_circular_plasmid.fasta
 
-    awk '\$5 == "False" { print \$1 }' barcode09_sample_per_contig_stats.tsv > hybracter_non_circular_plasmid.txt
-    seqkit grep -f hybracter_non_circular_plasmid.txt barcode09_sample_plasmid.fasta -o ${bar_id}_non_circular_plasmid.fasta
+    awk '\$5 == "False" && \$2 == "plasmid" { print \$1 }' ${tab_file} > hybracter_non_circular_plasmid.txt
+    seqkit grep -f hybracter_non_circular_plasmid.txt ${contig_fasta} -o ${barID}_non_circular_plasmid.fasta
     """    
 }
 
@@ -275,8 +293,7 @@ process PLASME {
     tuple val(barID), path("${barID}_plasme.fasta"), path(fastq)
 
     """
-    python plasme.py ${contig_fasta} ${barID}_plasme.fasta -d ${params.plasme_db}
-
+    PLASMe.py ${contig_fasta} ${barID}_plasme.fasta -d ${params.plasme_db}
     """
 }
 

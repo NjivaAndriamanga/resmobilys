@@ -65,6 +65,21 @@
           "type": "integer",
           "default": "500000000",
           "description": "Remove the worst reads until only target_bases Mbp remain with Filtlong. If the input read set is less than 500 Mbp, this setting will have no effect."
+        },
+        "plasme_env": {
+          "type": "string",
+          "default": "${projectDir}/conf/plasme.yaml",
+          "description": "Plasme environment file"
+        },
+        "plasme_download_db": {
+          "type": "boolean",
+          "default": true,
+          "description": "Download plasme database. if false, plasme will not be downloaded and should be downloaded manually from https://zenodo.org/record/8046934/files/DB.zip?download=1"
+        },
+        "plasme_db": {
+          "type": "string",
+          "default": "${projectDir}/DB",
+          "description": "plasme database directory"
         }
       },
       "required": ["fastq_pass_dir"]

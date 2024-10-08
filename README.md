@@ -3,9 +3,10 @@ Welcome to the waterisk project.
 INTRODUCTION
 
 SET UP
-Git
-
-Nextflow, Conda, hybracter
+Git : installation and git clone
+Nextflow: install nextflow
+Conda: install conda
+Install hybracter with conda, activate the environment then hybracter install
 
 Container manager (apptainer or docker)
 

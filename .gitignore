@@ -9,3 +9,5 @@ chrm_amr/
 plasmid_amr/
 test/
 DB/
+.snakemake
+conf/.snakemeke
