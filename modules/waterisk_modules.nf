@@ -6,7 +6,6 @@ The database can be download manually
 */
 process DOWNLOAD_DATABASE {
     label 'plasme'
-    cpus 8
 
     output:
     env output
@@ -150,7 +149,7 @@ process CLEAN_READS {
 
     script:
     """
-    fastqc --memory 2000 $query
+    fastqc --memory 2000 $query -t ${task.cpus}
     cutadapt --cut ${params.trim_end_size} --cut -${params.trim_end_size} -q ${params.quality_trim},${params.quality_trim} -o ${barID}Trimmed.fastq.gz $query -m ${params.read_min_length}
     fastqc --memory 2000 ${barID}Trimmed.fastq.gz
     multiqc .
@@ -299,7 +298,8 @@ process PLASME {
 
 //Align and filtered reads on infered plasmid
 process ALIGN_READS_PLASMID {
-
+    label 'process_high'
+    
     input:
     tuple val(barID), path(inferred_plasmid_fasta), path(fastq)
 
