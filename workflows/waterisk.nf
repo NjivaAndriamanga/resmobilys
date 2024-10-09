@@ -145,7 +145,8 @@ workflow WATERISK {
     PLASME(plasme_input_ch, DOWNLOAD_DATABASE.out)
 
     //Align reads and filter plasmid reads
-    ALIGN_READS_PLASMID(PLASME.out)
+    align_reads_input_ch = FILTER_CIRCULAR_PLASMID.out.circular_plasmid.join(PLASME.out.inferred_plasmid_fasta)
+    ALIGN_READS_PLASMID(align_reads_input_ch)
     
     //Assembly with reads matching plasme plasmid
     ASSEMBLY_PLASMID(ALIGN_READS_PLASMID.out.plasmid_reads)

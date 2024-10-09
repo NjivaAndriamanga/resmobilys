@@ -267,7 +267,7 @@ process FILTER_CIRCULAR_PLASMID {
     
     output:
     tuple val(barID), path(fastq), path("${barID}_non_circular_plasmid.fasta"), optional: true, emit: non_circular_plasmid
-    path "${barID}_circular_plasmid.fasta", optional: true
+    tuple val(barID), path("${barID}_circular_plasmid.fasta"), optional: true, emit: circular_plasmid
 
     script: 
     """
@@ -289,19 +289,20 @@ process PLASME {
     val x
 
     output:
-    tuple val(barID), path("${barID}_plasme.fasta"), path(fastq)
+    tuple val(barID), path("${barID}_plasme.fasta"), path(fastq), emit: inferred_plasmid_fasta
+    path "${barID}_plasme.fasta_report.csv", emit: plasme_report
 
     """
     PLASMe.py ${contig_fasta} ${barID}_plasme.fasta -d ${params.plasme_db}
     """
 }
 
-//Align and filtered reads on infered plasmid
+//Align and filtered reads on infered plasmid. 1 remove reads mapping to circular plasmid, 2 map remaining reads to inferred plasmid
 process ALIGN_READS_PLASMID {
     label 'process_high'
     
     input:
-    tuple val(barID), path(inferred_plasmid_fasta), path(fastq)
+    tuple val(barID),path(circular_plasmid_fasta),path(inferred_plasmid_fasta), path(fastq)
 
     output:
     tuple val(barID), path("${barID}_mapped_reads.fastq") , emit: plasmid_reads
@@ -309,13 +310,22 @@ process ALIGN_READS_PLASMID {
 
     script:
     """
-    minimap2 -ax map-ont ${inferred_plasmid_fasta} ${fastq} > aln.sam
+    minimap2 -ax map-ont ${circular_plasmid_fasta} ${fastq} > circular_aln.sam
+    samtools view -Sb -o circular_aln.bam circular_aln.sam
+    samtools sort circular_aln.bam -o circular_aln_sorted.bam
+    samtools index circular_aln_sorted.bam
+    samtools view -b -f 4 circular_aln_sorted.bam > remain_reads.bam
+    samtools fastq remain_reads.bam > ${barID}_remain_reads.fastq
+
+    minimap2 -ax map-ont ${inferred_plasmid_fasta} ${barID}_remain_reads.fastq > aln.sam
     samtools view -Sb -o aln.bam aln.sam
     samtools sort aln.bam -o aln_sorted.bam
     samtools index aln_sorted.bam
+
     samtools view -b -F 4 aln_sorted.bam > mapped_reads.bam
-    samtools view -b -f 4 aln_sorted.bam > unmapped_reads.bam
     samtools fastq mapped_reads.bam > ${barID}_mapped_reads.fastq
+
+    samtools view -b -f 4 aln_sorted.bam > unmapped_reads.bam
     samtools fastq unmapped_reads.bam > ${barID}_unmapped_reads.fastq
     """
 }
