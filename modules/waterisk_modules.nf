@@ -20,9 +20,7 @@ process DOWNLOAD_DATABASE {
             wget https://zenodo.org/record/8046934/files/DB.zip
             unzip DB.zip
             rm DB.zip
-            touch test.fasta
             PLASMe.py test.fasta test_plasmid.fasta -d ${params.plasme_db}
-            rm test.fasta
             rm test_plasmid.fasta
         else
             output="DB already exist"
