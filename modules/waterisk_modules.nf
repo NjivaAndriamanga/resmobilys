@@ -149,7 +149,7 @@ process CLEAN_READS {
     """
     fastqc --memory 2000 $query -t ${task.cpus}
     cutadapt --cut ${params.trim_end_size} --cut -${params.trim_end_size} -q ${params.quality_trim},${params.quality_trim} -o ${barID}Trimmed.fastq.gz $query -m ${params.read_min_length}
-    fastqc --memory 2000 ${barID}Trimmed.fastq.gz
+    fastqc --memory 2000 ${barID}Trimmed.fastq.gz -t ${task.cpus}
     multiqc .
     mv multiqc_report.html ${barID}_report.html
     """
@@ -180,16 +180,17 @@ Assembling genome and plasmid with hybracter
 Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_summary.tsv)
 For incomplete assembly, contigs are written in sample_final.fasta
 */
-process ASSEMBLE_GENOME { 
-    errorStrategy { task.attempt < 2 ? 'retry' : 'terminate'} //Error are mainly from medaka. the process will be re-runed but without medaka
+process ASSEMBLE_GENOME {  
     label 'process_high'
-    publishDir "${params.output_dir}genome_assembly/"
+    publishDir "${params.output_dir}hybracter/"
+    cpus { task.attempt < 2 ? task.cpus : 1 } //If blastx in dnaapler doesn't found hit, there is a segmentation fault (temporary fix)
+    errorStrategy { task.attempt < 3 ? 'retry' : 'ignore'}
 
     input:
     tuple val(barID), path(fastq)
     
     output:
-    tuple val(barID), path(fastq),path("${barID}_sample_per_contig_stats.tsv"), path("${barID}_plassembler_summary.tsv"), path("${barID}_sample_chromosome.fasta"), path("${barID}_sample_plasmid.fasta"), optional: true, emit: complete_assembly
+    tuple val(barID), path(fastq),path("${barID}_sample_per_contig_stats.tsv"), path("${barID}_plassembler_summary.tsv"), path("${barID}_sample_chromosome.fasta"), path("${barID}_hybracter_plasmid.fasta"), optional: true, emit: complete_assembly
     tuple val(barID), path(fastq),path("${barID}_sample_final.fasta"), optional: true, emit: incomplete_assembly
 
     script:
@@ -200,7 +201,7 @@ process ASSEMBLE_GENOME {
         [ ! -f hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ] || mv hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ${barID}_plassembler_summary.tsv
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
-        [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
+        [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_hybracter_plasmid.fasta
 
         [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample_final.fasta
         [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
@@ -212,7 +213,7 @@ process ASSEMBLE_GENOME {
         [ ! -f hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ] || mv hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ${barID}_plassembler_summary.tsv
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
         [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
-        [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_sample_plasmid.fasta
+        [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_hybracter_plasmid.fasta
 
         [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample_final.fasta
         [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
@@ -256,51 +257,75 @@ process IDENTIFY_AMR_CHRM {
     """
 }
 
-//Filter circular in a fasta file from a tab file
+//Filter circular plasmid in a fasta file from a tab file
 process FILTER_CIRCULAR_PLASMID {
-    publishDir "${params.output_dir}genome_assembly/"
+    publishDir "${params.output_dir}hybracter/"
 
     input:
-    tuple val(barID), path(fastq), path(tab_file), path(contig_fasta)
+    tuple val(barID), path(tab_file), path(chromosome),path(putative_plasmid)
     
     output:
-    tuple val(barID), path(fastq), path("${barID}_non_circular_plasmid.fasta"), optional: true, emit: non_circular_plasmid
-    tuple val(barID), path("${barID}_circular_plasmid.fasta"), optional: true, emit: circular_plasmid
+    tuple val(barID), path(chromosome), path("${barID}_hybracter_circular_plasmid.fasta"), path("${barID}_non_circular_plasmid.fasta")
 
     script: 
     """
     awk '\$5 == "True" && \$2 == "plasmid" { print \$1 }' ${tab_file} > hybracter_circular_plasmid.txt
-    seqkit grep -f hybracter_circular_plasmid.txt ${contig_fasta} -o ${barID}_circular_plasmid.fasta
+    seqkit grep -f hybracter_circular_plasmid.txt ${putative_plasmid} -o ${barID}_hybracter_circular_plasmid.fasta
 
     awk '\$5 == "False" && \$2 == "plasmid" { print \$1 }' ${tab_file} > hybracter_non_circular_plasmid.txt
-    seqkit grep -f hybracter_non_circular_plasmid.txt ${contig_fasta} -o ${barID}_non_circular_plasmid.fasta
+    seqkit grep -f hybracter_non_circular_plasmid.txt ${putative_plasmid} -o ${barID}_non_circular_plasmid.fasta
     """    
 }
 
 //Infer contig from a fasta file
-process PLASME {
+process PLASME_COMPLETE {
     label 'plasme'
-    //publishDir "${params.output_dir}plasme_output/"
+    publishDir "${params.output_dir}plasme_output/"
 
     input:
-    tuple val(barID), path(fastq), path(contig_fasta)
+    tuple val(barID), path(chromosome), path(plasmid), path(putative_plasmid)
     val x
 
     output:
-    tuple val(barID), path("${barID}_plasme.fasta"), path(fastq), emit: inferred_plasmid_fasta
-    path "${barID}_plasme.fasta_report.csv", emit: plasme_report
-
+    tuple val(barID), path(chromosome), path(plasmid)
+    
     """
-    PLASMe.py ${contig_fasta} ${barID}_plasme.fasta -d ${params.plasme_db}
+    PLASMe.py ${putative_plasmid} ${barID}_plasme.fasta -d ${params.plasme_db}
+    awk ' { print \$1 }' ${barID}_plasme.fasta_report.csv > chrm_contig.txt
+    seqkit grep --invert-match -f chrm_contig.txt ${putative_plasmid} -o ${barID}_plasme_chrm.fasta
+    cat ${barID}_plasme_chrm.fasta >> ${chromosome}
+    cat ${barID}_plasme.fasta >> ${plasmid}
     """
 }
 
-//Align and filtered reads on infered plasmid. 1 remove reads mapping to circular plasmid, 2 map remaining reads to inferred plasmid
+process PLASME_INCOMPLETE {
+    label 'plasme'
+    publishDir "${params.output_dir}plasme_output/"
+
+    input:
+    tuple val(barID), path(fastq), path(sample_fasta)
+    val x
+
+    output:
+    tuple val(barID), path(fastq), path("${barID}_plasme_chrm.fasta"), path("${barID}_plasme.fasta"), emit: inferred_plasmid
+    val x
+
+    script:
+    """
+    PLASMe.py ${sample_fasta} ${barID}_plasme.fasta -d ${params.plasme_db}
+    awk ' { print \$1 }' ${barID}_plasme.fasta_report.csv > chrm_contig.txt
+    seqkit grep -f -v ${barID}_plasme.fasta_report.csv ${sample_fasta} -o ${barID}_plasme_chrm.fasta
+    
+    """
+}   
+
+
+//Align and filtered reads on infered plasmid.
 process ALIGN_READS_PLASMID {
     label 'process_high'
     
     input:
-    tuple val(barID),path(circular_plasmid_fasta),path(inferred_plasmid_fasta), path(fastq)
+    tuple val(barID), path(fastq),path(inferred_chrms_fasta),path(inferred_plasmid_fasta)
 
     output:
     tuple val(barID), path("${barID}_mapped_reads.fastq") , emit: plasmid_reads
@@ -308,14 +333,7 @@ process ALIGN_READS_PLASMID {
 
     script:
     """
-    minimap2 -ax map-ont ${circular_plasmid_fasta} ${fastq} > circular_aln.sam
-    samtools view -Sb -o circular_aln.bam circular_aln.sam
-    samtools sort circular_aln.bam -o circular_aln_sorted.bam
-    samtools index circular_aln_sorted.bam
-    samtools view -b -f 4 circular_aln_sorted.bam > remain_reads.bam
-    samtools fastq remain_reads.bam > ${barID}_remain_reads.fastq
-
-    minimap2 -ax map-ont ${inferred_plasmid_fasta} ${barID}_remain_reads.fastq > aln.sam
+    minimap2 -ax map-ont ${inferred_plasmid_fasta} ${fastq} > aln.sam
     samtools view -Sb -o aln.bam aln.sam
     samtools sort aln.bam -o aln_sorted.bam
     samtools index aln_sorted.bam
@@ -323,8 +341,9 @@ process ALIGN_READS_PLASMID {
     samtools view -b -F 4 aln_sorted.bam > mapped_reads.bam
     samtools fastq mapped_reads.bam > ${barID}_mapped_reads.fastq
 
-    samtools view -b -f 4 aln_sorted.bam > unmapped_reads.bam
-    samtools fastq unmapped_reads.bam > ${barID}_unmapped_reads.fastq
+    samtools view -b -f 4 aln_sorted.bam > ${barID}_unmapped_reads.bam
+    samtools fastq ${barID}_unmapped_reads.bam > ${barID}_unmapped_reads.fastq
+
     """
 }
 
@@ -335,19 +354,19 @@ process ASSEMBLY_PLASMID {
     errorStrategy "ignore" //When depth is low, assembly is not possible and there is no result
 
     input:
-    tuple val(barID), path(mapped_reads)
+    tuple val(barID), path(plasmid_reads)
 
     output:
     tuple val(barID), path("${barID}_plasme_plasmid.fasta")
 
     script:
     """
-    if [ ! -s ${mapped_reads} ]
+    if [ ! -s ${plasmid_reads} ]
     then
         touch ${barID}_plasme_plasmid.fasta
     else
-        unicycler -l ${mapped_reads} -o ${barID}_plasme_plasmid -t ${task.cpus}
-        mv ${barID}_plasme_plasmid/assembly.fasta ${barID}_plasme_plasmid.fasta
+        unicycler -l ${plasmid_reads} -o ${barID}_plasmid -t ${task.cpus}
+        mv ${barID}_plasme_plasmid/assembly.fasta ${barID}_plasmid.fasta
     fi
     """
 }
@@ -358,18 +377,18 @@ process ASSEMBLY_CHRM {
     publishDir "${params.output_dir}plasme_output/"
 
     input:
-    tuple val(barID), path(mapped_reads)
+    tuple val(barID), path(chrm_reads)
 
     output:
     tuple val(barID), path("${barID}_plasme_chrm.fasta")
 
     script:
     """
-    if [ ! -s ${mapped_reads} ]
+    if [ ! -s ${chrm_reads} ]
     then
         touch ${barID}_plasme_chrm.fasta
     else
-        flye --nano-hq ${mapped_reads} -t ${task.cpus} -o flye_output
+        flye --nano-hq ${chrm_reads} -t ${task.cpus} -o flye_output
         mv flye_output/assembly.fasta ${barID}_plasme_chrm.fasta
     fi
     """
