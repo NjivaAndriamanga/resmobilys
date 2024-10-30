@@ -183,7 +183,7 @@ For incomplete assembly, contigs are written in sample_final.fasta
 process ASSEMBLE_GENOME {  
     label 'process_high'
     publishDir "${params.output_dir}hybracter/"
-    cpus { task.attempt < 2 ? task.cpus : 1 } //If blastx in dnaapler doesn't found hit, there is a segmentation fault (temporary fix)
+    cpus { task.attempt < 2 ? task.cpus : 1 } //If blastx in dnaapler doesn't found hit fot certain seq length, there is a segmentation fault (temporary fix: reduce cpus to 1)
     errorStrategy { task.attempt < 3 ? 'retry' : 'ignore'}
 
     input:
@@ -194,7 +194,7 @@ process ASSEMBLE_GENOME {
     tuple val(barID), path(fastq),path("${barID}_sample_final.fasta"), optional: true, emit: incomplete_assembly
 
     script:
-    if (params.medaka == true && task.attempt == 1)
+    if (params.medaka == true)
         """
         hybracter long-single -l $fastq -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel --nano-hq -c ${params.c_size}
         
@@ -206,7 +206,7 @@ process ASSEMBLE_GENOME {
         [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample_final.fasta
         [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
         """
-    else if (params.medaka == false || task.attempt > 1)
+    else if (params.medaka == false)
         """
         hybracter long-single -l $fastq -t ${task.cpus} --no_medaka --min_length ${params.read_min_length} --flyeModel --nano-hq -c ${params.c_size}
         
@@ -225,13 +225,13 @@ Identify AMR gene on plasmid and chromosome using abricate
 */
 process IDENTIFY_AMR_PLASMID {
     //label 'amr_detection'
-    publishDir "${params.output_dir}plasmid_amr/"
+    publishDir "${params.output_dir}final_output/"
 
     input:
     tuple val(barID) ,path(plasmid_fasta)
 
     output:
-    path "${barID}_plasmid_amr.txt", emit: plasmid_amr
+    tuple val(barID), path (plasmid_fasta),path("${barID}_plasmid_amr.txt"), emit: plasmid_amr
 
     script:
     """
@@ -243,13 +243,13 @@ process IDENTIFY_AMR_PLASMID {
 
 process IDENTIFY_AMR_CHRM {
     //label 'amr_detection'
-    publishDir "${params.output_dir}chrm_amr/"
+    publishDir "${params.output_dir}final_output/"
 
     input:
     tuple val(barID), path(chrm_fasta)
 
     output:
-    path "${barID}_chrm_amr.txt", emit: chrm_amr
+    tuple val(barID), path (chrm_fasta),path("${barID}_chrm_amr.txt"), emit: chrm_amr
     
     script:
     """
@@ -265,15 +265,15 @@ process FILTER_CIRCULAR_PLASMID {
     tuple val(barID), path(tab_file), path(chromosome),path(putative_plasmid)
     
     output:
-    tuple val(barID), path(chromosome), path("${barID}_hybracter_circular_plasmid.fasta"), path("${barID}_non_circular_plasmid.fasta")
+    tuple val(barID), path(chromosome), path("${barID}_final_plasmid.fasta"), path("${barID}_putative_plasmid.fasta")
 
     script: 
     """
     awk '\$5 == "True" && \$2 == "plasmid" { print \$1 }' ${tab_file} > hybracter_circular_plasmid.txt
-    seqkit grep -f hybracter_circular_plasmid.txt ${putative_plasmid} -o ${barID}_hybracter_circular_plasmid.fasta
+    seqkit grep -f hybracter_circular_plasmid.txt ${putative_plasmid} -o ${barID}_final_plasmid.fasta
 
     awk '\$5 == "False" && \$2 == "plasmid" { print \$1 }' ${tab_file} > hybracter_non_circular_plasmid.txt
-    seqkit grep -f hybracter_non_circular_plasmid.txt ${putative_plasmid} -o ${barID}_non_circular_plasmid.fasta
+    seqkit grep -f hybracter_non_circular_plasmid.txt ${putative_plasmid} -o ${barID}_putative_plasmid.fasta
     """    
 }
 
@@ -307,13 +307,13 @@ process PLASME_INCOMPLETE {
     val x
 
     output:
-    tuple val(barID), path(fastq), path("${barID}_plasme_chrm.fasta"), path("${barID}_plasme.fasta"), emit: inferred_plasmid
+    tuple val(barID), path(fastq), path("${barID}_plasme_chrm.fasta"), path("${barID}_plasme_plasmid.fasta"), emit: inferred_plasmid
     val x
 
     script:
     """
-    PLASMe.py ${sample_fasta} ${barID}_plasme.fasta -d ${params.plasme_db}
-    awk ' { print \$1 }' ${barID}_plasme.fasta_report.csv > chrm_contig.txt
+    PLASMe.py ${sample_fasta} ${barID}_plasme_plasmid.fasta -d ${params.plasme_db}
+    awk ' { print \$1 }' ${barID}_plasme_plasmid.fasta_report.csv > chrm_contig.txt
     seqkit grep -f -v ${barID}_plasme.fasta_report.csv ${sample_fasta} -o ${barID}_plasme_chrm.fasta
     
     """
@@ -350,7 +350,7 @@ process ALIGN_READS_PLASMID {
 //Plasmid assembly with unicycler
 process ASSEMBLY_PLASMID {
     label 'process_high'
-    publishDir "${params.output_dir}plasme_output/"
+    publishDir "${params.output_dir}plasme_assembly/"
     errorStrategy "ignore" //When depth is low, assembly is not possible and there is no result
 
     input:
@@ -374,7 +374,7 @@ process ASSEMBLY_PLASMID {
 //chrm assembly with flye
 process ASSEMBLY_CHRM {
     label 'process_high'
-    publishDir "${params.output_dir}plasme_output/"
+    publishDir "${params.output_dir}plasme_assembly/"
 
     input:
     tuple val(barID), path(chrm_reads)

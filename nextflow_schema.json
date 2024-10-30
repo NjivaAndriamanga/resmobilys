@@ -29,7 +29,7 @@
         "c_size": {
           "type": "integer",
           "default": 1000000,
-          "description": "Estimated chomosome length"
+          "description": "Estimated chomosome length. If set to 0, it will be estimated automatically."
         },
         "read_min_length": {
           "type": "integer",
