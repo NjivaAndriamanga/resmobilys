@@ -82,6 +82,7 @@ include { PLASME_INCOMPLETE }       from '../modules/waterisk_modules.nf'
 include { ALIGN_READS_PLASMID }     from '../modules/waterisk_modules.nf'
 include { ASSEMBLY_PLASMID }        from '../modules/waterisk_modules.nf'
 include { ASSEMBLY_CHRM}            from '../modules/waterisk_modules.nf'
+include { BUSCO}                    from '../modules/waterisk_modules.nf'
 
 
 /*
@@ -158,6 +159,9 @@ workflow WATERISK {
 
     IDENTIFY_AMR_PLASMID( plasmid_amr_ch )
     IDENTIFY_AMR_CHRM( chrm_amr_ch)
+
+    //BUSCO
+    BUSCO( chrm_amr_ch)
 
 }
 

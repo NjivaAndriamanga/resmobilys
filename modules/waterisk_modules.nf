@@ -221,10 +221,29 @@ process ASSEMBLE_GENOME {
 }
 
 /*
+Busco assembly evaluation
+*/
+process BUSCO {
+    label 'busco'
+    publishDir "${params.output_dir}busco/"
+
+    input:
+    tuple val(barID), path(fasta)
+
+    output:
+    path("${barID}_busco.txt")
+    script:
+    """
+    busco -i ${fasta} -m genome -l ${params.lineage_db} -o ${barID}_busco
+    cp ${barID}_busco/short*.txt ${barID}_busco.txt
+    """
+}
+
+/*
 Identify AMR gene on plasmid and chromosome using abricate
 */
 process IDENTIFY_AMR_PLASMID {
-    //label 'amr_detection'
+    label 'amr_detection'
     publishDir "${params.output_dir}final_output/"
 
     input:
@@ -242,7 +261,7 @@ process IDENTIFY_AMR_PLASMID {
 
 
 process IDENTIFY_AMR_CHRM {
-    //label 'amr_detection'
+    label 'amr_detection'
     publishDir "${params.output_dir}final_output/"
 
     input:
@@ -265,12 +284,12 @@ process FILTER_CIRCULAR_PLASMID {
     tuple val(barID), path(tab_file), path(chromosome),path(putative_plasmid)
     
     output:
-    tuple val(barID), path(chromosome), path("${barID}_final_plasmid.fasta"), path("${barID}_putative_plasmid.fasta")
+    tuple val(barID), path(chromosome), path("${barID}_plasmid.fasta"), path("${barID}_putative_plasmid.fasta")
 
     script: 
     """
     awk '\$5 == "True" && \$2 == "plasmid" { print \$1 }' ${tab_file} > hybracter_circular_plasmid.txt
-    seqkit grep -f hybracter_circular_plasmid.txt ${putative_plasmid} -o ${barID}_final_plasmid.fasta
+    seqkit grep -f hybracter_circular_plasmid.txt ${putative_plasmid} -o ${barID}_plasmid.fasta
 
     awk '\$5 == "False" && \$2 == "plasmid" { print \$1 }' ${tab_file} > hybracter_non_circular_plasmid.txt
     seqkit grep -f hybracter_non_circular_plasmid.txt ${putative_plasmid} -o ${barID}_putative_plasmid.fasta
@@ -287,14 +306,17 @@ process PLASME_COMPLETE {
     val x
 
     output:
-    tuple val(barID), path(chromosome), path(plasmid)
+    tuple val(barID), path("${barID}_final_chrm.fasta"), path("${barID}_final_plasmid.fasta")
     
     """
     PLASMe.py ${putative_plasmid} ${barID}_plasme.fasta -d ${params.plasme_db}
     awk ' { print \$1 }' ${barID}_plasme.fasta_report.csv > chrm_contig.txt
     seqkit grep --invert-match -f chrm_contig.txt ${putative_plasmid} -o ${barID}_plasme_chrm.fasta
-    cat ${barID}_plasme_chrm.fasta >> ${chromosome}
-    cat ${barID}_plasme.fasta >> ${plasmid}
+    cat ${barID}_plasme_chrm.fasta > ${barID}_final_chrm.fasta
+    cat ${chromosome} >> ${barID}_final_chrm.fasta
+    cat ${barID}_plasme.fasta > ${barID}_final_plasmid.fasta
+    cat ${plasmid} >> ${barID}_final_plasmid.fasta
+    touch test.txt
     """
 }
 
