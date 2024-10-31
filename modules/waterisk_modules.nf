@@ -457,7 +457,7 @@ process CREATE_TAXA {
 
     script:
     """
-    tail -n +2 ${plasmid_type} | cut -f1 -d'\t' | awk '{print \$1 "\t${barID}"}' > plasmid_tax.txt
+    tail -n +2 ${plasmid_type} | cut -f1 -d\$'\t' | awk '{print \$1 "\t${barID}"}' > plasmid_tax.txt
 
     """
 }
