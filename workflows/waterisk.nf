@@ -81,15 +81,14 @@ include { PLASME_COMPLETE }         from '../modules/waterisk_modules.nf'
 include { PLASME_INCOMPLETE }       from '../modules/waterisk_modules.nf'
 include { ALIGN_READS_PLASMID }     from '../modules/waterisk_modules.nf'
 include { ASSEMBLY_PLASMID }        from '../modules/waterisk_modules.nf'
-include { ASSEMBLY_CHRM}            from '../modules/waterisk_modules.nf'
-include { BUSCO}                    from '../modules/waterisk_modules.nf'
-include { CHANGE_PLASMID_NAME}      from '../modules/waterisk_modules.nf'
-include {CREATE_MERGE_FILE}         from '../modules/waterisk_modules.nf'
-include {MERGE_PLASMID}             from '../modules/waterisk_modules.nf'
-include { MOB_TYPER}                from '../modules/waterisk_modules.nf'
-include { MERGE_TYPE}               from '../modules/waterisk_modules.nf'
-include { CREATE_TAXA}              from '../modules/waterisk_modules.nf'
-include { MERGE_TAXA}               from '../modules/waterisk_modules.nf'
+include { ASSEMBLY_CHRM }           from '../modules/waterisk_modules.nf'
+include { BUSCO }                   from '../modules/waterisk_modules.nf'
+include { CHANGE_PLASMID_NAME }     from '../modules/waterisk_modules.nf'
+include { MERGE_PLASMID }           from '../modules/waterisk_modules.nf'
+include { MOB_TYPER }               from '../modules/waterisk_modules.nf'
+include { MERGE_TYPE }              from '../modules/waterisk_modules.nf'
+include { CREATE_TAXA }             from '../modules/waterisk_modules.nf'
+include { MERGE_TAXA }              from '../modules/waterisk_modules.nf'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -169,19 +168,19 @@ workflow WATERISK {
     BUSCO( chrm_amr_ch)
 
     // Plasmid typing and clustering
-    CREATE_MERGE_FILE()
-    CHANGE_PLASMID_NAME( plasmid_amr_ch, CREATE_MERGE_FILE.out.plasmids_tax)
+    //CREATE_MERGE_FILE()
+    CHANGE_PLASMID_NAME( plasmid_amr_ch)
     MOB_TYPER(CHANGE_PLASMID_NAME.out)
 
     plasmid_to_merge = CHANGE_PLASMID_NAME.out.map{barID, plasmid -> plasmid }.collectFile()
-    MERGE_PLASMID(plasmid_to_merge, CREATE_MERGE_FILE.out.plasmids_fasta)
+    MERGE_PLASMID(plasmid_to_merge)
 
     type_to_merge = MOB_TYPER.out.map{barID, type -> type }.collectFile()
-    MERGE_TYPE(type_to_merge, CREATE_MERGE_FILE.out.plasmids_type)
+    MERGE_TYPE(type_to_merge)
 
     CREATE_TAXA(MOB_TYPER.out)
     taxa_to_merge = CREATE_TAXA.out.collectFile()
-    MERGE_TAXA(taxa_to_merge, CREATE_MERGE_FILE.out.plasmids_tax)
+    MERGE_TAXA(taxa_to_merge)
 }
 
 /*

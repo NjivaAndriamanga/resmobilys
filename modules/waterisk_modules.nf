@@ -416,19 +416,21 @@ process ASSEMBLY_CHRM {
     """
 }
 
+/*
+Add BarID for each plasmids id
+*/
 process CHANGE_PLASMID_NAME {
     cpus 1
 
     input:
     tuple val(barID) ,path(plasmid_fasta)
-    path(plasmid_tax)
 
     output:
-    tuple val(barID) ,path("plasmid.fasta")
+    tuple val(barID) ,path("plasmids.fasta")
 
     script:
     """
-    awk '/^>/ {\$0 = ">${barID}_" substr(\$0, 2)} 1' ${plasmid_fasta} > plasmid.fasta
+    awk '/^>/ {\$0 = ">${barID}_" substr(\$0, 2)} 1' ${plasmid_fasta} > plasmids.fasta
     """
 }
 
@@ -446,6 +448,24 @@ process MOB_TYPER {
     mob_typer --multi --infile ${plasmid_fasta} --out_file plasmid_type.txt
     """
 }
+
+process MERGE_TYPE {
+
+    publishDir "${params.output_dir}plasmid_annotation/"
+
+    input:
+    path(all_plasmid_type)
+
+    output:
+    path("mergeAll_type.txt")
+
+    script:
+    """
+    echo "sample_id	num_contigs	size	gc	md5	rep_type(s)	rep_type_accession(s)	relaxase_type(s)	relaxase_type_accession(s)	mpf_type	mpf_type_accession(s)	orit_type(s)	orit_accession(s)	predicted_mobility	mash_nearest_neighbor	mash_neighbor_distance	mash_neighbor_identification	primary_cluster_id	secondary_cluster_id	predicted_host_range_overall_rank	predicted_host_range_overall_name	observed_host_range_ncbi_rank	observed_host_range_ncbi_name	reported_host_range_lit_rank	reported_host_range_lit_name	associated_pmid(s)" > mergeAll_type.txt
+    sed '/^sample_id/d' ${all_plasmid_type} >>  "mergeAll_type.txt"
+    """
+}
+
 
 process CREATE_TAXA {
     
@@ -467,31 +487,13 @@ process MERGE_TAXA {
 
     input:
     path(all_plasmid_tax)
-    path(plasmids_tax)
 
     output:
-    path(plasmids_tax)
+    path("plasmidsAll_tax.txt")
 
     script:
     """
-    cat ${all_plasmid_tax} >> ${plasmids_tax}
-    """
-}
-
-process CREATE_MERGE_FILE {
-
-    output:
-    path "plasmids.fasta", emit: plasmids_fasta
-    path "plasmids_type.txt", emit: plasmids_type
-    path "plasmids_tax.txt", emit: plasmids_tax
-
-    script:
-    """
-    touch plasmids.fasta
-    touch plasmids_type.txt
-    touch plasmids_tax.txt
-    echo "sample_id	num_contigs	size	gc	md5	rep_type(s)	rep_type_accession(s)	relaxase_type(s)	relaxase_type_accession(s)	mpf_type	mpf_type_accession(s)	orit_type(s)	orit_accession(s)	predicted_mobility	mash_nearest_neighbor	mash_neighbor_distance	mash_neighbor_identification	primary_cluster_id	secondary_cluster_id	predicted_host_range_overall_rank	predicted_host_range_overall_name	observed_host_range_ncbi_rank	observed_host_range_ncbi_name	reported_host_range_lit_rank	reported_host_range_lit_name	associated_pmid(s)" > plasmids_type.txt
-    echo "seq_id\torganism" > plasmids_tax.txt
+    cat ${all_plasmid_tax} >> "plasmidsAll_tax.txt"
     """
 }
 
@@ -501,31 +503,13 @@ process MERGE_PLASMID {
 
     input:
     path(all_plasmid_fasta)
-    path(plasmids_fasta)
 
     output:
-    path(plasmids_fasta)
+    path("mergeAll_plasmid.fasta")
 
     script:
     """
-    cat ${all_plasmid_fasta} > ${plasmids_fasta}
-    """
-}
-
-process MERGE_TYPE {
-    maxForks 1
-    publishDir "${params.output_dir}plasmid_annotation/"
-
-    input:
-    path(all_plasmid_type)
-    path(plasmids_type)
-
-    output:
-    path(plasmids_type)
-
-    script:
-    """
-    sed '/^sample_id/d' ${all_plasmid_type} >> ${plasmids_type}
+    cat ${all_plasmid_fasta} > "mergeAll_plasmid.fasta"
     """
 }
 
