@@ -430,7 +430,7 @@ process CHANGE_PLASMID_NAME {
 
     script:
     """
-    awk '/^>/ {\$0 = ">${barID}_" substr(\$0, 2)} 1' ${plasmid_fasta} > plasmids.fasta
+    awk '/^>/ {\$0 = ">${barID}_" substr(\$0, 2); gsub(" ", "_", \$0)} 1' ${plasmid_fasta} > plasmids.fasta
     """
 }
 
@@ -477,7 +477,7 @@ process CREATE_TAXA {
 
     script:
     """
-    tail -n +2 ${plasmid_type} | cut -f1 -d\$'\t' | awk '{print \$1 "\t${barID}"}' > plasmid_tax.txt
+    tail -n +2 ${plasmid_type} | cut -f1 -d\$'\t' | awk  -F'\t' '{print \$1 "\t${barID}"}' >> plasmid_tax.txt
 
     """
 }
@@ -493,7 +493,8 @@ process MERGE_TAXA {
 
     script:
     """
-    cat ${all_plasmid_tax} >> "plasmidsAll_tax.txt"
+    echo "sample_id\ttaxonomy" > plasmidsAll_tax.txt
+    cat ${all_plasmid_tax} >> plasmidsAll_tax.txt
     """
 }
 
@@ -518,12 +519,16 @@ process MOB_CLUSTER {
     publishDir "${params.output_dir}plasmid_annotation/"
 
     input:
-    tuple path(plasmids_tax) ,path(plasmids_fasta), path(plasmids_type)
+    path(plasmids_tax)
+    path(plasmids_fasta)
+    path(plasmids_type)
 
     output:
+    path("clusters.txt")
 
     script:
     """
-    mob_cluster  --mode build -f ${plasmids_fasta} -f ${plasmids_tax} -p ${plasmids_type} -o output
+    mob_cluster  --mode build -f ${plasmids_fasta} -t ${plasmids_tax} -p ${plasmids_type} -o output
+    mv output/clusters.txt clusters.txt
     """
 }

@@ -89,6 +89,7 @@ include { MOB_TYPER }               from '../modules/waterisk_modules.nf'
 include { MERGE_TYPE }              from '../modules/waterisk_modules.nf'
 include { CREATE_TAXA }             from '../modules/waterisk_modules.nf'
 include { MERGE_TAXA }              from '../modules/waterisk_modules.nf'
+include { MOB_CLUSTER }              from '../modules/waterisk_modules.nf' 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -181,6 +182,8 @@ workflow WATERISK {
     CREATE_TAXA(MOB_TYPER.out)
     taxa_to_merge = CREATE_TAXA.out.collectFile()
     MERGE_TAXA(taxa_to_merge)
+
+    MOB_CLUSTER(MERGE_TAXA.out, MERGE_PLASMID.out, MERGE_TYPE.out)
 }
 
 /*
