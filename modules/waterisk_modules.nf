@@ -54,6 +54,9 @@ process IDENTIFIED_RAW_SAMPLES {
     """
 }
 
+/*
+    Identified samples from csv files if exist
+*/
 process IDENTIFIED_SAMPLES {
     input:
     path fastq
@@ -179,6 +182,7 @@ process SAMPLING_FASTQ {
 Assembling genome and plasmid with hybracter
 Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_summary.tsv)
 For incomplete assembly, contigs are written in sample_final.fasta
+TO DO: Add c_size
 */
 process ASSEMBLE_GENOME {  
     label 'process_high'

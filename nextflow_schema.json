@@ -5,31 +5,26 @@
   "description": "Assemble bacterial genome from Nanopore to detect AMR and MGE association",
   "type": "object",
   "definitions": {
-    "inputs_output_and_parameters": {
-      "title": "Inputs and parameters",
+    "required_inputs": {
+      "title": "Required inputs",
       "type": "object",
       "description": "",
       "default": "",
       "properties": {
-        "fastq_pass_dir": {
+        "long_reads_dir": {
           "type": "string",
           "default": null,
-          "description": "The absolute path of the input directory that contains fastq_pass Nonopore output"
+          "description": "The absolute path of the input directory that contains long_read fastq"
         },
         "output_dir": {
           "type": "string",
           "default": "waterisk_output/",
           "description": "Output directory for the pipeline"
         },
-        "raw": {
-          "type": "boolean",
-          "default": "",
-          "description": "set to true if fastq file are separate in multiple fastq file"
-        },
-        "c_size": {
-          "type": "integer",
-          "default": 1000000,
-          "description": "Estimated chomosome length. If set to 0, it will be estimated automatically."
+        "index_file": {
+          "type": "string",
+          "default": null,
+          "description": "The absolute path of the index file that contains estimated chomosome length for each isolate. If set to null, it will be estimated automatically and long read assembly will be performed."
         },
         "read_min_length": {
           "type": "integer",
@@ -87,7 +82,38 @@
           "description": "Lineage database for busco. See https://busco.ezlab.org/list_of_lineages.html for a list of available lineage databases."
         }
       },
-      "required": ["fastq_pass_dir"]
+      "required": ["long_reads_dir"]
+    },
+    "quality_control": {
+      "title": "Quality control assessment",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        
+        }
+    },
+    "Hybracter_parameters": {
+      "title": "Hybracter parameters",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        
+        }
+    },
+    "Others": {
+      "title": "Other parameters",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "raw": {
+          "type": "boolean",
+          "default": "",
+          "description": "set to true if fastq file are separate in multiple fastq file"
+        }
+      }
     },
     "max_job_request_options": {
       "title": "Max job request options",
@@ -117,7 +143,7 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/inputs_output_and_parameters"
+      "$ref": "#/definitions/required_inputs"
     },
     {
       "$ref": "#/definitions/max_job_request_options"

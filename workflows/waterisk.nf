@@ -97,20 +97,34 @@ include { MOB_CLUSTER }              from '../modules/waterisk_modules.nf'
 */
 
 workflow WATERISK {
-    
+
+    //Parameters checking
+    Channel
+    .fromPath(params.index_file)
+    .splitCsv(header: true)
+    .map { row ->
+        if (row.size() != 2) {
+            log.error "Error: Expected 2 columns, but found ${row.size()} columns in row: ${row}"
+            return null  // Return null to skip invalid rows
+        } else {
+            log.info "Row: ${row}"
+        }
+    }
+    .filter { it != null }  // Filter out any rows that were invalid
+    .set { idSizeChannel }
+
     //download database
     DOWNLOAD_DATABASE().view()
 
     //if raw output from MINION
-    if (params.raw == true){
-        IDENTIFIED_RAW_SAMPLES(file(params.fastq_pass_dir), params.fastq_pass_dir)
+    /* if (params.raw == true){
+        IDENTIFIED_RAW_SAMPLES(file(params.long_reads_dir), params.long_reads_dir)
         (fastq) = MERGE_SEPARATE_FASTQ(IDENTIFIED_SAMPLES.out.flatten())
     }
     else {
-        def fastqs = Channel.fromPath(params.fastq_pass_dir + "*.fastq.gz")
+        def fastqs = Channel.fromPath(params.long_reads_dir + "*.fastq.gz")
         fastq = IDENTIFIED_SAMPLES(fastqs)
     }
-    
     
     //Remove barcode then trim reads
     if (params.remove_barcode == true){
@@ -122,6 +136,7 @@ workflow WATERISK {
     }
 
     //De novo assembly using Hybracter
+     // TO DO: Read c_size chromosome length
     ASSEMBLE_GENOME(CLEAN_READS.out.trimmed_fastq)
 
     //Filtering complete where all plasmid is circular (1), complete but with non-circular plasmid (2) and incomplete (3)
@@ -183,7 +198,7 @@ workflow WATERISK {
     taxa_to_merge = CREATE_TAXA.out.collectFile()
     MERGE_TAXA(taxa_to_merge)
 
-    MOB_CLUSTER(MERGE_TAXA.out, MERGE_PLASMID.out, MERGE_TYPE.out)
+    MOB_CLUSTER(MERGE_TAXA.out, MERGE_PLASMID.out, MERGE_TYPE.out) */
 }
 
 /*
