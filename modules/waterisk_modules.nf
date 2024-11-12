@@ -174,7 +174,7 @@ process SAMPLING_FASTQ {
 
     script:
     """
-    filtlong --min_length ${params.read_min_length} --target_bases ${params.target_bases} $query | gzip > "${barID}sampleTrimmed.fastq.gz"
+    filtlong --min_length ${params.read_min_length} $query | gzip > "${barID}sampleTrimmed.fastq.gz"
     """
 }
 

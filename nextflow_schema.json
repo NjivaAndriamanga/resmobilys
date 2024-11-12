@@ -13,7 +13,7 @@
       "properties": {
         "long_reads_dir": {
           "type": "string",
-          "default": null,
+          "default": "long_reads/",
           "description": "The absolute path of the input directory that contains long_read fastq"
         },
         "output_dir": {
@@ -23,14 +23,18 @@
         },
         "index_file": {
           "type": "string",
-          "default": null,
+          "default": "index.csv",
           "description": "The absolute path of the index file that contains estimated chomosome length for each isolate. If set to null, it will be estimated automatically and long read assembly will be performed."
-        },
-        "read_min_length": {
-          "type": "integer",
-          "default": 50,
-          "description": "Minimum read length"
-        },
+        }
+      },
+      "required": ["long_reads_dir","index_file"]
+    },
+    "quality_control": {
+      "title": "Quality control assessment",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
         "trim_end_size": {
           "type": "integer",
           "default": 0,
@@ -41,25 +45,56 @@
           "default": 20,
           "description": "Parameter can be used to trim low-quality ends from reads."
         },
-        "amr_db": {
-          "type": "string",
-          "default": "card",
-          "description": "AMR database for AMR detection with ABRICATE"
-        },
         "remove_barcode": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "If true, remove barcodes with Porechop"
+        },
+        "lineage_db": {
+          "type": "string",
+          "default": "_odb10",
+          "description": "Lineage database for busco. See https://busco.ezlab.org/list_of_lineages.html for a list of available lineage databases."
+        }
+        }
+    },
+    "Hybracter_parameters": {
+      "title": "Hybracter parameters",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "read_min_length": {
+          "type": "integer",
+          "default": 1000,
+          "description": "Minimum read length"
+        },
+        "c_size": {
+          "type": "integer",
+          "default": 1000000,
+          "description": "Approximate chomosome read length. Expected to be overwritten by index_file"
         },
         "medaka": {
           "type": "boolean",
+          "default": true,
+          "description": "Run medaka"
+        }
+        }
+    },
+    "Others": {
+      "title": "Other parameters",
+      "type": "object",
+      "description": "",
+      "default": "",
+      "properties": {
+        "raw": {
+          "type": "boolean",
           "default": false,
-          "description": "if true, polish the long read assembly with Medaka"
+          "description": "set to true if fastq file are separate in multiple fastq file"
         },
-        "target_bases": {
-          "type": "integer",
-          "default": "500000000",
-          "description": "Remove the worst reads until only target_bases Mbp remain with Filtlong. If the input read set is less than 500 Mbp, this setting will have no effect."
+        "amr_db": {
+          "type": "string",
+          "default": "",
+          "description": "AMR database for AMR detection with ABRICATE"
         },
         "plasme_env": {
           "type": "string",
@@ -76,42 +111,9 @@
           "default": "${projectDir}/DB",
           "description": "plasme database directory"
         },
-        "lineage_db": {
-          "type": "string",
-          "default": "bacteria_odb10",
-          "description": "Lineage database for busco. See https://busco.ezlab.org/list_of_lineages.html for a list of available lineage databases."
-        }
-      },
-      "required": ["long_reads_dir"]
-    },
-    "quality_control": {
-      "title": "Quality control assessment",
-      "type": "object",
-      "description": "",
-      "default": "",
-      "properties": {
-        
-        }
-    },
-    "Hybracter_parameters": {
-      "title": "Hybracter parameters",
-      "type": "object",
-      "description": "",
-      "default": "",
-      "properties": {
-        
-        }
-    },
-    "Others": {
-      "title": "Other parameters",
-      "type": "object",
-      "description": "",
-      "default": "",
-      "properties": {
-        "raw": {
-          "type": "boolean",
-          "default": "",
-          "description": "set to true if fastq file are separate in multiple fastq file"
+        "help": {
+          "type": "boolean", 
+          "description": "Print help message"
         }
       }
     },
@@ -147,6 +149,15 @@
     },
     {
       "$ref": "#/definitions/max_job_request_options"
+    },
+    {
+      "$ref": "#/definitions/quality_control"
+    },
+    {
+      "$ref": "#/definitions/Hybracter_parameters"
+    },
+    {
+      "$ref": "#/definitions/Others"
     }
   ]
 }
