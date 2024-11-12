@@ -11,3 +11,4 @@ test/
 DB/
 .snakemake
 conf/.snakemeke
+containers/

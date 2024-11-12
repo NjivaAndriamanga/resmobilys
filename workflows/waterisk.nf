@@ -139,7 +139,6 @@ workflow WATERISK {
         fastq = IDENTIFIED_SAMPLES(fastqs_ch)
     }
     
-    /*
     //Remove barcode then trim reads
     if (params.remove_barcode == true){
         (fastq_nobar) = REMOVE_BARCODES(fastq)
@@ -212,7 +211,7 @@ workflow WATERISK {
     taxa_to_merge = CREATE_TAXA.out.collectFile()
     MERGE_TAXA(taxa_to_merge)
 
-    MOB_CLUSTER(MERGE_TAXA.out, MERGE_PLASMID.out, MERGE_TYPE.out) */
+    MOB_CLUSTER(MERGE_TAXA.out, MERGE_PLASMID.out, MERGE_TYPE.out)
 }
 
 /*
