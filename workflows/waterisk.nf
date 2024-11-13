@@ -10,13 +10,7 @@ log.info "\n"
     PARAMETERS MANAGMENT
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { validateParameters; paramsHelp; paramsSummaryLog; fromSamplesheet } from 'plugin/nf-validation'
-
-//print help message, supply typical command line usage for the pipeline
-if (params.help) {
-    log.info paramsHelp("nextflow run waterisk --profile perso")
-    exit 0
-}
+include { validateParameters; paramsHelp; paramsSummaryLog;  samplesheetToList } from 'plugin/nf-schema'
 
 //Validate input parameters
 validateParameters()
@@ -25,26 +19,18 @@ validateParameters()
 log.info paramsSummaryLog(workflow)
 
 /*
-    CHECKING PROFILE
-    */
-    if ( (workflow.profile.contains('local') || workflow.profile.contains('slurm')) && (workflow.profile.contains('singularity') || workflow.profile.contains('conda')) ) 
-        { "executer selected" }
-    else { exit 1, "No executer selected: executer must be suplied with -profile local/slurm,singularity/conda" }
+CHECKING PROFILE
+*/
+if ( (workflow.profile.contains('local') || workflow.profile.contains('slurm')) && (workflow.profile.contains('singularity') || workflow.profile.contains('conda')) ) 
+    { "executer selected" }
+else { exit 1, "No executer selected: executer must be suplied with -profile local/slurm,singularity/conda" }
 
-    /*
-    VERIFY INPUT FILES ANS INITIALIZE CHANNELS
-    */
+/*
+VALIDATE SAMPLE SHEET INDEX_FILE
+*/
+ch_input = Channel.fromList(samplesheetToList(params.index_file, "assets/lr_schema_input.json"))
 
-    //long reads directory
-    if (file(params.long_reads_dir).exists() == false) {
-        log.error "Directory ${params.long_reads_dir} does not exist or missing. Check your personnal config file or use the --long_reads_dir option"
-        exit 1
-    }
-
-    if (file(params.index_file).exists() == false) {
-        log.error "Index file ${params.index_file} does not exist or missing. Check your personnal config file or use the --index_file option"
-        exit 1
-    }
+ch_input.view()
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -117,28 +103,18 @@ include { MOB_CLUSTER }              from '../modules/waterisk_modules.nf'
 
 workflow WATERISK {
 
-    //index file for approximate genome size
-    //for long read only : long_read_sampleID, genomeSize
-    // ex   : sample1, 100000
-    //for hybrid assembly : long_read_sampleID, genomeSize, short_read1_sampleID, short_read2_sampleID   
-    index_ch = Channel
-    .fromPath(params.index_file)
-    .splitCsv(header: true)
-    .map { row -> tuple(row[0], row[1]) }
-
     //download database
     DOWNLOAD_DATABASE().view()
 
-    //if raw output from MINION
-    if (params.raw == true){
+    //
+    /* if (params.raw == true){
         IDENTIFIED_RAW_SAMPLES(file(params.long_reads_dir), params.long_reads_dir)
         (fastq) = MERGE_SEPARATE_FASTQ(IDENTIFIED_SAMPLES.out.flatten())
     }
-    else {
-        fastqs_ch = Channel.fromPath(params.long_reads_dir + "*.fastq.gz")
-        fastq = IDENTIFIED_SAMPLES(fastqs_ch)
-    }
-    
+      */
+
+    fastq = IDENTIFIED_SAMPLES(ch_input)
+
     //Remove barcode then trim reads
     if (params.remove_barcode == true){
         (fastq_nobar) = REMOVE_BARCODES(fastq)

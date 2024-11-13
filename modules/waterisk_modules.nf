@@ -59,7 +59,7 @@ process IDENTIFIED_RAW_SAMPLES {
 */
 process IDENTIFIED_SAMPLES {
     input:
-    path fastq
+    tuple path(fastq), val(genome_size)
 
     output:
     tuple val(barID), path(fastq)

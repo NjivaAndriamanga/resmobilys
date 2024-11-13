@@ -1,30 +1,37 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/WATERISK/master/nextflow_schema.json",
   "title": "WATERISK pipeline parameters",
   "description": "Assemble bacterial genome from Nanopore to detect AMR and MGE association",
   "type": "object",
-  "definitions": {
+  "$defs": {
     "required_inputs": {
       "title": "Required inputs",
       "type": "object",
       "description": "",
       "default": "",
       "properties": {
-        "long_reads_dir": {
+        "assembly": {
           "type": "string",
-          "default": "long_reads/",
-          "description": "The absolute path of the input directory that contains long_read fastq"
+          "default": null,
+          "description": "Long reads assembly or hybrid ",
+          "errorMessage": "No assembly method provided",
+          "enum": ["long_reads","hybrid"]
         },
         "output_dir": {
           "type": "string",
           "default": "waterisk_output/",
-          "description": "Output directory for the pipeline"
+          "description": "Output directory for the pipeline",
+          "format": "directory-path"
         },
         "index_file": {
           "type": "string",
-          "default": "index.csv",
-          "description": "The absolute path of the index file that contains estimated chomosome length for each isolate. If set to null, it will be estimated automatically and long read assembly will be performed."
+          "default": null,
+          "description": "The absolute path of the index file that contains estimated chomosome length for each isolate. If set to null, it will be estimated automatically and long read assembly will be performed.",
+          "format": "file-path",
+          "exists": true,
+          "errorMessage": "Check your personnal config file or use the --index_file option",
+          "mimetype": "text/csv"
         }
       },
       "required": ["long_reads_dir","index_file"]
@@ -52,7 +59,7 @@
         },
         "lineage_db": {
           "type": "string",
-          "default": "_odb10",
+          "default": "bacteria_odb10",
           "description": "Lineage database for busco. See https://busco.ezlab.org/list_of_lineages.html for a list of available lineage databases."
         }
         }
@@ -80,8 +87,8 @@
         }
         }
     },
-    "Others": {
-      "title": "Other parameters",
+    "Further_parameters": {
+      "title": "Further parameters",
       "type": "object",
       "description": "",
       "default": "",
@@ -93,13 +100,16 @@
         },
         "amr_db": {
           "type": "string",
-          "default": "",
-          "description": "AMR database for AMR detection with ABRICATE"
+          "default": "card",
+          "description": "AMR database for AMR detection with ABRICATE",
+          "enum": ["argannot","card","ecoh","ecoli_vf","megares","ncbi","plasmidfinder","resfinder","vfdb"]
         },
         "plasme_env": {
           "type": "string",
           "default": "${projectDir}/conf/plasme.yaml",
-          "description": "Plasme environment file"
+          "description": "Plasme environment file",
+          "format": "file-path",
+          "exists": true
         },
         "plasme_download_db": {
           "type": "boolean",
@@ -109,11 +119,8 @@
         "plasme_db": {
           "type": "string",
           "default": "${projectDir}/DB",
-          "description": "plasme database directory"
-        },
-        "help": {
-          "type": "boolean", 
-          "description": "Print help message"
+          "description": "plasme database directory",
+          "format": "directory-path"
         }
       }
     },
@@ -145,19 +152,19 @@
   },
   "allOf": [
     {
-      "$ref": "#/definitions/required_inputs"
+      "$ref": "#/$defs/required_inputs"
     },
     {
-      "$ref": "#/definitions/max_job_request_options"
+      "$ref": "#/$defs/max_job_request_options"
     },
     {
-      "$ref": "#/definitions/quality_control"
+      "$ref": "#/$defs/quality_control"
     },
     {
-      "$ref": "#/definitions/Hybracter_parameters"
+      "$ref": "#/$defs/Hybracter_parameters"
     },
     {
-      "$ref": "#/definitions/Others"
+      "$ref": "#/$defs/Further_parameters"
     }
   ]
 }
