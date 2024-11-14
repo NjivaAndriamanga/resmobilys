@@ -59,15 +59,22 @@ process IDENTIFIED_RAW_SAMPLES {
 */
 process IDENTIFIED_SAMPLES {
     input:
-    tuple path(fastq), val(genome_size)
+    tuple path(fastq), val(genome_size), path(sr1), path(sr2)
 
     output:
-    tuple val(barID), path(fastq)
-
+    tuple val(barID), path(fastq), val(genome_size),path(sr1), path(sr2), emit: long_reads
+    
     script:
     barID = fastq.getSimpleName()
-    """
 
+    if(sr1 == null || sr2 == null) {
+        assembly = "long_reads"
+    }
+    else {
+        assembly = "hybrid"
+    }
+    """
+    
     """
 }
 
@@ -89,93 +96,30 @@ process MERGE_SEPARATE_FASTQ {
 }
 
 /*
-Remove barcode identifiers (or not processed with guppy during demultiplexing)
-*/
-process REMOVE_BARCODES {
-    label 'process_high'
-
-    input:
-    tuple val(barID), path(fastq)
-
-    output:
-    tuple val(barID), path("trimmed_${barID}.fastq.gz")
-
-    script:
-    """
-    porechop --i $fastq -o trimmed_${barID}.fastq.gz -t ${task.cpus}
-    """
-}
-
-/*
-Reads trimming by length and quality score and filtering with fastp. FASTP 0.23.4 is not reproductible and some errors have not yet been fixed
-NB: fastp can be ram greedy. 
-*/
-/* process CLEAN_READS {
-    label "process_high"
-    publishDir "${params.output_dir}trimmed_output/"
-    maxRetries 5
-    maxForks 2
-    errorStrategy { if (task.attempt <= maxRetries) { sleep(Math.pow(2, task.attempt) * 200 as long); return 'retry'} else { return 'finish'} }
-    
-    input:
-    val barID
-    path query
-
-    output:
-    val barID, emit: barID
-    path "${barID}_trimmed.fastq.gz", emit: trimmed_fastq
-    path "${barID}_trimmming.html" //to save trimming report in publishDir
-
-    script:
-    """
-    fastp -i $query -o ${barID}_trimmed.fastq.gz --thread ${task.cpus} --trim_front1 ${params.trim_end_size} --trim_tail1 ${params.trim_end_size} \
-    -Q -A --cut_tail --cut_tail_window_size 5 --cut_tail_mean_quality 20 --cut_front --cut_front_window_size 5 \
-    --cut_front_mean_quality 20 --length_required ${params.read_min_length} --html ${barID}_trimmming.html
-    """
-} */
-
-/*
-Reads trimming by length and quality score and filtering with cutadapt. Asses reads quality before and reads filtering with fastqc. The two reports are merged with multiqc
+Long reads trimming by length and quality score and filtering with cutadapt. Asses reads quality before and reads filtering with fastqc. The two reports are merged with multiqc
 */
 process CLEAN_READS {
     label "process_high"
     publishDir "${params.output_dir}trimmed_output/"
     
     input:
-    tuple val(barID), path(query)
+    tuple val(barID), path(query), val(genome_size), path(sr1), path(sr2)
 
     output:
-    tuple val(barID), path("${barID}Trimmed.fastq.gz"), emit: trimmed_fastq
-    path "${barID}_report.html" //to save trimming report in publishDir
+    tuple val(barID), path("${barID}Trimmed.fastq.gz"), val(genome_size),path(sr1), path(sr2), emit: trimmed_fastq
 
     script:
     """
+    cutadapt --cut ${params.trim_end_size} --cut -${params.trim_end_size} -q ${params.quality_trim},${params.quality_trim} -o ${barID}Trimmed.fastq.gz $query -m ${params.read_min_length}
+
+    """
+    /* """
     fastqc --memory 2000 $query -t ${task.cpus}
     cutadapt --cut ${params.trim_end_size} --cut -${params.trim_end_size} -q ${params.quality_trim},${params.quality_trim} -o ${barID}Trimmed.fastq.gz $query -m ${params.read_min_length}
     fastqc --memory 2000 ${barID}Trimmed.fastq.gz -t ${task.cpus}
     multiqc .
     mv multiqc_report.html ${barID}_report.html
-    """
-}
-
-/*
-Remove the worst reads until only 500 Mbp remain (100x coverage for 5M genome size), useful for very large read sets. If the input read set is less than 500 Mbp, this setting will have no effect.
-Alternative Rasusa
-*/
-process SAMPLING_FASTQ {
-    debug true
-    publishDir "${params.output_dir}trimmed_output/"
-
-    input:
-    tuple val(barID),path(query)
-
-    output:
-    tuple val(barID), path("${barID}sampleTrimmed.fastq.gz")
-
-    script:
-    """
-    filtlong --min_length ${params.read_min_length} $query | gzip > "${barID}sampleTrimmed.fastq.gz"
-    """
+    """ */
 }
 
 /*
@@ -191,37 +135,40 @@ process ASSEMBLE_GENOME {
     errorStrategy { task.attempt < 3 ? 'retry' : 'ignore'}
 
     input:
-    tuple val(barID), path(fastq)
+    tuple val(barID), path(fastq), val(genome_size), path(sr1), path(sr2), val(assembly)
     
     output:
     tuple val(barID), path(fastq),path("${barID}_sample_per_contig_stats.tsv"), path("${barID}_plassembler_summary.tsv"), path("${barID}_sample_chromosome.fasta"), path("${barID}_hybracter_plasmid.fasta"), optional: true, emit: complete_assembly
     tuple val(barID), path(fastq),path("${barID}_sample_final.fasta"), optional: true, emit: incomplete_assembly
 
     script:
-    if (params.medaka == true)
-        """
-        hybracter long-single -l $fastq -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel --nano-hq -c ${params.c_size}
-        
-        [ ! -f hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ] || mv hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ${barID}_plassembler_summary.tsv
-        [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
-        [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
-        [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_hybracter_plasmid.fasta
+    def args = " "
+    if (assembly == "long_reads"){
+        args = "long-single -l $fastq -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel ${params.flyeModel}"
+    }
+    if (assembly == "hybrid"){
+        args = "hybrid-single -l $fastq -1 $sr1 -2 $sr2 -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel ${params.flyeModel}"        
+    }
+    if (params.medaka == false) {
+        args = args + " --no_medaka"
+    }
+    if(genome_size == 0){
+        args = args + " --auto"
+    }
+    if(genome_size > 0){
+        args = args + " -c ${genome_size}"
+    }
+    """
+    hybracter ${args}
+    
+    [ ! -f hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ] || mv hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ${barID}_plassembler_summary.tsv
+    [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
+    [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
+    [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_hybracter_plasmid.fasta
 
-        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample_final.fasta
-        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
-        """
-    else if (params.medaka == false)
-        """
-        hybracter long-single -l $fastq -t ${task.cpus} --no_medaka --min_length ${params.read_min_length} --flyeModel --nano-hq -c ${params.c_size}
-        
-        [ ! -f hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ] || mv hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ${barID}_plassembler_summary.tsv
-        [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
-        [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
-        [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_hybracter_plasmid.fasta
-
-        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample_final.fasta
-        [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
-        """
+    [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample_final.fasta
+    [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
+    """
 }
 
 /*

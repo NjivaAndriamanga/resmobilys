@@ -28,11 +28,9 @@ else { exit 1, "No executer selected: executer must be suplied with -profile loc
 /*
 VALIDATE SAMPLE SHEET INDEX_FILE
 */
-ch_input = Channel.fromList(samplesheetToList(params.index_file, "assets/lr_schema_input.json"))
-
-ch_input.view()
-
+ch_input = Channel.fromList(samplesheetToList(params.index_file, "assets/schema_input.json"))
 /*
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     DEF FUNCTION
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -76,7 +74,6 @@ include { DOWNLOAD_DATABASE }       from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_RAW_SAMPLES }  from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_SAMPLES}       from '../modules/waterisk_modules.nf'
 include { MERGE_SEPARATE_FASTQ }    from '../modules/waterisk_modules.nf'
-include { REMOVE_BARCODES }         from '../modules/waterisk_modules.nf'
 include { CLEAN_READS }             from '../modules/waterisk_modules.nf'
 include { ASSEMBLE_GENOME }         from '../modules/waterisk_modules.nf'
 include { FILTER_CIRCULAR_PLASMID } from '../modules/waterisk_modules.nf'
@@ -94,7 +91,7 @@ include { MOB_TYPER }               from '../modules/waterisk_modules.nf'
 include { MERGE_TYPE }              from '../modules/waterisk_modules.nf'
 include { CREATE_TAXA }             from '../modules/waterisk_modules.nf'
 include { MERGE_TAXA }              from '../modules/waterisk_modules.nf'
-include { MOB_CLUSTER }              from '../modules/waterisk_modules.nf' 
+include { MOB_CLUSTER }             from '../modules/waterisk_modules.nf' 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -106,7 +103,6 @@ workflow WATERISK {
     //download database
     DOWNLOAD_DATABASE().view()
 
-    //
     /* if (params.raw == true){
         IDENTIFIED_RAW_SAMPLES(file(params.long_reads_dir), params.long_reads_dir)
         (fastq) = MERGE_SEPARATE_FASTQ(IDENTIFIED_SAMPLES.out.flatten())
@@ -114,7 +110,7 @@ workflow WATERISK {
       */
 
     fastq = IDENTIFIED_SAMPLES(ch_input)
-
+/* 
     //Remove barcode then trim reads
     if (params.remove_barcode == true){
         (fastq_nobar) = REMOVE_BARCODES(fastq)
@@ -141,8 +137,6 @@ workflow WATERISK {
     complete_non_circular_ch = complete_assembly_ch //2
         .filter{ barID, fastq, contig_stats, plassembler, chromosome, plasmids -> 
             check_nonCircularPlasmid(contig_stats)}
-
-    
     
     incomplete_assembly_ch = ASSEMBLE_GENOME.out.incomplete_assembly //3
     
@@ -187,7 +181,7 @@ workflow WATERISK {
     taxa_to_merge = CREATE_TAXA.out.collectFile()
     MERGE_TAXA(taxa_to_merge)
 
-    MOB_CLUSTER(MERGE_TAXA.out, MERGE_PLASMID.out, MERGE_TYPE.out)
+    MOB_CLUSTER(MERGE_TAXA.out, MERGE_PLASMID.out, MERGE_TYPE.out) */
 }
 
 /*

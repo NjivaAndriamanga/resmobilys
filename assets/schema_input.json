@@ -1,0 +1,35 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/WATERISK/master/lr_schema_input.json",
+    "title": "params.input schema",
+    "description": "Schema for the file provided with params.index_file",
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "fastq": {
+          "type": "string",
+          "format": "file-path",
+          "pattern": "^\\S+\\.f(ast)?q\\.gz$",
+          "errorMessage": "FastQ file for long reads must be provided, cannot contain spaces and must have extension '.fq.gz','.fastq.gz', '.fastq' or '.fq'."
+        },
+        "genome_size": {
+          "type": "integer",
+          "errorMessage": "Approximate genome size must be an integer. If unknown, set to 0."
+        },
+        "sr1": {
+          "type": "string",
+          "format": "file-path",
+          "pattern": "^\\S+\\.f(ast)?q\\.gz$",
+          "errorMessage": "FastQ file must be provided, cannot contain spaces and must have extension '.fq.gz','.fastq.gz', '.fastq' or '.fq'."
+        },
+        "sr2": {
+          "type": "string",
+          "format": "file-path",
+          "pattern": "^\\S+\\.f(ast)?q\\.gz$",
+          "errorMessage": "FastQ file must be provided, cannot contain spaces and must have extension '.fq.gz','.fastq.gz', '.fastq' or '.fq'."
+        }
+      },
+      "required": ["fastq", "genome_size"]
+    }
+  }

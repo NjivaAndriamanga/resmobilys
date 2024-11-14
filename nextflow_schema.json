@@ -34,7 +34,7 @@
           "mimetype": "text/csv"
         }
       },
-      "required": ["long_reads_dir","index_file"]
+      "required": ["assembly","index_file"]
     },
     "quality_control": {
       "title": "Quality control assessment",
@@ -84,6 +84,12 @@
           "type": "boolean",
           "default": true,
           "description": "Run medaka"
+        },
+        "flyeModel": {
+          "type": "string",
+          "default": "--nano-hq",
+          "description": "Flye assembly model",
+          "enum": ["--nano-hq","--nano-corr","--nano-raw","--pacbio-raw","--pacbio-corr","--pacbio-hifi"]
         }
         }
     },
