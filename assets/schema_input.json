@@ -11,7 +11,8 @@
           "type": "string",
           "format": "file-path",
           "pattern": "^\\S+\\.f(ast)?q\\.gz$",
-          "errorMessage": "FastQ file for long reads must be provided, cannot contain spaces and must have extension '.fq.gz','.fastq.gz', '.fastq' or '.fq'."
+          "errorMessage": "FastQ file for long reads must be provided, cannot contain spaces and must have extension '.fq.gz','.fastq.gz', '.fastq' or '.fq'.",
+          "exists": true
         },
         "genome_size": {
           "type": "integer",
@@ -21,13 +22,15 @@
           "type": "string",
           "format": "file-path",
           "pattern": "^\\S+\\.f(ast)?q\\.gz$",
-          "errorMessage": "FastQ file must be provided, cannot contain spaces and must have extension '.fq.gz','.fastq.gz', '.fastq' or '.fq'."
+          "errorMessage": "FastQ file for short reads 1, cannot contain spaces and must have extension '.fq.gz','.fastq.gz', '.fastq' or '.fq'.",
+          "exists": true
         },
         "sr2": {
           "type": "string",
           "format": "file-path",
           "pattern": "^\\S+\\.f(ast)?q\\.gz$",
-          "errorMessage": "FastQ file must be provided, cannot contain spaces and must have extension '.fq.gz','.fastq.gz', '.fastq' or '.fq'."
+          "errorMessage": "FastQ file for short reads 2, cannot contain spaces and must have extension '.fq.gz','.fastq.gz', '.fastq' or '.fq'.",
+          "exists": true
         }
       },
       "required": ["fastq", "genome_size"]

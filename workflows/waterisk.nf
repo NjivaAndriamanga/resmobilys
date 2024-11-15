@@ -74,7 +74,7 @@ include { DOWNLOAD_DATABASE }       from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_RAW_SAMPLES }  from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_SAMPLES}       from '../modules/waterisk_modules.nf'
 include { MERGE_SEPARATE_FASTQ }    from '../modules/waterisk_modules.nf'
-include { CLEAN_READS }             from '../modules/waterisk_modules.nf'
+include { CLEAN_LONG_READS }        from '../modules/waterisk_modules.nf'
 include { ASSEMBLE_GENOME }         from '../modules/waterisk_modules.nf'
 include { FILTER_CIRCULAR_PLASMID } from '../modules/waterisk_modules.nf'
 include { IDENTIFY_AMR_PLASMID }    from '../modules/waterisk_modules.nf'
@@ -108,22 +108,27 @@ workflow WATERISK {
         (fastq) = MERGE_SEPARATE_FASTQ(IDENTIFIED_SAMPLES.out.flatten())
     }
       */
+    IDENTIFIED_SAMPLES(ch_input)
+    fastq_long_reads_ch = IDENTIFIED_SAMPLES.out.long_reads
+    genome_size_ch = IDENTIFIED_SAMPLES.out.genome_size
+    fastq_short_reads_ch = IDENTIFIED_SAMPLES.out.short_reads
 
-    fastq = IDENTIFIED_SAMPLES(ch_input)
-/* 
     //Remove barcode then trim reads
     if (params.remove_barcode == true){
-        (fastq_nobar) = REMOVE_BARCODES(fastq)
-        CLEAN_READS(fastq_nobar)
+        (fastq_nobar) = REMOVE_BARCODES(fastq_long_reads_ch)
+        CLEAN_LONG_READS(fastq_nobar)
     }
     else {
-        CLEAN_READS(fastq)
+        CLEAN_LONG_READS(fastq_long_reads_ch)
     }
 
+    assembly_input_ch = CLEAN_LONG_READS.out.trimmed_fastq.join(genome_size_ch)
+    assembly_input_ch = assembly_input_ch.join(fastq_short_reads_ch)
+    //assembly_input_ch = assembly_input_ch.join(fastq_short_reads_ch)
     //De novo assembly using Hybracter
      // TO DO: Read c_size chromosome length
-    ASSEMBLE_GENOME(CLEAN_READS.out.trimmed_fastq)
-
+    ASSEMBLE_GENOME(assembly_input_ch)
+/*
     //Filtering complete where all plasmid is circular (1), complete but with non-circular plasmid (2) and incomplete (3)
     complete_assembly_ch = ASSEMBLE_GENOME.out.complete_assembly
 

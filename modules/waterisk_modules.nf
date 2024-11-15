@@ -55,24 +55,20 @@ process IDENTIFIED_RAW_SAMPLES {
 }
 
 /*
-    Identified samples from csv files if exist
+    Identified samples from index_files and check the presence of short reads
 */
 process IDENTIFIED_SAMPLES {
     input:
     tuple path(fastq), val(genome_size), path(sr1), path(sr2)
 
     output:
-    tuple val(barID), path(fastq), val(genome_size),path(sr1), path(sr2), emit: long_reads
+    tuple val(barID), path(fastq), emit: long_reads
+    tuple val(barID), val(genome_size), emit: genome_size
+    tuple val(barID), path(sr1), path(sr2), emit: short_reads
     
     script:
     barID = fastq.getSimpleName()
 
-    if(sr1 == null || sr2 == null) {
-        assembly = "long_reads"
-    }
-    else {
-        assembly = "hybrid"
-    }
     """
     
     """
@@ -98,20 +94,19 @@ process MERGE_SEPARATE_FASTQ {
 /*
 Long reads trimming by length and quality score and filtering with cutadapt. Asses reads quality before and reads filtering with fastqc. The two reports are merged with multiqc
 */
-process CLEAN_READS {
+process CLEAN_LONG_READS {
     label "process_high"
     publishDir "${params.output_dir}trimmed_output/"
     
     input:
-    tuple val(barID), path(query), val(genome_size), path(sr1), path(sr2)
+    tuple val(barID), path(query)
 
     output:
-    tuple val(barID), path("${barID}Trimmed.fastq.gz"), val(genome_size),path(sr1), path(sr2), emit: trimmed_fastq
+    tuple val(barID), path("${barID}Trimmed.fastq.gz"), emit: trimmed_fastq
 
     script:
     """
     cutadapt --cut ${params.trim_end_size} --cut -${params.trim_end_size} -q ${params.quality_trim},${params.quality_trim} -o ${barID}Trimmed.fastq.gz $query -m ${params.read_min_length}
-
     """
     /* """
     fastqc --memory 2000 $query -t ${task.cpus}
@@ -135,7 +130,7 @@ process ASSEMBLE_GENOME {
     errorStrategy { task.attempt < 3 ? 'retry' : 'ignore'}
 
     input:
-    tuple val(barID), path(fastq), val(genome_size), path(sr1), path(sr2), val(assembly)
+    tuple val(barID), path(fastq), val(genome_size), path(sr1), path(sr2)
     
     output:
     tuple val(barID), path(fastq),path("${barID}_sample_per_contig_stats.tsv"), path("${barID}_plassembler_summary.tsv"), path("${barID}_sample_chromosome.fasta"), path("${barID}_hybracter_plasmid.fasta"), optional: true, emit: complete_assembly
@@ -143,12 +138,13 @@ process ASSEMBLE_GENOME {
 
     script:
     def args = " "
-    if (assembly == "long_reads"){
+    if (sr1 == [] || sr2 == []){ //if no short reads
         args = "long-single -l $fastq -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel ${params.flyeModel}"
     }
-    if (assembly == "hybrid"){
+    else {
         args = "hybrid-single -l $fastq -1 $sr1 -2 $sr2 -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel ${params.flyeModel}"        
     }
+
     if (params.medaka == false) {
         args = args + " --no_medaka"
     }
@@ -158,6 +154,7 @@ process ASSEMBLE_GENOME {
     if(genome_size > 0){
         args = args + " -c ${genome_size}"
     }
+
     """
     hybracter ${args}
     

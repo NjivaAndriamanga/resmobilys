@@ -75,11 +75,6 @@
           "default": 1000,
           "description": "Minimum read length"
         },
-        "c_size": {
-          "type": "integer",
-          "default": 1000000,
-          "description": "Approximate chomosome read length. Expected to be overwritten by index_file"
-        },
         "medaka": {
           "type": "boolean",
           "default": true,
@@ -106,7 +101,7 @@
         },
         "amr_db": {
           "type": "string",
-          "default": "card",
+          "default": "megares",
           "description": "AMR database for AMR detection with ABRICATE",
           "enum": ["argannot","card","ecoh","ecoli_vf","megares","ncbi","plasmidfinder","resfinder","vfdb"]
         },
