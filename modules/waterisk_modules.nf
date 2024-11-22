@@ -17,11 +17,8 @@ process DOWNLOAD_DATABASE {
         """
         cd ${projectDir}
         if [ ! -d DB ]; then 
-            wget https://zenodo.org/record/8046934/files/DB.zip
-            unzip DB.zip
-            rm DB.zip
-            PLASMe.py test.fasta test_plasmid.fasta -d ${params.plasme_db}
-            rm test_plasmid.fasta
+            echo "Download plasme db in tar format"
+            tar -xvf DB.tar.gz
         else
             output="DB already exist"
         fi
