@@ -122,13 +122,11 @@ workflow WATERISK {
         CLEAN_LONG_READS(fastq_long_reads_ch)
     }
 
+    //De novo assembly using Hybracter
     assembly_input_ch = CLEAN_LONG_READS.out.trimmed_fastq.join(genome_size_ch)
     assembly_input_ch = assembly_input_ch.join(fastq_short_reads_ch)
-    //assembly_input_ch = assembly_input_ch.join(fastq_short_reads_ch)
-    //De novo assembly using Hybracter
-     // TO DO: Read c_size chromosome length
     ASSEMBLE_GENOME(assembly_input_ch)
-/*
+
     //Filtering complete where all plasmid is circular (1), complete but with non-circular plasmid (2) and incomplete (3)
     complete_assembly_ch = ASSEMBLE_GENOME.out.complete_assembly
 
@@ -186,7 +184,7 @@ workflow WATERISK {
     taxa_to_merge = CREATE_TAXA.out.collectFile()
     MERGE_TAXA(taxa_to_merge)
 
-    MOB_CLUSTER(MERGE_TAXA.out, MERGE_PLASMID.out, MERGE_TYPE.out) */
+    MOB_CLUSTER(MERGE_TAXA.out, MERGE_PLASMID.out, MERGE_TYPE.out)
 }
 
 /*

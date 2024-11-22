@@ -206,8 +206,6 @@ process IDENTIFY_AMR_PLASMID {
     """
 }
 
-
-
 process IDENTIFY_AMR_CHRM {
     label 'amr_detection'
     publishDir "${params.output_dir}final_output/"
@@ -284,7 +282,7 @@ process PLASME_INCOMPLETE {
     """
     PLASMe.py ${sample_fasta} ${barID}_plasme_plasmid.fasta -d ${params.plasme_db}
     awk ' { print \$1 }' ${barID}_plasme_plasmid.fasta_report.csv > chrm_contig.txt
-    seqkit grep -f -v ${barID}_plasme.fasta_report.csv ${sample_fasta} -o ${barID}_plasme_chrm.fasta
+    seqkit grep -v -f chrm_contig.txt ${sample_fasta} -o ${barID}_plasme_chrm.fasta
     
     """
 }   
@@ -335,8 +333,9 @@ process ASSEMBLY_PLASMID {
     then
         touch ${barID}_plasme_plasmid.fasta
     else
-        unicycler -l ${plasmid_reads} -o ${barID}_plasmid -t ${task.cpus}
-        mv ${barID}_plasme_plasmid/assembly.fasta ${barID}_plasmid.fasta
+        unicycler -l ${plasmid_reads} -o ${barID}_plasme_plasmid -t ${task.cpus}
+        mv ${barID}_plasme_plasmid/assembly.fasta ${barID}.fasta
+        awk '/^>/ {print \$0 "_plasmid"; next} {print \$0}' ${barID}.fasta > ${barID}_plasme_plasmid.fasta
     fi
     """
 }
@@ -359,7 +358,8 @@ process ASSEMBLY_CHRM {
         touch ${barID}_plasme_chrm.fasta
     else
         flye --nano-hq ${chrm_reads} -t ${task.cpus} -o flye_output
-        mv flye_output/assembly.fasta ${barID}_plasme_chrm.fasta
+        mv flye_output/assembly.fasta ${barID}.fasta
+        awk '/^>/ {print  \$0 "_chromosome"; next} {print \$0}' ${barID}.fasta > ${barID}_plasme_chrm.fasta
     fi
     """
 }
@@ -410,7 +410,7 @@ process MERGE_TYPE {
     script:
     """
     echo "sample_id	num_contigs	size	gc	md5	rep_type(s)	rep_type_accession(s)	relaxase_type(s)	relaxase_type_accession(s)	mpf_type	mpf_type_accession(s)	orit_type(s)	orit_accession(s)	predicted_mobility	mash_nearest_neighbor	mash_neighbor_distance	mash_neighbor_identification	primary_cluster_id	secondary_cluster_id	predicted_host_range_overall_rank	predicted_host_range_overall_name	observed_host_range_ncbi_rank	observed_host_range_ncbi_name	reported_host_range_lit_rank	reported_host_range_lit_name	associated_pmid(s)" > mergeAll_type.txt
-    sed '/^sample_id/d' ${all_plasmid_type} >>  "mergeAll_type.txt"
+    sed '/^sample_id/d' ${all_plasmid_type} >> "mergeAll_type.txt"
     """
 }
 
