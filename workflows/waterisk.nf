@@ -21,7 +21,7 @@ log.info paramsSummaryLog(workflow)
 /*
 CHECKING PROFILE
 */
-if ( (workflow.profile.contains('local') || workflow.profile.contains('slurm')) && (workflow.profile.contains('singularity') || workflow.profile.contains('conda')) ) 
+if ( (workflow.profile.contains('local') || workflow.profile.contains('slurm') || workflow.profile.contains('perso')) && (workflow.profile.contains('singularity') || workflow.profile.contains('conda')) ) 
     { "executer selected" }
 else { exit 1, "No executer selected: executer must be suplied with -profile local/slurm,singularity/conda" }
 
@@ -69,7 +69,7 @@ def write_value = { value -> "test.txt" >> value + "\n" }
     IMPORT LOCAL MODULES / SUBWORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-
+include { TEST_PROCESS }            from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_DATABASE }       from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_RAW_SAMPLES }  from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_SAMPLES}       from '../modules/waterisk_modules.nf'
@@ -102,12 +102,15 @@ workflow WATERISK {
 
     //download database
     DOWNLOAD_DATABASE().view()
+    TEST_PROCESS().view()
 
     /* if (params.raw == true){
         IDENTIFIED_RAW_SAMPLES(file(params.long_reads_dir), params.long_reads_dir)
         (fastq) = MERGE_SEPARATE_FASTQ(IDENTIFIED_SAMPLES.out.flatten())
     }
-      */
+    */
+
+    /*
     IDENTIFIED_SAMPLES(ch_input)
     fastq_long_reads_ch = IDENTIFIED_SAMPLES.out.long_reads
     genome_size_ch = IDENTIFIED_SAMPLES.out.genome_size
@@ -185,6 +188,7 @@ workflow WATERISK {
     MERGE_TAXA(taxa_to_merge)
 
     MOB_CLUSTER(MERGE_TAXA.out, MERGE_PLASMID.out, MERGE_TYPE.out)
+    */
 }
 
 /*

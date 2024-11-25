@@ -1,4 +1,19 @@
 /*
+
+*/
+process TEST_PROCESS {
+    label 'process_high'
+
+    output:
+    stdout
+
+    script:
+    """
+    echo "${task.cpus} ${task.memory}"
+    """
+}
+
+/*
 This process will download the plasme database from github and unzip it in the same directory as the main script (main.nf)
 Run PLasme.py script to unzip and install the dabatase (avoid conflict when accessing the database during plasme process)
 But if the directory DB already exist, it will not be re-downloaded
