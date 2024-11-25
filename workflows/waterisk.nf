@@ -110,7 +110,6 @@ workflow WATERISK {
     }
     */
 
-    /*
     IDENTIFIED_SAMPLES(ch_input)
     fastq_long_reads_ch = IDENTIFIED_SAMPLES.out.long_reads
     genome_size_ch = IDENTIFIED_SAMPLES.out.genome_size
@@ -188,7 +187,6 @@ workflow WATERISK {
     MERGE_TAXA(taxa_to_merge)
 
     MOB_CLUSTER(MERGE_TAXA.out, MERGE_PLASMID.out, MERGE_TYPE.out)
-    */
 }
 
 /*
