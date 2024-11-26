@@ -69,29 +69,32 @@ def write_value = { value -> "test.txt" >> value + "\n" }
     IMPORT LOCAL MODULES / SUBWORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { TEST_PROCESS }            from '../modules/waterisk_modules.nf'
-include { DOWNLOAD_DATABASE }       from '../modules/waterisk_modules.nf'
-include { IDENTIFIED_RAW_SAMPLES }  from '../modules/waterisk_modules.nf'
-include { IDENTIFIED_SAMPLES}       from '../modules/waterisk_modules.nf'
-include { MERGE_SEPARATE_FASTQ }    from '../modules/waterisk_modules.nf'
-include { CLEAN_LONG_READS }        from '../modules/waterisk_modules.nf'
-include { ASSEMBLE_GENOME }         from '../modules/waterisk_modules.nf'
-include { FILTER_CIRCULAR_PLASMID } from '../modules/waterisk_modules.nf'
-include { IDENTIFY_AMR_PLASMID }    from '../modules/waterisk_modules.nf'
-include { IDENTIFY_AMR_CHRM }       from '../modules/waterisk_modules.nf'
-include { PLASME_COMPLETE }         from '../modules/waterisk_modules.nf'
-include { PLASME_INCOMPLETE }       from '../modules/waterisk_modules.nf'
-include { ALIGN_READS_PLASMID }     from '../modules/waterisk_modules.nf'
-include { ASSEMBLY_PLASMID }        from '../modules/waterisk_modules.nf'
-include { ASSEMBLY_CHRM }           from '../modules/waterisk_modules.nf'
-include { BUSCO }                   from '../modules/waterisk_modules.nf'
-include { CHANGE_PLASMID_NAME }     from '../modules/waterisk_modules.nf'
-include { MERGE_PLASMID }           from '../modules/waterisk_modules.nf'
-include { MOB_TYPER }               from '../modules/waterisk_modules.nf'
-include { MERGE_TYPE }              from '../modules/waterisk_modules.nf'
-include { CREATE_TAXA }             from '../modules/waterisk_modules.nf'
-include { MERGE_TAXA }              from '../modules/waterisk_modules.nf'
-include { MOB_CLUSTER }             from '../modules/waterisk_modules.nf' 
+include { TEST_PROCESS }                from '../modules/waterisk_modules.nf'
+include { DOWNLOAD_DATABASE }           from '../modules/waterisk_modules.nf'
+include { IDENTIFIED_RAW_SAMPLES }      from '../modules/waterisk_modules.nf'
+include { IDENTIFIED_SAMPLES}           from '../modules/waterisk_modules.nf'
+include { MERGE_SEPARATE_FASTQ }        from '../modules/waterisk_modules.nf'
+include { CLEAN_LONG_READS }            from '../modules/waterisk_modules.nf'
+include { ASSEMBLE_GENOME }             from '../modules/waterisk_modules.nf'
+include { FILTER_CIRCULAR_PLASMID }     from '../modules/waterisk_modules.nf'
+include { IDENTIFY_AMR_PLASMID }        from '../modules/waterisk_modules.nf'
+include { IDENTIFY_AMR_CHRM }           from '../modules/waterisk_modules.nf'
+include { PLASME_COMPLETE }             from '../modules/waterisk_modules.nf'
+include { PLASME_INCOMPLETE }           from '../modules/waterisk_modules.nf'
+include { ALIGN_READS_PLASMID }         from '../modules/waterisk_modules.nf'
+include { ASSEMBLY_PLASMID }            from '../modules/waterisk_modules.nf'
+include { ASSEMBLY_CHRM }               from '../modules/waterisk_modules.nf'
+include { BUSCO }                       from '../modules/waterisk_modules.nf'
+include { CHANGE_PLASMID_NAME }         from '../modules/waterisk_modules.nf'
+include { MERGE_PLASMID }               from '../modules/waterisk_modules.nf'
+include { MOB_TYPER }                   from '../modules/waterisk_modules.nf'
+include { MERGE_TYPE }                  from '../modules/waterisk_modules.nf'
+include { CREATE_TAXA }                 from '../modules/waterisk_modules.nf'
+include { MERGE_TAXA }                  from '../modules/waterisk_modules.nf'
+include { MOB_CLUSTER }                 from '../modules/waterisk_modules.nf'
+include { INTEGRON_FINDER_CHROMOSOME}   from '../modules/waterisk_modules.nf'
+include { INTEGRON_FINDER_PLASMID }     from '../modules/waterisk_modules.nf'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -102,7 +105,6 @@ workflow WATERISK {
 
     //download database
     DOWNLOAD_DATABASE().view()
-    TEST_PROCESS().view()
 
     /* if (params.raw == true){
         IDENTIFIED_RAW_SAMPLES(file(params.long_reads_dir), params.long_reads_dir)
@@ -167,6 +169,10 @@ workflow WATERISK {
 
     IDENTIFY_AMR_PLASMID( plasmid_amr_ch )
     IDENTIFY_AMR_CHRM( chrm_amr_ch)
+
+    //Integron_finder
+    INTEGRON_FINDER_CHROMOSOME( chrm_amr_ch )
+    INTEGRON_FINDER_PLASMID( plasmid_amr_ch )
 
     //BUSCO
     BUSCO( chrm_amr_ch)

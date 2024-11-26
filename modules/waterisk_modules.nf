@@ -492,3 +492,39 @@ process MOB_CLUSTER {
     mv output/clusters.txt clusters.txt
     """
 }
+
+process INTEGRON_FINDER_PLASMID {
+
+    publishDir "${params.output_dir}intergron_finder/"
+
+    input:
+    tuple val(barID) ,path(plasmid_fasta)
+
+    output:
+    tuple val(barID) ,path("integron_finder.txt")
+
+    script:
+    file_name = plasmid_fasta.getSimpleName()
+    """
+    integron_finder --local-max ${plasmid_fasta}
+    mv Results_Integron_Finder_${file_name}/${file_name}.integrons ${barID}_plasmid_integron.txt
+    """
+}
+
+process INTEGRON_FINDER_CHROMOSOME {
+
+    publishDir "${params.output_dir}intergron_finder/"
+
+    input:
+    tuple val(barID) ,path(chromosome_fasta)
+
+    output: 
+    tuple val(barID) ,path("integron_finder.txt") 
+
+    script:
+    file_name = chromosome_fasta.getSimpleName()
+    """
+    integron_finder --local-max ${chromosome_fasta}
+    mv Results_Integron_Finder_${file_name}/${file_name}.integrons ${barID}_chromosome_integron.txt
+    """
+}
