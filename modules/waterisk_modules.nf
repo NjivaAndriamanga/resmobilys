@@ -501,7 +501,7 @@ process INTEGRON_FINDER_PLASMID {
     tuple val(barID) ,path(plasmid_fasta)
 
     output:
-    tuple val(barID) ,path("integron_finder.txt")
+    tuple val(barID) ,path("${barID}_plasmid_integron.txt")
 
     script:
     file_name = plasmid_fasta.getSimpleName()
@@ -519,12 +519,46 @@ process INTEGRON_FINDER_CHROMOSOME {
     tuple val(barID) ,path(chromosome_fasta)
 
     output: 
-    tuple val(barID) ,path("integron_finder.txt") 
+    tuple val(barID) ,path("${barID}_chromosome_integron.txt") 
 
     script:
     file_name = chromosome_fasta.getSimpleName()
     """
     integron_finder --local-max ${chromosome_fasta}
     mv Results_Integron_Finder_${file_name}/${file_name}.integrons ${barID}_chromosome_integron.txt
+    """
+}
+
+process INTEGRON_FORMAT {
+    publishDir "${params.output_dir}intergron_finder/"
+
+    input:
+    tuple val(barID) ,path(integron)
+
+    output:
+    tuple val(barID) ,path("${file_name}_summary.txt")
+
+    script:
+    file_name = integron.getSimpleName()
+    """
+    awk '
+    BEGIN { OFS="\t"; print "Integron_ID", "Replicon_ID" , "Start_Position", "End_Position", "Type" }
+    \$1 ~ /^integron_/ && \$11 ~ /(complete|CALIN)/ {
+        if (!seen[\$1]++) {
+            min_pos[\$1] = \$4
+            max_pos[\$1] = \$5
+            type[\$1] = \$11
+            replicon[\$1] = \$2
+        } else {
+            if (\$4 < min_pos[\$1]) min_pos[\$1] = \$4
+            if (\$5 > max_pos[\$1]) max_pos[\$1] = \$5
+        }
+    }
+    END {
+        for (id in seen) {
+            print id, replicon[id], min_pos[id], max_pos[id], type[id]
+        }
+    }' ${integron} > ${file_name}_summary.txt
+
     """
 }
