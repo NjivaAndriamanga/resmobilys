@@ -16,8 +16,10 @@ process TEST_PROCESS {
 /*
 This process will download the plasme database from github and unzip it in the same directory as the main script (main.nf)
 Run PLasme.py script to unzip and install the dabatase (avoid conflict when accessing the database during plasme process)
+Alternative: download the database from plasme and unzip it waterisk directory with the name DB
+
 But if the directory DB already exist, it will not be re-downloaded
-The database can be download manually 
+
 */
 process DOWNLOAD_DATABASE {
     label 'plasme'
@@ -35,13 +37,30 @@ process DOWNLOAD_DATABASE {
             echo "Download plasme db in tar format"
             tar -xvf DB.tar.gz
         else
-            output="DB already exist"
+            output=" Plamse DB already exist"
         fi
         """
     }
     else if (params.plasme_download_db == false) {
         """
         output="DB are already provided"
+        """
+    }
+    if (params.kraken_download_db == true) {
+        log.info "Downloading kraken database..."
+        """
+        cd ${projectDir}
+        if [ ! -d k2_standard_08gb_20240904 ]; then 
+            wget https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20240904.tar.gz
+            tar -xvf k2_standard_08gb_20240904.tar.gz
+        else
+            output=" Kraken DB already exist"
+        fi
+        """
+    }
+    else if (params.kraken_download_db == false) {
+        """
+        output="Kraken DB are already provided"
         """
     }
 }
@@ -449,28 +468,12 @@ process MERGE_TAXA {
     path(all_plasmid_tax)
 
     output:
-    path("plasmidsAll_tax.txt")
+    path("plasmidsAll_sample.txt")
 
     script:
     """
-    echo "sample_id\ttaxonomy" > plasmidsAll_tax.txt
-    cat ${all_plasmid_tax} >> plasmidsAll_tax.txt
-    """
-}
-
-process MERGE_PLASMID {
-    maxForks 1
-    publishDir "${params.output_dir}plasmid_annotation/"
-
-    input:
-    path(all_plasmid_fasta)
-
-    output:
-    path("mergeAll_plasmid.fasta")
-
-    script:
-    """
-    cat ${all_plasmid_fasta} > "mergeAll_plasmid.fasta"
+    echo "sample_id\ttaxonomy" > plasmidsAll_sample.txt
+    cat ${all_plasmid_tax} >> plasmidsAll_sample.txt
     """
 }
 
@@ -560,5 +563,39 @@ process INTEGRON_FORMAT {
         }
     }' ${integron} > ${file_name}_summary.txt
 
+    """
+}
+
+process KRAKEN {
+    label 'process_high'
+
+    input:
+    tuple val(barID) ,path(chromosome_fasta)
+
+    output:
+    tuple val(barID) ,path("${barID}_kraken.txt")
+
+    script:
+    """
+    kraken2 --db ${params.kraken_db} --threads ${task.cpus} --input ${chromosome_fasta} --use-names --report kraken.txt
+    echo "${barID} \n" >> ${barID}_kraken.txt
+    cat kraken.txt >> ${barID}_kraken.txt
+    echo "\n" >> ${barID}_kraken.txt
+
+    """
+}
+
+process MLST {
+    label 'process_high'
+
+    input:
+    tuple val(barID) ,path(chromosome_fasta)
+    
+    output:
+    tuple val(barID) ,path("${barID}_mlst.txt")
+
+    script:
+    """
+    mlst ${chromosome_fasta} > ${barID}_mlst.txt
     """
 }

@@ -122,6 +122,22 @@
           "default": "${projectDir}/DB",
           "description": "plasme database directory",
           "format": "directory-path"
+        },
+        "kraken_db": {
+          "type": "string",
+          "default": "${projectDir}/kraken_db",
+          "description": "kraken database directory",
+          "format": "directory-path"
+        },
+        "kraken_taxonomy": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable kraken taxonomy"
+        },
+        "mlst": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable MLST"
         }
       }
     },

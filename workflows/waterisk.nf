@@ -86,7 +86,6 @@ include { ASSEMBLY_PLASMID }            from '../modules/waterisk_modules.nf'
 include { ASSEMBLY_CHRM }               from '../modules/waterisk_modules.nf'
 include { BUSCO }                       from '../modules/waterisk_modules.nf'
 include { CHANGE_PLASMID_NAME }         from '../modules/waterisk_modules.nf'
-include { MERGE_PLASMID }               from '../modules/waterisk_modules.nf'
 include { MOB_TYPER }                   from '../modules/waterisk_modules.nf'
 include { MERGE_TYPE }                  from '../modules/waterisk_modules.nf'
 include { CREATE_TAXA }                 from '../modules/waterisk_modules.nf'
@@ -95,6 +94,8 @@ include { MOB_CLUSTER }                 from '../modules/waterisk_modules.nf'
 include { INTEGRON_FINDER_CHROMOSOME}   from '../modules/waterisk_modules.nf'
 include { INTEGRON_FINDER_PLASMID }     from '../modules/waterisk_modules.nf'
 include { INTEGRON_FORMAT }             from '../modules/waterisk_modules.nf'
+include { KRAKEN }                      from '../modules/waterisk_modules.nf'
+include { MLST }                        from '../modules/waterisk_modules.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -180,12 +181,10 @@ workflow WATERISK {
     BUSCO( chrm_amr_ch)
 
     // Plasmid typing and clustering
-    //CREATE_MERGE_FILE()
     CHANGE_PLASMID_NAME( plasmid_amr_ch)
     MOB_TYPER(CHANGE_PLASMID_NAME.out)
 
-    plasmid_to_merge = CHANGE_PLASMID_NAME.out.map{barID, plasmid -> plasmid }.collectFile()
-    MERGE_PLASMID(plasmid_to_merge)
+    plasmid_merge = CHANGE_PLASMID_NAME.out.map{barID, plasmid -> plasmid }.collectFile(name:"plasmid_merge.fasta", storeDir:"${params.output_dir}plasmid_annotation/")
 
     type_to_merge = MOB_TYPER.out.map{barID, type -> type }.collectFile()
     MERGE_TYPE(type_to_merge)
@@ -194,7 +193,20 @@ workflow WATERISK {
     taxa_to_merge = CREATE_TAXA.out.collectFile()
     MERGE_TAXA(taxa_to_merge)
 
-    MOB_CLUSTER(MERGE_TAXA.out, MERGE_PLASMID.out, MERGE_TYPE.out)
+    MOB_CLUSTER(MERGE_TAXA.out, plasmid_merge, MERGE_TYPE.out)
+
+    //KRAKEN
+    if (params.kraken_db != "null" && params.kraken_taxonomy == true) {
+        KRAKEN(chrm_amr_ch)
+        kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
+    }
+
+    //mlst
+    if (params.mlst == true) {
+        MLST(chrm_amr_ch)
+        mlst_ch = MLST.out.map{ barID, mlst -> mlst}.collectFile(name:"mlst_summary.txt", storeDir:"${params.output_dir}mlst/")
+    }
+    
 }
 
 /*
