@@ -125,7 +125,7 @@
         },
         "kraken_db": {
           "type": "string",
-          "default": "${projectDir}/kraken_db",
+          "default": null,
           "description": "kraken database directory",
           "format": "directory-path"
         },
@@ -138,6 +138,12 @@
           "type": "boolean",
           "default": false,
           "description": "Enable MLST"
+        },
+        "vf_db": {
+          "type": "string",
+          "default": "${projectDir}/DB",
+          "description": "VF database directory",
+          "format": "directory-path"
         }
       }
     },

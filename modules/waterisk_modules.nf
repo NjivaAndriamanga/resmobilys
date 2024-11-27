@@ -18,6 +18,7 @@ This process will download the plasme database from github and unzip it in the s
 Run PLasme.py script to unzip and install the dabatase (avoid conflict when accessing the database during plasme process)
 Alternative: download the database from plasme and unzip it waterisk directory with the name DB
 
+Database for kraken and for virulence factor detection
 But if the directory DB already exist, it will not be re-downloaded
 
 */
@@ -28,7 +29,7 @@ process DOWNLOAD_DATABASE {
     env output
 
     script:
-    
+
     if (params.plasme_download_db == true) {
         log.info "Downloading plasme database..."
         """
@@ -46,7 +47,8 @@ process DOWNLOAD_DATABASE {
         output="DB are already provided"
         """
     }
-    if (params.kraken_download_db == true) {
+
+    if (params.kraken_db == "${projectDir}/k2_standard_08gb_20240904" && params.kraken_taxonomy == true) {
         log.info "Downloading kraken database..."
         """
         cd ${projectDir}
@@ -58,11 +60,26 @@ process DOWNLOAD_DATABASE {
         fi
         """
     }
-    else if (params.kraken_download_db == false) {
+    else if (params.kraken_taxonomy == true && params.kraken_db != "${projectDir}/k2_standard_08gb_20240904" && params.kraken_db != null) {
         """
         output="Kraken DB are already provided"
         """
     }
+
+    log.info "Downloading VF database..."
+    """
+    if [ ! -d VF_db ]; then
+        cd ${projectDir}
+        mkdir VF_db
+        wget https://www.mgc.ac.cn/VFs/Down/VFDB_setB_nt.fas.gz
+        gzip -d VFDB_setB_nt.fas.gz
+        mv VFDB_setB_nt.fas VF_db/
+        cd VF_db
+        makeblastdb -in VFDB_setB_nt.fas -dbtype nucl
+    else
+        output="VF DB already exist"
+    fi
+    """
 }
 
 
