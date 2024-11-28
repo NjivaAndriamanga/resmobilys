@@ -22,7 +22,7 @@ Database for kraken and for virulence factor detection
 But if the directory DB already exist, it will not be re-downloaded
 
 */
-process DOWNLOAD_DATABASE {
+process DOWNLOAD_PLASME_DATABASE {
     label 'plasme'
 
     output:
@@ -37,6 +37,7 @@ process DOWNLOAD_DATABASE {
         if [ ! -d DB ]; then 
             echo "Download plasme db in tar format"
             tar -xvf DB.tar.gz
+            output="PLASME DB OK"
         else
             output=" Plamse DB already exist"
         fi
@@ -47,16 +48,24 @@ process DOWNLOAD_DATABASE {
         output="DB are already provided"
         """
     }
+}
 
-    if (params.kraken_db == "${projectDir}/k2_standard_08gb_20240904" && params.kraken_taxonomy == true) {
+process DOWNLOAD_KRAKEN_DATABASE {
+   output:
+   env output
+
+   script:
+   if (params.kraken_db.equals("${projectDir}/k2_standard_08gb_20240904") && params.kraken_taxonomy == true) {
         log.info "Downloading kraken database..."
         """
         cd ${projectDir}
-        if [ ! -d k2_standard_08gb_20240904 ]; then 
+        if [ ! -d k2_standard_08gb_20240904 ]; then
+            mkdir k2_standard_08gb_20240904
             wget https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20240904.tar.gz
-            tar -xvf k2_standard_08gb_20240904.tar.gz
+            tar -xvf k2_standard_08gb_20240904.tar.gz -C k2_standard_08gb_20240904/
+            output="Kraken DB OK"
         else
-            output=" Kraken DB already exist"
+            output=" Kraken DB already exist  dd"
         fi
         """
     }
@@ -65,17 +74,24 @@ process DOWNLOAD_DATABASE {
         output="Kraken DB are already provided"
         """
     }
+}
 
+process DOWNLOAD_VF_DATABASE {
+    output:
+    env output
+
+    script:
     log.info "Downloading VF database..."
     """
+    cd ${projectDir}
     if [ ! -d VF_db ]; then
-        cd ${projectDir}
         mkdir VF_db
         wget https://www.mgc.ac.cn/VFs/Down/VFDB_setB_nt.fas.gz
         gzip -d VFDB_setB_nt.fas.gz
         mv VFDB_setB_nt.fas VF_db/
         cd VF_db
         makeblastdb -in VFDB_setB_nt.fas -dbtype nucl
+        output="VF DB OK"
     else
         output="VF DB already exist"
     fi
@@ -588,6 +604,7 @@ process KRAKEN {
 
     input:
     tuple val(barID) ,path(chromosome_fasta)
+    val x
 
     output:
     tuple val(barID) ,path("${barID}_kraken.txt")

@@ -70,7 +70,9 @@ def write_value = { value -> "test.txt" >> value + "\n" }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 include { TEST_PROCESS }                from '../modules/waterisk_modules.nf'
-include { DOWNLOAD_DATABASE }           from '../modules/waterisk_modules.nf'
+include { DOWNLOAD_PLASME_DATABASE }    from '../modules/waterisk_modules.nf'
+include { DOWNLOAD_KRAKEN_DATABASE }    from '../modules/waterisk_modules.nf'
+include { DOWNLOAD_VF_DATABASE }        from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_RAW_SAMPLES }      from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_SAMPLES}           from '../modules/waterisk_modules.nf'
 include { MERGE_SEPARATE_FASTQ }        from '../modules/waterisk_modules.nf'
@@ -106,7 +108,9 @@ include { MLST }                        from '../modules/waterisk_modules.nf'
 workflow WATERISK {
 
     //download database
-    DOWNLOAD_DATABASE().view()
+    DOWNLOAD_PLASME_DATABASE().view()
+    DOWNLOAD_KRAKEN_DATABASE().view()
+    DOWNLOAD_VF_DATABASE().view()	
 
     /* if (params.raw == true){
         IDENTIFIED_RAW_SAMPLES(file(params.long_reads_dir), params.long_reads_dir)
@@ -153,12 +157,12 @@ workflow WATERISK {
     putitative_plasmid_ch = complete_non_circular_ch.map{ barID, fastq, contig_stats, plassembler, chromosome, plasmids -> 
                                                                                                                 [ barID, contig_stats, chromosome,plasmids]}
     FILTER_CIRCULAR_PLASMID(putitative_plasmid_ch)
-    PLASME_COMPLETE(FILTER_CIRCULAR_PLASMID.out, DOWNLOAD_DATABASE.out)
+    PLASME_COMPLETE(FILTER_CIRCULAR_PLASMID.out, DOWNLOAD_PLASME_DATABASE.out)
     complete_chrm_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, chromosome]}
     complete_plasmid_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, plasmid]}
     
     //Incomplete assembly, align reads and filter plasmid reads for incomplete assembly
-    PLASME_INCOMPLETE(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_DATABASE.out)
+    PLASME_INCOMPLETE(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLASME_DATABASE.out)
     ALIGN_READS_PLASMID(PLASME_INCOMPLETE.out.inferred_plasmid)
     ASSEMBLY_PLASMID(ALIGN_READS_PLASMID.out.plasmid_reads)
     ASSEMBLY_CHRM(ALIGN_READS_PLASMID.out.chrm_reads)
@@ -197,7 +201,7 @@ workflow WATERISK {
 
     //KRAKEN
     if (params.kraken_db != "null" && params.kraken_taxonomy == true) {
-        KRAKEN(chrm_amr_ch)
+        KRAKEN(chrm_amr_ch,DOWNLOAD_KRAKEN_DATABASE.out)
         kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
     }
 
