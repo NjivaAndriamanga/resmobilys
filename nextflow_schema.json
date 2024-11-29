@@ -143,7 +143,7 @@
           "type": "string",
           "default": "${projectDir}/DB",
           "description": "VF database directory",
-          "format": "directory-path"
+          "format": "file-path"
         }
       }
     },

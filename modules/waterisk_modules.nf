@@ -633,3 +633,24 @@ process MLST {
     mlst ${chromosome_fasta} > ${barID}_mlst.txt
     """
 }
+
+/*
+Blast for virulence factors and keeps track of unique values (gene) in column 2
+*/
+process VF_BLAST {
+    publishDir "${params.output_dir}vf_blast/"
+    label 'process_high'
+
+    input:
+    tuple val(barID) ,path(fasta)
+
+    output:
+    tuple val(barID) ,path("${sample}_vf_blast.txt")
+
+    script:
+    sample = fasta.getSimpleName()
+    """
+    blastn -db ${params.vf_db} -query ${fasta} -out vf_blast.txt -outfmt '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' -num_threads ${task.cpus}
+    awk '!seen[\$2]++ {print \$0}' vf_blast.txt > ${sample}_vf_blast.txt
+    """
+}

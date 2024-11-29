@@ -98,6 +98,7 @@ include { INTEGRON_FINDER_PLASMID }     from '../modules/waterisk_modules.nf'
 include { INTEGRON_FORMAT }             from '../modules/waterisk_modules.nf'
 include { KRAKEN }                      from '../modules/waterisk_modules.nf'
 include { MLST }                        from '../modules/waterisk_modules.nf'
+include { VF_BLAST }                    from '../modules/waterisk_modules.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -211,6 +212,9 @@ workflow WATERISK {
         mlst_ch = MLST.out.map{ barID, mlst -> mlst}.collectFile(name:"mlst_summary.txt", storeDir:"${params.output_dir}mlst/")
     }
     
+    //Virulence factor
+    fasta_ch = chrm_amr_ch.concat(plasmid_amr_ch)
+    VF_BLAST(fasta_ch)
 }
 
 /*
