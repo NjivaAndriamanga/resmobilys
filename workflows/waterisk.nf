@@ -73,6 +73,7 @@ include { TEST_PROCESS }                from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_PLASME_DATABASE }    from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_KRAKEN_DATABASE }    from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_VF_DATABASE }        from '../modules/waterisk_modules.nf'
+include { DOWNLOAD_DBSCAN_DATABASE }    from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_RAW_SAMPLES }      from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_SAMPLES}           from '../modules/waterisk_modules.nf'
 include { MERGE_SEPARATE_FASTQ }        from '../modules/waterisk_modules.nf'
@@ -99,6 +100,7 @@ include { INTEGRON_FORMAT }             from '../modules/waterisk_modules.nf'
 include { KRAKEN }                      from '../modules/waterisk_modules.nf'
 include { MLST }                        from '../modules/waterisk_modules.nf'
 include { VF_BLAST }                    from '../modules/waterisk_modules.nf'
+include { DBSCAN }                      from '../modules/waterisk_modules.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

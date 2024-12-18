@@ -65,7 +65,7 @@ process DOWNLOAD_KRAKEN_DATABASE {
             tar -xvf k2_standard_08gb_20240904.tar.gz -C k2_standard_08gb_20240904/
             output="Kraken DB OK"
         else
-            output=" Kraken DB already exist  dd"
+            output=" Kraken DB already exist "
         fi
         """
     }
@@ -95,6 +95,41 @@ process DOWNLOAD_VF_DATABASE {
     else
         output="VF DB already exist"
     fi
+    """
+}
+
+process DOWNLOAD_DBSCAN_DATABASE {
+    output:
+    env output
+
+    script:
+    log.info "Downloading DBSCAN database..."
+    """
+    cd ${projectDir}/bin/DBSCAN-SWA
+    if [ ! -d db ]; then
+        wget https://zenodo.org/records/10404224/files/db.tar.gz
+        tar -xvf db.tar.gz
+    else
+        output="db for DBSCAN already exist"
+    fi
+    """
+}
+
+process DBSCAN {
+    input:
+    tuple val(barID) ,path(chromosome_fasta)
+    val x
+
+    output:
+    tuple val(barID) ,path("${barID}_DBSCAN.txt")
+
+    script:
+    """
+    export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/software/blast+/bin:$PATH
+    export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/bin
+    export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/software/diamond
+    python3 ${projectDir}/bin/DBSCAN-SWA/DBSCAN.py --input ${chromosome_fasta} --output dbscan_output
+    mv dbscan_output/bac_DBSCAN-SWA_prophage_summary.txt ${barID}_DBSCAN.txt
     """
 }
 
@@ -185,7 +220,6 @@ process CLEAN_LONG_READS {
 Assembling genome and plasmid with hybracter
 Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_summary.tsv)
 For incomplete assembly, contigs are written in sample_final.fasta
-TO DO: Add c_size
 */
 process ASSEMBLE_GENOME {  
     label 'process_high'
