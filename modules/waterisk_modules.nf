@@ -125,10 +125,10 @@ process DBSCAN {
 
     script:
     """
-    export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/software/blast+/bin:$PATH
+    export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/software/blast+/bin
     export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/bin
     export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/software/diamond
-    python3 ${projectDir}/bin/DBSCAN-SWA/DBSCAN.py --input ${chromosome_fasta} --output dbscan_output
+    ${projectDir}/DBSCAN-SWA/bin/dbscan-swa.py --input ${chromosome_fasta} --output dbscan_output
     mv dbscan_output/bac_DBSCAN-SWA_prophage_summary.txt ${barID}_DBSCAN.txt
     """
 }

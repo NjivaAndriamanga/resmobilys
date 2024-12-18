@@ -114,6 +114,7 @@ workflow WATERISK {
     DOWNLOAD_PLASME_DATABASE().view()
     DOWNLOAD_KRAKEN_DATABASE().view()
     DOWNLOAD_VF_DATABASE().view()	
+    DOWNLOAD_DBSCAN_DATABASE().view()
 
     /* if (params.raw == true){
         IDENTIFIED_RAW_SAMPLES(file(params.long_reads_dir), params.long_reads_dir)
@@ -185,7 +186,10 @@ workflow WATERISK {
     INTEGRON_FORMAT( INTEGRON_FINDER_CHROMOSOME.out.concat(INTEGRON_FINDER_PLASMID.out))
 
     //BUSCO
-    BUSCO( chrm_amr_ch)
+    BUSCO( chrm_amr_ch )
+
+    //DBSCAN
+    DBSCAN( chrm_amr_ch , DOWNLOAD_DBSCAN_DATABASE.out )
 
     // Plasmid typing and clustering
     CHANGE_PLASMID_NAME( plasmid_amr_ch)
