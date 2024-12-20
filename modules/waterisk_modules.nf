@@ -105,7 +105,7 @@ process DOWNLOAD_DBSCAN_DATABASE {
     script:
     log.info "Downloading DBSCAN database..."
     """
-    cd ${projectDir}/bin/DBSCAN-SWA
+    cd ${projectDir}/DBSCAN-SWA
     if [ ! -d db ]; then
         wget https://zenodo.org/records/10404224/files/db.tar.gz
         tar -xvf db.tar.gz
@@ -116,6 +116,8 @@ process DOWNLOAD_DBSCAN_DATABASE {
 }
 
 process DBSCAN {
+    publishDir "${params.output_dir}dbscan/"
+
     input:
     tuple val(barID) ,path(chromosome_fasta)
     val x
@@ -125,10 +127,8 @@ process DBSCAN {
 
     script:
     """
-    export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/software/blast+/bin
-    export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/bin
-    export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/software/diamond
-    ${projectDir}/DBSCAN-SWA/bin/dbscan-swa.py --input ${chromosome_fasta} --output dbscan_output
+    prokka --version
+    dbscan-swa.py --input ${chromosome_fasta} --output dbscan_output
     mv dbscan_output/bac_DBSCAN-SWA_prophage_summary.txt ${barID}_DBSCAN.txt
     """
 }
