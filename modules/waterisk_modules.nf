@@ -127,8 +127,7 @@ process DBSCAN {
 
     script:
     """
-    prokka --version
-    dbscan-swa.py --input ${chromosome_fasta} --output dbscan_output
+    python ${projectDir}/DBSCAN-SWA/bin/DBSCAN-SWA.py --threads ${task.cpus} --input ${chromosome_fasta} --output dbscan_output
     mv dbscan_output/bac_DBSCAN-SWA_prophage_summary.txt ${barID}_DBSCAN.txt
     """
 }
