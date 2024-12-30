@@ -98,20 +98,36 @@ process DOWNLOAD_VF_DATABASE {
     """
 }
 
-process DOWNLOAD_DBSCAN_DATABASE {
+process DOWNLOAD_DBSCAN {
     output:
     env output
 
     script:
     log.info "Downloading DBSCAN database..."
     """
+    
+    cd ${projectDir}
+    if [ ! -d DBSCAN-SWA ]; then
+        git clone https://github.com/HIT-ImmunologyLab/DBSCAN-SWA
+        chmod u+x -R DBSCAN-SWA/bin
+        chmod u+x -R DBSCAN-SWA/software
+        export PATH=$PATH:${projectDir}/DBSCAN-SWA/software/blast+/bin
+        export PATH=$PATH:${projectDir}/DBSCAN-SWA/bin
+        export PATH=$PATH:${projectDir}/DBSCAN-SWA/software/diamond
+        output="Downloading DBSCAN from github OK. "
+    else
+        output="DBSCAN tools OK."
+    fi
+
     cd ${projectDir}/DBSCAN-SWA
     if [ ! -d db ]; then
         wget https://zenodo.org/records/10404224/files/db.tar.gz
         tar -xvf db.tar.gz
+        output+="db for DBSCAN OK. "
     else
-        output="db for DBSCAN already exist"
+        output+="db for DBSCAN already exist. "
     fi
+    
     """
 }
 
@@ -127,7 +143,7 @@ process DBSCAN {
 
     script:
     """
-    python ${projectDir}/DBSCAN-SWA/bin/DBSCAN-SWA.py --threads ${task.cpus} --input ${chromosome_fasta} --output dbscan_output
+    python ${projectDir}/DBSCAN-SWA/bin/dbscan-swa.py --thread_num ${task.cpus} --input ${chromosome_fasta} --output dbscan_output
     mv dbscan_output/bac_DBSCAN-SWA_prophage_summary.txt ${barID}_DBSCAN.txt
     """
 }

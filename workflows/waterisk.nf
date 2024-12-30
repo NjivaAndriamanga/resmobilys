@@ -73,7 +73,7 @@ include { TEST_PROCESS }                from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_PLASME_DATABASE }    from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_KRAKEN_DATABASE }    from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_VF_DATABASE }        from '../modules/waterisk_modules.nf'
-include { DOWNLOAD_DBSCAN_DATABASE }    from '../modules/waterisk_modules.nf'
+include { DOWNLOAD_DBSCAN }             from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_RAW_SAMPLES }      from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_SAMPLES}           from '../modules/waterisk_modules.nf'
 include { MERGE_SEPARATE_FASTQ }        from '../modules/waterisk_modules.nf'
@@ -110,11 +110,11 @@ include { DBSCAN }                      from '../modules/waterisk_modules.nf'
 
 workflow WATERISK {
 
-    //download database
+    //download tools and databases
     DOWNLOAD_PLASME_DATABASE().view()
     DOWNLOAD_KRAKEN_DATABASE().view()
     DOWNLOAD_VF_DATABASE().view()	
-    DOWNLOAD_DBSCAN_DATABASE().view()
+    DOWNLOAD_DBSCAN().view()
 
     /* if (params.raw == true){
         IDENTIFIED_RAW_SAMPLES(file(params.long_reads_dir), params.long_reads_dir)
@@ -189,7 +189,7 @@ workflow WATERISK {
     BUSCO( chrm_amr_ch )
 
     //DBSCAN
-    DBSCAN( chrm_amr_ch , DOWNLOAD_DBSCAN_DATABASE.out )
+    DBSCAN( chrm_amr_ch , DOWNLOAD_DBSCAN.out )
 
     // Plasmid typing and clustering
     CHANGE_PLASMID_NAME( plasmid_amr_ch)
