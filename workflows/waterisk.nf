@@ -101,6 +101,8 @@ include { KRAKEN }                      from '../modules/waterisk_modules.nf'
 include { MLST }                        from '../modules/waterisk_modules.nf'
 include { VF_BLAST }                    from '../modules/waterisk_modules.nf'
 include { DBSCAN }                      from '../modules/waterisk_modules.nf'
+include { REASONATE_TOOLS_CHROMOSOME }  from '../modules/waterisk_modules.nf'
+include { REASONATE_PIPELINE_CHROMOSOME }     from '../modules/waterisk_modules.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -221,6 +223,11 @@ workflow WATERISK {
     //Virulence factor
     fasta_ch = chrm_amr_ch.concat(plasmid_amr_ch)
     VF_BLAST(fasta_ch)
+
+
+    //TRANSPOSON WITH REASONATE
+    REASONATE_TOOLS_CHROMOSOME(chrm_amr_ch)
+    REASONATE_PIPELINE_CHROMOSOME(REASONATE_TOOLS_CHROMOSOME.out)
 }
 
 /*

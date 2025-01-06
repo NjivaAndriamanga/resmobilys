@@ -703,3 +703,56 @@ process VF_BLAST {
     awk '!seen[\$2]++ {print \$0}' vf_blast.txt > ${sample}_vf_blast.txt
     """
 }
+
+//ReasonaTE annotation without repeatModeler (incompatibility issues)
+process REASONATE_TOOLS_CHROMOSOME {
+    cpus 8
+    memory '10GB'
+    label "reasonate_tools"
+    input:
+    tuple val(barID) ,path(chromosome_fasta)
+
+    output:
+    tuple val(barID) ,path("workspace")
+
+    script:
+    """
+    mkdir workspace
+    reasonaTE -mode createProject -projectFolder workspace -projectName testProject -inputFasta $chromosome_fasta
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool helitronScanner &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool ltrHarvest &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool mitefind &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool mitetracker &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool must &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool sinefind &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool sinescan &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool tirvish &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool transposonPSI &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool NCBICDD1000 &
+    wait
+    reasonaTE -mode parseAnnotations -projectFolder workspace -projectName testProject
+
+    """
+}
+
+//REASONATE PIPELINE may failed if only 1 transposons is present in the pipeline annotations. Solution: use tools annotation
+process REASONATE_PIPELINE_CHROMOSOME {
+    label "reasonate_pipeline"
+    publishDir "${params.output_dir}reasona_pipeline/"
+    input:
+    tuple val(barID) ,path(workspace)
+
+    output:
+    tuple val(barID) ,path("${barID}_transposons.gff3")
+
+    script:
+    """
+    { reasonaTE -mode pipeline -projectFolder $workspace -projectName testProject ;} || true
+    if [ -s $workspace/testProject/finalResults/FinalAnnotations_Transposons.gff3 ];
+    then
+        mv $workspace/testProject/finalResults/FinalAnnotations_Transposons.gff3 ${barID}_transposons.gff3
+    else
+        mv $workspace/testProject/finalResults/ToolAnnotations_Transposons.gff3 ${barID}_transposons.gff3
+    fi
+    """
+}
