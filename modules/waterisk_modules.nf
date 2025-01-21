@@ -650,6 +650,7 @@ process INTEGRON_FORMAT {
 
 process KRAKEN {
     label 'process_high'
+    publishDir "${params.output_dir}kraken/"
 
     input:
     tuple val(barID) ,path(chromosome_fasta)
@@ -670,6 +671,7 @@ process KRAKEN {
 
 process MLST {
     label 'process_high'
+    publishDir "${params.output_dir}mlst/"
 
     input:
     tuple val(barID) ,path(chromosome_fasta)
