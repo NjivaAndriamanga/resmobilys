@@ -29,7 +29,7 @@ Via conda: here
 Manually: here
 
 To install singularity:
-Follow the instructions at the singularity website
+Follow the instructions at the Singularity website
 
 ```bash
 
@@ -46,7 +46,7 @@ nextflow run main.nf --input index_file.csv -profile singularity
 ```
 
 ### **Configuration Options**
-Modify `nextflow.config` to customize execution parameters, including computing resources and software dependencies.
+Modify `personal.config` to customize execution parameters, including computing resources and software dependencies.
 
 ## **Outputs**
 Upon successful execution, ResMobiLys generates:
@@ -55,17 +55,11 @@ Upon successful execution, ResMobiLys generates:
 - Reports on plasmids, integrons, and transposable elements
 - Taxonomic classification of input sequences
 
-## **Contributing**
-We welcome contributions! Feel free to open issues or submit pull requests.
-
-## **License**
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-
 ## **Citation**
 If you use ResMobiLys in your research, please cite it as follows:
 ```
-Author(s), ResMobiLys: A Nextflow Pipeline for Resistome and Mobilome Analysis, Year.
+Publication in process...
 ```
 
 ## **Contact**
-For questions or support, please open an issue or contact the developers at [your.email@example.com](mailto:your.email@example.com).
+If you have any questions or support, please open an issue.
