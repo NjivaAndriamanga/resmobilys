@@ -1,3 +1,4 @@
+# **ResMobiLys: A nextflow pipeline for Resistome and associated Mobilome anaLysis of field and Clinical Eubacteria isolates**
 
 # INTRODUCTION
 Mobile Genetic Elements (MGEs) are DNA segments capable of moving within or between genomes, facilitating the transfer of genetic material across
