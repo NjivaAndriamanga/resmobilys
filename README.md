@@ -1,17 +1,23 @@
-Welcome to the waterisk project.
 
-INTRODUCTION
+#INTRODUCTION
+Mobile Genetic Elements (MGEs) are DNA segments capable of moving within or between genomes, facilitating the transfer of genetic material across
+microbial populations. MGEs play a key role in microbial ecology by spreading genes linked to antimicrobial resistance (AMR), which poses significant
+public health challenges. Advances in high-throughput sequencing technologies allow large-scale studies of diverse bacterial genomes from various origins, generating vast
+data volumes that require efficient and integrated analysis.
 
-SET UP
+#PURPOSE
+ResMobiLys, a Nextflow pipeline designed for comprehensive mobilome and resistome analysis. ResMobiLys provides an end-to-end
+solution, from de novo assembly to precise identification of MGEs like plasmids, integrons, prophages, and transposable elements. It also detects Antibiotic Resistance
+Genes (ARGs) and virulence factors, whether associated with MGEs or not, enabling streamlined and detailed genomic feature analysis.
+
+#Installation
 Git : installation and git clone
 Nextflow: install nextflow
-Conda: install conda
-Install hybracter with conda, activate the environment then hybracter install
+Singularity: install singularity
 
-Container manager (apptainer or docker)
+#USAGE
+index_file
 
-USAGE
-Config file:
 
 test with conda : nextflow run waterisk -profile conda
 
