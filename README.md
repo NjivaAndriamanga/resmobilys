@@ -13,7 +13,7 @@ ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resist
 - **Workflow Overview:**
   - De novo assembly with Hybacter
   - Taxonomy assignment with Kraken2
-  - Assembly assessment
+  - Assembly assessment with busco
   - Identification of antimicrobial resistance genes (ARGs), biocide and heavy metal resistance genes, and virulence factors
   - Identification of MGEs (plasmids, transposable elements, integrons, prophages)
 - **Output:**
@@ -24,12 +24,14 @@ ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resist
 ## **Installation**
 Ensure the following dependencies are installed before running ResMobiLys:
 
-```bash
-# Install Nextflow
-curl -s https://get.nextflow.io | bash
+To install nextflow: 
+Via conda: here
+Manually: here
 
-# Install Singularity (if not already installed)
-sudo apt-get install -y singularity-container  # Debian/Ubuntu
+To install singularity:
+Follow the instructions at the singularity website
+
+```bash
 
 # Clone the project repository
 git clone https://github.com/yourusername/ResMobiLys.git
