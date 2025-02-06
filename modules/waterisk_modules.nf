@@ -614,6 +614,9 @@ process INTEGRON_FINDER_CHROMOSOME {
     """
 }
 
+/*
+Format integron_finder output to GFF3. 
+*/
 process INTEGRON_FORMAT {
     publishDir "${params.output_dir}intergron_finder/"
 
@@ -627,7 +630,10 @@ process INTEGRON_FORMAT {
     file_name = integron.getSimpleName()
     """
     awk '
-    BEGIN { OFS="\t"; print "Integron_ID", "Replicon_ID" , "Start_Position", "End_Position", "Type" }
+    BEGIN { 
+        OFS="\t"; 
+        print "##gff-version 3";  # Print GFF version header first
+        }
     \$1 ~ /^integron_/ && \$11 ~ /(complete|CALIN)/ {
         if (!seen[\$1]++) {
             min_pos[\$1] = \$4
@@ -641,7 +647,7 @@ process INTEGRON_FORMAT {
     }
     END {
         for (id in seen) {
-            print id, replicon[id], min_pos[id], max_pos[id], type[id]
+            print replicon[id], "integron_finder", id,  min_pos[id], max_pos[id], ".","+", "0",  type[id]
         }
     }' ${integron} > ${file_name}_summary.txt
 
