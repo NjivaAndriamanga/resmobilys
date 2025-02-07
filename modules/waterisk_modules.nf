@@ -168,7 +168,7 @@ process DBSCAN_PLASMID {
     touch ${barID}_plasmid_DBSCAN.txt
     if [[ -s ${plasmid_fasta} ]]; then
         python ${projectDir}/DBSCAN-SWA/bin/dbscan-swa.py --thread_num ${task.cpus} --input ${plasmid_fasta} --output dbscan_output
-        if [[ $? -ne 0 ]]; then
+        if [[ \$? -ne 0 ]]; then
             echo "DBSCAN script failed because 0 prophages were found, but continuing..."
         else
             mv dbscan_output/bac_DBSCAN-SWA_prophage_summary.txt ${barID}_plasmid_DBSCAN.txt
