@@ -133,6 +133,7 @@ process DOWNLOAD_DBSCAN {
 
 process DBSCAN_CHROMOSOME {
     publishDir "${params.output_dir}dbscan/"
+    label "process_high"
 
     input:
     tuple val(barID) ,path(chromosome_fasta)
@@ -150,6 +151,7 @@ process DBSCAN_CHROMOSOME {
 
 process DBSCAN_PLASMID {
     publishDir "${params.output_dir}dbscan/"
+    label "process_high"
 
     input:
     tuple val(barID) ,path(plasmid_fasta)
@@ -160,8 +162,12 @@ process DBSCAN_PLASMID {
 
     script:
     """
-    python ${projectDir}/DBSCAN-SWA/bin/dbscan-swa.py --thread_num ${task.cpus} --input ${plasmid_fasta} --output dbscan_output
-    mv dbscan_output/bac_DBSCAN-SWA_prophage_summary.txt ${barID}_plasmid_DBSCAN.txt
+    if [[ -s ${plasmid_fasta} ]]; then
+        python ${projectDir}/DBSCAN-SWA/bin/dbscan-swa.py --thread_num ${task.cpus} --input ${plasmid_fasta} --output dbscan_output
+        mv dbscan_output/bac_DBSCAN-SWA_prophage_summary.txt ${barID}_plasmid_DBSCAN.txt
+    else
+        touch ${barID}_plasmid_DBSCAN.txt
+    fi
     """
 }
 
