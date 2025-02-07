@@ -140,7 +140,7 @@ process DBSCAN_CHROMOSOME {
     val x
 
     output:
-    tuple val(barID) ,path("${barID}_DBSCAN.txt")
+    tuple val(barID) ,path("${barID}_chrm_DBSCAN.txt")
 
     script:
     """
@@ -158,7 +158,7 @@ process DBSCAN_PLASMID {
     val x
 
     output:
-    tuple val(barID) ,path("${barID}_DBSCAN.txt")
+    tuple val(barID) ,path("${barID}_plasmid_DBSCAN.txt")
 
     script:
     """
