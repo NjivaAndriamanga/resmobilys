@@ -104,7 +104,8 @@ include { DBSCAN_CHROMOSOME }           from '../modules/waterisk_modules.nf'
 include { DBSCAN_PLASMID }              from '../modules/waterisk_modules.nf'
 include { REASONATE_TOOLS_CHROMOSOME }  from '../modules/waterisk_modules.nf'
 include { REASONATE_PIPELINE_CHROMOSOME }     from '../modules/waterisk_modules.nf'
-
+include { REASONATE_TOOLS_PLASMID }     from '../modules/waterisk_modules.nf'
+include { REASONATE_PIPELINE_PLASMID }  from '../modules/waterisk_modules.nf'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -230,6 +231,10 @@ workflow WATERISK {
     //TRANSPOSON WITH REASONATE
     REASONATE_TOOLS_CHROMOSOME(chrm_amr_ch)
     REASONATE_PIPELINE_CHROMOSOME(REASONATE_TOOLS_CHROMOSOME.out)
+
+    //TRANSPOSON WITH REASONATE
+    REASONATE_TOOLS_PLASMID(plasmid_amr_ch)
+    REASONATE_PIPELINE_PLASMID(REASONATE_TOOLS_PLASMID.out)
 }
 
 /*
