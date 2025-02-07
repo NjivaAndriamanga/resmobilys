@@ -747,6 +747,8 @@ process REASONATE_TOOLS_CHROMOSOME {
     cpus 8
     memory '10GB'
     label "reasonate_tools"
+    errorStrategy "ignore" //error during parseAnnotation can occur. For now it's better to ignore. (Other solution is to turn off must annotation)
+
     input:
     tuple val(barID) ,path(chromosome_fasta)
 
@@ -781,16 +783,69 @@ process REASONATE_PIPELINE_CHROMOSOME {
     tuple val(barID) ,path(workspace)
 
     output:
-    tuple val(barID) ,path("${barID}_transposons.gff3")
+    tuple val(barID) ,path("${barID}_transposons_chromosome.gff3")
 
     script:
     """
     { reasonaTE -mode pipeline -projectFolder $workspace -projectName testProject ;} || true
     if [ -s $workspace/testProject/finalResults/FinalAnnotations_Transposons.gff3 ];
     then
-        mv $workspace/testProject/finalResults/FinalAnnotations_Transposons.gff3 ${barID}_transposons.gff3
+        mv $workspace/testProject/finalResults/FinalAnnotations_Transposons.gff3 ${barID}_transposons_chromosome.gff3
     else
-        mv $workspace/testProject/finalResults/ToolAnnotations_Transposons.gff3 ${barID}_transposons.gff3
+        mv $workspace/testProject/finalResults/ToolAnnotations_Transposons.gff3 ${barID}_transposons_chromosome.gff3
+    fi
+    """
+}
+
+process REASONATE_TOOLS_PLASMID {
+    cpus 8
+    memory '10GB'
+    label "reasonate_tools"
+    errorStrategy "ignore" //error during parseAnnotation can occur. For now it's better to ignore. (Other solution is to turn off must annotation)
+
+    input:
+    tuple val(barID) ,path(plasmid_fasta)
+
+    output:
+    tuple val(barID) ,path("workspace")
+
+    script:
+    """
+    mkdir workspace
+    reasonaTE -mode createProject -projectFolder workspace -projectName testProject -inputFasta $plasmid_fasta
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool helitronScanner &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool ltrHarvest &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool mitefind &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool mitetracker &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool must &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool sinefind &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool sinescan &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool tirvish & 
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool transposonPSI &
+    reasonaTE -mode annotate -projectFolder workspace -projectName testProject -tool NCBICDD1000 &
+    wait
+    reasonaTE -mode parseAnnotations -projectFolder workspace -projectName testProject
+
+    """
+}
+
+process REASONATE_PIPELINE_PLASMID {
+    label "reasonate_pipeline"
+    publishDir "${params.output_dir}reasona_pipeline/"
+    input:
+    tuple val(barID) ,path(workspace)
+
+    output:
+    tuple val(barID) ,path("${barID}_transposons_plasmid.gff3")
+
+    script:
+    """
+    { reasonaTE -mode pipeline -projectFolder $workspace -projectName testProject ;} || true
+    if [ -s $workspace/testProject/finalResults/FinalAnnotations_Transposons.gff3 ];
+    then
+        mv $workspace/testProject/finalResults/FinalAnnotations_Transposons.gff3 ${barID}_transposons_plasmid.gff3
+    else
+        mv $workspace/testProject/finalResults/ToolAnnotations_Transposons.gff3 ${barID}_transposons_plasmid.gff3
     fi
     """
 }
