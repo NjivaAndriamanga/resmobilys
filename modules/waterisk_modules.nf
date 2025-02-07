@@ -131,7 +131,7 @@ process DOWNLOAD_DBSCAN {
     """
 }
 
-process DBSCAN {
+process DBSCAN_CHROMOSOME {
     publishDir "${params.output_dir}dbscan/"
 
     input:
@@ -144,10 +144,25 @@ process DBSCAN {
     script:
     """
     python ${projectDir}/DBSCAN-SWA/bin/dbscan-swa.py --thread_num ${task.cpus} --input ${chromosome_fasta} --output dbscan_output
-    mv dbscan_output/bac_DBSCAN-SWA_prophage_summary.txt ${barID}_DBSCAN.txt
+    mv dbscan_output/bac_DBSCAN-SWA_prophage_summary.txt ${barID}_chrm_DBSCAN.txt
     """
 }
 
+process DBSCAN_PLASMID {
+    publishDir "${params.output_dir}dbscan/"
+
+    input:
+    tuple val(barID) ,path(plasmid_fasta)
+
+    output:
+    tuple val(barID) ,path("${barID}_DBSCAN.txt")
+
+    script:
+    """
+    python ${projectDir}/DBSCAN-SWA/bin/dbscan-swa.py --thread_num ${task.cpus} --input ${plasmid_fasta} --output dbscan_output
+    mv dbscan_output/bac_DBSCAN-SWA_prophage_summary.txt ${barID}_plasmid_DBSCAN.txt
+    """
+}
 
 /*
 List all barcodes contain in the input directory from miniON output

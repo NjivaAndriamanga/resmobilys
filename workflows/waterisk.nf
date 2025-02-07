@@ -100,7 +100,8 @@ include { INTEGRON_FORMAT }             from '../modules/waterisk_modules.nf'
 include { KRAKEN }                      from '../modules/waterisk_modules.nf'
 include { MLST }                        from '../modules/waterisk_modules.nf'
 include { VF_BLAST }                    from '../modules/waterisk_modules.nf'
-include { DBSCAN }                      from '../modules/waterisk_modules.nf'
+include { DBSCAN_CHROMOSOME }           from '../modules/waterisk_modules.nf'
+include { DBSCAN_PLASMID }              from '../modules/waterisk_modules.nf'
 include { REASONATE_TOOLS_CHROMOSOME }  from '../modules/waterisk_modules.nf'
 include { REASONATE_PIPELINE_CHROMOSOME }     from '../modules/waterisk_modules.nf'
 
@@ -191,7 +192,8 @@ workflow WATERISK {
     BUSCO( chrm_amr_ch )
 
     //DBSCAN
-    DBSCAN( chrm_amr_ch , DOWNLOAD_DBSCAN.out )
+    DBSCAN_CHROMOSOME( chrm_amr_ch , DOWNLOAD_DBSCAN.out )
+    DBSCAN_PLASMID( plasmid_amr_ch , DOWNLOAD_DBSCAN.out )
 
     // Plasmid typing and clustering
     CHANGE_PLASMID_NAME( plasmid_amr_ch)
