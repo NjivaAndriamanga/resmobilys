@@ -153,6 +153,7 @@ process DBSCAN_PLASMID {
 
     input:
     tuple val(barID) ,path(plasmid_fasta)
+    val x
 
     output:
     tuple val(barID) ,path("${barID}_DBSCAN.txt")
