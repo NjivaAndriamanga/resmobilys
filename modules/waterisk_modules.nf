@@ -744,8 +744,8 @@ process VF_BLAST {
 
 //ReasonaTE annotation without repeatModeler (incompatibility issues)
 process REASONATE_TOOLS_CHROMOSOME {
-    cpus 8
-    memory '10GB'
+    cpus 12
+    memory '40GB'
     label "reasonate_tools"
     errorStrategy "ignore" //error during parseAnnotation can occur. For now it's better to ignore. (Other solution is to turn off must annotation)
 
@@ -798,8 +798,8 @@ process REASONATE_PIPELINE_CHROMOSOME {
 }
 
 process REASONATE_TOOLS_PLASMID {
-    cpus 8
-    memory '10GB'
+    cpus 12
+    memory '40GB'
     label "reasonate_tools"
     errorStrategy "ignore" //error during parseAnnotation can occur. For now it's better to ignore. (Other solution is to turn off must annotation)
 
@@ -833,6 +833,7 @@ process REASONATE_PIPELINE_PLASMID {
     label "reasonate_pipeline"
     publishDir "${params.output_dir}reasona_pipeline/"
     errorStrategy "ignore"
+
     input:
     tuple val(barID) ,path(workspace)
 
