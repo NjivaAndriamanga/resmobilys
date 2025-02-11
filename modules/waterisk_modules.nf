@@ -832,6 +832,7 @@ process REASONATE_TOOLS_PLASMID {
 process REASONATE_PIPELINE_PLASMID {
     label "reasonate_pipeline"
     publishDir "${params.output_dir}reasona_pipeline/"
+    errorStrategy "ignore"
     input:
     tuple val(barID) ,path(workspace)
 
