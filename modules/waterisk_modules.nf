@@ -153,6 +153,7 @@ process DBSCAN_CHROMOSOME {
 DBSCAN output an exit status 1 when no prophage is found for some fasta. This message is ignored for now
 */
 process DBSCAN_PLASMID {
+    scratch true
     publishDir "${params.output_dir}dbscan/"
     label "process_high"
 
@@ -183,6 +184,7 @@ process DBSCAN_PLASMID {
 List all barcodes contain in the input directory from miniON output
 */
 process IDENTIFIED_RAW_SAMPLES {
+    scratch true
     input:
     path fastq_dir
     val fastq_path
@@ -202,6 +204,7 @@ process IDENTIFIED_RAW_SAMPLES {
     Identified samples from index_files and check the presence of short reads
 */
 process IDENTIFIED_SAMPLES {
+    scratch true
     input:
     tuple path(fastq), val(genome_size), path(sr1), path(sr2)
 
@@ -222,6 +225,8 @@ process IDENTIFIED_SAMPLES {
 Merge all seprates fastq.gz for each barcodes file into one file
 */
 process MERGE_SEPARATE_FASTQ {
+    scratch true
+
     input:
     path barcode_dir
 
@@ -239,6 +244,7 @@ process MERGE_SEPARATE_FASTQ {
 Long reads trimming by length and quality score and filtering with cutadapt. Asses reads quality before and reads filtering with fastqc. The two reports are merged with multiqc
 */
 process CLEAN_LONG_READS {
+    scratch true
     label "process_high"
     publishDir "${params.output_dir}trimmed_output/"
     
@@ -315,6 +321,7 @@ process ASSEMBLE_GENOME {
 Busco assembly evaluation
 */
 process BUSCO {
+    scratch true
     label 'busco'
     publishDir "${params.output_dir}busco/"
 
@@ -334,6 +341,7 @@ process BUSCO {
 Identify AMR gene on plasmid and chromosome using abricate
 */
 process IDENTIFY_AMR_PLASMID {
+    scratch true
     label 'amr_detection'
     publishDir "${params.output_dir}final_output/"
 
@@ -350,6 +358,7 @@ process IDENTIFY_AMR_PLASMID {
 }
 
 process IDENTIFY_AMR_CHRM {
+    scratch true
     label 'amr_detection'
     publishDir "${params.output_dir}final_output/"
 
@@ -367,6 +376,7 @@ process IDENTIFY_AMR_CHRM {
 
 //Filter circular plasmid in a fasta file from a tab file
 process FILTER_CIRCULAR_PLASMID {
+    scratch true
     publishDir "${params.output_dir}hybracter/"
 
     input:
@@ -387,6 +397,7 @@ process FILTER_CIRCULAR_PLASMID {
 
 //Infer contig from a fasta file
 process PLASME_COMPLETE {
+    scratch true
     label 'plasme'
     publishDir "${params.output_dir}plasme_output/"
 
@@ -410,6 +421,7 @@ process PLASME_COMPLETE {
 }
 
 process PLASME_INCOMPLETE {
+    scratch true
     label 'plasme'
     publishDir "${params.output_dir}plasme_output/"
 
@@ -433,6 +445,7 @@ process PLASME_INCOMPLETE {
 
 //Align and filtered reads on infered plasmid.
 process ALIGN_READS_PLASMID {
+    scratch true
     label 'process_high'
     
     input:
@@ -460,6 +473,7 @@ process ALIGN_READS_PLASMID {
 
 //Plasmid assembly with unicycler
 process ASSEMBLY_PLASMID {
+    scratch true
     label 'process_high'
     publishDir "${params.output_dir}plasme_assembly/"
     errorStrategy "ignore" //When depth is low, assembly is not possible and there is no result
@@ -485,6 +499,7 @@ process ASSEMBLY_PLASMID {
 
 //chrm assembly with flye
 process ASSEMBLY_CHRM {
+    scratch true
     label 'process_high'
     publishDir "${params.output_dir}plasme_assembly/"
 
@@ -511,6 +526,7 @@ process ASSEMBLY_CHRM {
 Add BarID for each plasmids id
 */
 process CHANGE_PLASMID_NAME {
+    scratch true
     cpus 1
 
     input:
@@ -526,6 +542,7 @@ process CHANGE_PLASMID_NAME {
 }
 
 process MOB_TYPER {
+    scratch true
     label 'mob'
 
     input:
@@ -541,7 +558,7 @@ process MOB_TYPER {
 }
 
 process MERGE_TYPE {
-
+    scratch true
     publishDir "${params.output_dir}plasmid_annotation/"
 
     input:
@@ -559,7 +576,8 @@ process MERGE_TYPE {
 
 
 process CREATE_TAXA {
-    
+    scratch true
+
     input:
     tuple val(barID) ,path(plasmid_type)
 
@@ -574,6 +592,7 @@ process CREATE_TAXA {
 }
 
 process MERGE_TAXA {
+    scratch true
     publishDir "${params.output_dir}plasmid_annotation/"
 
     input:
@@ -590,6 +609,7 @@ process MERGE_TAXA {
 }
 
 process MOB_CLUSTER {
+    scratch true
     label 'mob'
     publishDir "${params.output_dir}plasmid_annotation/"
 
@@ -609,7 +629,7 @@ process MOB_CLUSTER {
 }
 
 process INTEGRON_FINDER_PLASMID {
-
+    scratch true
     publishDir "${params.output_dir}intergron_finder/"
 
     input:
@@ -627,7 +647,7 @@ process INTEGRON_FINDER_PLASMID {
 }
 
 process INTEGRON_FINDER_CHROMOSOME {
-
+    scratch true
     publishDir "${params.output_dir}intergron_finder/"
 
     input:
@@ -648,6 +668,7 @@ process INTEGRON_FINDER_CHROMOSOME {
 Format integron_finder output to GFF3. 
 */
 process INTEGRON_FORMAT {
+    scratch true
     publishDir "${params.output_dir}intergron_finder/"
 
     input:
@@ -685,6 +706,7 @@ process INTEGRON_FORMAT {
 }
 
 process KRAKEN {
+    scratch true
     label 'process_high'
     publishDir "${params.output_dir}kraken/"
 
@@ -706,6 +728,7 @@ process KRAKEN {
 }
 
 process MLST {
+    scratch true
     label 'process_high'
     publishDir "${params.output_dir}mlst/"
 
@@ -725,6 +748,7 @@ process MLST {
 Blast for virulence factors and keeps track of unique values (gene) in column 2
 */
 process VF_BLAST {
+    scratch true
     publishDir "${params.output_dir}vf_blast/"
     label 'process_high'
 
@@ -744,6 +768,7 @@ process VF_BLAST {
 
 //ReasonaTE annotation without repeatModeler (incompatibility issues)
 process REASONATE_TOOLS_CHROMOSOME {
+    scratch true
     label 'process_high'
     label 'reasonate_tools'
     errorStrategy "ignore" //error during parseAnnotation can occur. For now it's better to ignore. (Other solution is to turn off must annotation)
@@ -776,6 +801,7 @@ process REASONATE_TOOLS_CHROMOSOME {
 
 //REASONATE PIPELINE may failed if only 1 transposons is present in the pipeline annotations. Solution: use tools annotation
 process REASONATE_PIPELINE_CHROMOSOME {
+    scratch true
     label 'reasonate_pipeline'
     publishDir "${params.output_dir}reasona_pipeline/"
 
@@ -798,6 +824,7 @@ process REASONATE_PIPELINE_CHROMOSOME {
 }
 
 process REASONATE_TOOLS_PLASMID {
+    scratch true
     label 'process_high'
     label 'reasonate_tools'
     errorStrategy "ignore" //error during parseAnnotation can occur. For now it's better to ignore. (Other solution is to turn off must annotation)
@@ -829,6 +856,7 @@ process REASONATE_TOOLS_PLASMID {
 }
 
 process REASONATE_PIPELINE_PLASMID {
+    scratch true
     label "reasonate_pipeline"
     publishDir "${params.output_dir}reasona_pipeline/"
     errorStrategy "ignore"
