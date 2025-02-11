@@ -777,8 +777,9 @@ process REASONATE_TOOLS_CHROMOSOME {
 
 //REASONATE PIPELINE may failed if only 1 transposons is present in the pipeline annotations. Solution: use tools annotation
 process REASONATE_PIPELINE_CHROMOSOME {
-    label "reasonate_pipeline"
+    label ['process_high','reasonate_pipeline']
     publishDir "${params.output_dir}reasona_pipeline/"
+
     input:
     tuple val(barID) ,path(workspace)
 
@@ -798,9 +799,7 @@ process REASONATE_PIPELINE_CHROMOSOME {
 }
 
 process REASONATE_TOOLS_PLASMID {
-    cpus 12
-    memory '40GB'
-    label "reasonate_tools"
+    label ['process_high','reasonate_tools']
     errorStrategy "ignore" //error during parseAnnotation can occur. For now it's better to ignore. (Other solution is to turn off must annotation)
 
     input:
