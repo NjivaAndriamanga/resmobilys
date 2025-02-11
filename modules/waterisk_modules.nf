@@ -777,7 +777,7 @@ process REASONATE_TOOLS_CHROMOSOME {
 
 //REASONATE PIPELINE may failed if only 1 transposons is present in the pipeline annotations. Solution: use tools annotation
 process REASONATE_PIPELINE_CHROMOSOME {
-    label ['process_high','reasonate_pipeline']
+    label 'reasonate_pipeline'
     publishDir "${params.output_dir}reasona_pipeline/"
 
     input:
