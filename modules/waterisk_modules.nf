@@ -744,9 +744,8 @@ process VF_BLAST {
 
 //ReasonaTE annotation without repeatModeler (incompatibility issues)
 process REASONATE_TOOLS_CHROMOSOME {
-    cpus 12
-    memory '40GB'
-    label "reasonate_tools"
+    label 'process_high'
+    label 'reasonate_tools'
     errorStrategy "ignore" //error during parseAnnotation can occur. For now it's better to ignore. (Other solution is to turn off must annotation)
 
     input:
@@ -799,7 +798,8 @@ process REASONATE_PIPELINE_CHROMOSOME {
 }
 
 process REASONATE_TOOLS_PLASMID {
-    label ['process_high','reasonate_tools']
+    label 'process_high'
+    label 'reasonate_tools'
     errorStrategy "ignore" //error during parseAnnotation can occur. For now it's better to ignore. (Other solution is to turn off must annotation)
 
     input:
