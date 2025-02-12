@@ -69,7 +69,6 @@ def write_value = { value -> "test.txt" >> value + "\n" }
     IMPORT LOCAL MODULES / SUBWORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { TEST_PROCESS }                from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_PLASME_DATABASE }    from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_KRAKEN_DATABASE }    from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_VF_DATABASE }        from '../modules/waterisk_modules.nf'
