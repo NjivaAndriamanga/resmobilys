@@ -97,7 +97,6 @@ include { INTEGRON_FINDER_CHROMOSOME}   from '../modules/waterisk_modules.nf'
 include { INTEGRON_FINDER_PLASMID }     from '../modules/waterisk_modules.nf'
 include { INTEGRON_FORMAT }             from '../modules/waterisk_modules.nf'
 include { KRAKEN }                      from '../modules/waterisk_modules.nf'
-include { MLST }                        from '../modules/waterisk_modules.nf'
 include { VF_BLAST }                    from '../modules/waterisk_modules.nf'
 include { DBSCAN_CHROMOSOME }           from '../modules/waterisk_modules.nf'
 include { DBSCAN_PLASMID }              from '../modules/waterisk_modules.nf'
@@ -214,12 +213,6 @@ workflow WATERISK {
     if (params.kraken_db != "null" && params.kraken_taxonomy == true) {
         KRAKEN(chrm_amr_ch,DOWNLOAD_KRAKEN_DATABASE.out)
         kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
-    }
-
-    //mlst
-    if (params.mlst == true) {
-        MLST(chrm_amr_ch)
-        mlst_ch = MLST.out.map{ barID, mlst -> mlst}.collectFile(name:"mlst_summary.txt", storeDir:"${params.output_dir}mlst/")
     }
     
     //Virulence factor
