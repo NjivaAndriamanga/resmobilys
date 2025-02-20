@@ -79,8 +79,10 @@ include { MERGE_SEPARATE_FASTQ }        from '../modules/waterisk_modules.nf'
 include { CLEAN_LONG_READS }            from '../modules/waterisk_modules.nf'
 include { ASSEMBLE_GENOME }             from '../modules/waterisk_modules.nf'
 include { FILTER_CIRCULAR_PLASMID }     from '../modules/waterisk_modules.nf'
-include { IDENTIFY_AMR_PLASMID }        from '../modules/waterisk_modules.nf'
-include { IDENTIFY_AMR_CHRM }           from '../modules/waterisk_modules.nf'
+include { ABRICATE_PLASMID }            from '../modules/waterisk_modules.nf'
+include { ABRICATE_CHRM }               from '../modules/waterisk_modules.nf'
+include { AMRFINDER_CHRM}               from '../modules/waterisk_modules.nf'
+include { AMRFINDER_PLASMID}            from '../modules/waterisk_modules.nf'
 include { PLASME_COMPLETE }             from '../modules/waterisk_modules.nf'
 include { PLASME_INCOMPLETE }           from '../modules/waterisk_modules.nf'
 include { ALIGN_READS_PLASMID }         from '../modules/waterisk_modules.nf'
@@ -179,8 +181,10 @@ workflow WATERISK {
     chrm_amr_ch = complete_circular_chrm_ch.concat(complete_chrm_ch).concat(incomplete_chrm_ch)
     plasmid_amr_ch = complete_circular_plasmid_ch.concat(complete_plasmid_ch).concat(incomplete_plasmid_ch) 
 
-    //IDENTIFY_AMR_PLASMID( plasmid_amr_ch )
-    //IDENTIFY_AMR_CHRM( chrm_amr_ch)
+    ABRICATE_PLASMID( plasmid_amr_ch )
+    ABRICATE_PLASMID( chrm_amr_ch)
+    AMRFINDER_CHRM( chrm_amr_ch )
+    AMRFINDER_PLASMID( plasmid_amr_ch )
 
     //Integron_finder
     //INTEGRON_FINDER_CHROMOSOME( chrm_amr_ch )

@@ -328,8 +328,7 @@ process BUSCO {
 Identify AMR gene on plasmid. Abricate with megares to identify heavy and efflux pump. AMR finder plus for ARG.
 Resistance to drugs identified with abricate are remove with grep
 */
-process IDENTIFY_AMR_PLASMID {
-    label 'amr_detection'
+process ABRICATE_PLASMID {
     publishDir "${params.output_dir}final_output/"
 
     input:
@@ -341,13 +340,10 @@ process IDENTIFY_AMR_PLASMID {
     script:
     """
     abricate -db ${params.amr_db} ${plasmid_fasta} | grep -v "Drugs" > ${barID}_plasmid_amr.txt
-    amrfinder -u
-    amrfinder --nucleotide ${plasmid_fasta} > ${barID}_plasmid_arg.txt
     """
 }
 
-process IDENTIFY_AMR_CHRM {
-    label 'amr_detection'
+process ABRICATE_CHRM {
     publishDir "${params.output_dir}final_output/"
 
     input:
@@ -359,7 +355,37 @@ process IDENTIFY_AMR_CHRM {
     script:
     """
     abricate -db ${params.amr_db} ${chrm_fasta} | grep -v "Drugs" > ${barID}_chrm_amr.txt
-    amrfinder -u
+    """
+}
+
+process AMRFINDER_PLASMID {
+    label 'amrfinder'
+    publishDir "${params.output_dir}final_output/"
+    
+    input:
+    tuple val(barID) , path(plasmid_fasta)
+    
+    output:
+    tuple val(barID), path(plasmid_fasta), path("${barID}_plasmid_arg.txt")
+
+    script:
+    """
+    amrfinder --nucleotide ${plasmid_fasta} > ${barID}_plasmid_arg.txt
+    """
+}
+
+process AMRFINDER_CHRM {
+    label 'amrfinder'
+    publishDir "${params.output_dir}final_output/"
+    
+    input:
+    tuple val(barID) , path(chrm_fasta)
+    
+    output:
+    tuple val(barID), path(chrm_fasta), path("${barID}_chrm_arg.txt")
+
+    script:
+    """
     amrfinder --nucleotide ${chrm_fasta} > ${barID}_chrm_arg.txt
     """
 }
