@@ -182,7 +182,7 @@ workflow WATERISK {
     plasmid_amr_ch = complete_circular_plasmid_ch.concat(complete_plasmid_ch).concat(incomplete_plasmid_ch) 
 
     ABRICATE_PLASMID( plasmid_amr_ch )
-    ABRICATE_PLASMID( chrm_amr_ch)
+    ABRICATE_CHRM( chrm_amr_ch)
     AMRFINDER_CHRM( chrm_amr_ch )
     AMRFINDER_PLASMID( plasmid_amr_ch )
 
