@@ -335,7 +335,7 @@ process ABRICATE_PLASMID {
     tuple val(barID) ,path(plasmid_fasta)
 
     output:
-    tuple val(barID), path (plasmid_fasta),path("${barID}_plasmid_amr.txt"), path("${barID}_plasmid_arg.txt"), emit: plasmid_amr
+    tuple val(barID), path (plasmid_fasta),path("${barID}_plasmid_amr.txt"), emit: plasmid_amr
 
     script:
     """
@@ -350,7 +350,7 @@ process ABRICATE_CHRM {
     tuple val(barID), path(chrm_fasta)
 
     output:
-    tuple val(barID), path (chrm_fasta),path("${barID}_chrm_amr.txt"),path("${barID}_chrm_arg.txt") , emit: chrm_amr
+    tuple val(barID), path (chrm_fasta),path("${barID}_chrm_amr.txt"), emit: chrm_amr
     
     script:
     """
