@@ -193,6 +193,7 @@ process IDENTIFIED_RAW_SAMPLES {
     Identified samples from index_files and check the presence of short reads
 */
 process IDENTIFIED_SAMPLES {
+    cache true
     input:
     tuple path(fastq), val(genome_size), path(sr1), path(sr2)
 
@@ -230,6 +231,7 @@ process MERGE_SEPARATE_FASTQ {
 Long reads trimming by length and quality score and filtering with cutadapt. Asses reads quality before and reads filtering with fastqc. The two reports are merged with multiqc
 */
 process CLEAN_LONG_READS {
+    cache true
     label "process_high"
     publishDir "${params.output_dir}trimmed_output/"
     
@@ -339,7 +341,7 @@ process IDENTIFY_AMR_PLASMID {
     script:
     """
     abricate -db ${params.amr_db} ${plasmid_fasta} | grep -v "Drugs" > ${barID}_plasmid_amr.txt
-    grep 
+    amrfinder -u
     amrfinder --nucleotide ${plasmid_fasta} > ${barID}_plasmid_arg.txt
     """
 }
@@ -357,6 +359,7 @@ process IDENTIFY_AMR_CHRM {
     script:
     """
     abricate -db ${params.amr_db} ${chrm_fasta} | grep -v "Drugs" > ${barID}_chrm_amr.txt
+    amrfinder -u
     amrfinder --nucleotide ${chrm_fasta} > ${barID}_chrm_arg.txt
     """
 }
@@ -604,6 +607,7 @@ process MOB_CLUSTER {
 }
 
 process INTEGRON_FINDER_PLASMID {
+    label 'integron_finder'
     publishDir "${params.output_dir}intergron_finder/"
 
     input:
@@ -621,6 +625,7 @@ process INTEGRON_FINDER_PLASMID {
 }
 
 process INTEGRON_FINDER_CHROMOSOME {
+    label 'integron_finder'
     publishDir "${params.output_dir}intergron_finder/"
 
     input:

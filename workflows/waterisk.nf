@@ -179,54 +179,54 @@ workflow WATERISK {
     chrm_amr_ch = complete_circular_chrm_ch.concat(complete_chrm_ch).concat(incomplete_chrm_ch)
     plasmid_amr_ch = complete_circular_plasmid_ch.concat(complete_plasmid_ch).concat(incomplete_plasmid_ch) 
 
-    IDENTIFY_AMR_PLASMID( plasmid_amr_ch )
-    IDENTIFY_AMR_CHRM( chrm_amr_ch)
+    //IDENTIFY_AMR_PLASMID( plasmid_amr_ch )
+    //IDENTIFY_AMR_CHRM( chrm_amr_ch)
 
     //Integron_finder
-    INTEGRON_FINDER_CHROMOSOME( chrm_amr_ch )
-    INTEGRON_FINDER_PLASMID( plasmid_amr_ch )
-    INTEGRON_FORMAT( INTEGRON_FINDER_CHROMOSOME.out.concat(INTEGRON_FINDER_PLASMID.out))
+    //INTEGRON_FINDER_CHROMOSOME( chrm_amr_ch )
+    //INTEGRON_FINDER_PLASMID( plasmid_amr_ch )
+    //INTEGRON_FORMAT( INTEGRON_FINDER_CHROMOSOME.out.concat(INTEGRON_FINDER_PLASMID.out))
 
     //BUSCO
-    BUSCO( chrm_amr_ch )
+    //BUSCO( chrm_amr_ch )
 
     //DBSCAN
-    DBSCAN_CHROMOSOME( chrm_amr_ch , DOWNLOAD_DBSCAN.out )
-    DBSCAN_PLASMID( plasmid_amr_ch , DOWNLOAD_DBSCAN.out )
+    //DBSCAN_CHROMOSOME( chrm_amr_ch , DOWNLOAD_DBSCAN.out )
+    //DBSCAN_PLASMID( plasmid_amr_ch , DOWNLOAD_DBSCAN.out )
 
     // Plasmid typing and clustering
-    CHANGE_PLASMID_NAME( plasmid_amr_ch)
-    MOB_TYPER(CHANGE_PLASMID_NAME.out)
+    //CHANGE_PLASMID_NAME( plasmid_amr_ch)
+    //MOB_TYPER(CHANGE_PLASMID_NAME.out)
 
-    plasmid_merge = CHANGE_PLASMID_NAME.out.map{barID, plasmid -> plasmid }.collectFile(name:"plasmid_merge.fasta", storeDir:"${params.output_dir}plasmid_annotation/")
+    //plasmid_merge = CHANGE_PLASMID_NAME.out.map{barID, plasmid -> plasmid }.collectFile(name:"plasmid_merge.fasta", storeDir:"${params.output_dir}plasmid_annotation/")
 
-    type_to_merge = MOB_TYPER.out.map{barID, type -> type }.collectFile()
-    MERGE_TYPE(type_to_merge)
+    //type_to_merge = MOB_TYPER.out.map{barID, type -> type }.collectFile()
+    //MERGE_TYPE(type_to_merge)
 
-    CREATE_TAXA(MOB_TYPER.out)
-    taxa_to_merge = CREATE_TAXA.out.collectFile()
-    MERGE_TAXA(taxa_to_merge)
+    //CREATE_TAXA(MOB_TYPER.out)
+    //taxa_to_merge = CREATE_TAXA.out.collectFile()
+    //MERGE_TAXA(taxa_to_merge)
 
-    MOB_CLUSTER(MERGE_TAXA.out, plasmid_merge, MERGE_TYPE.out)
+    //MOB_CLUSTER(MERGE_TAXA.out, plasmid_merge, MERGE_TYPE.out)
 
     //KRAKEN
-    if (params.kraken_db != "null" && params.kraken_taxonomy == true) {
-        KRAKEN(chrm_amr_ch,DOWNLOAD_KRAKEN_DATABASE.out)
-        kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
-    }
+    //if (params.kraken_db != "null" && params.kraken_taxonomy == true) {
+    //    KRAKEN(chrm_amr_ch,DOWNLOAD_KRAKEN_DATABASE.out)
+    //    kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
+    //}
     
     //Virulence factor
-    fasta_ch = chrm_amr_ch.concat(plasmid_amr_ch)
-    VF_BLAST(fasta_ch)
+    //fasta_ch = chrm_amr_ch.concat(plasmid_amr_ch)
+    //VF_BLAST(fasta_ch)
 
 
     //TRANSPOSON WITH REASONATE
-    REASONATE_TOOLS_CHROMOSOME(chrm_amr_ch)
-    REASONATE_PIPELINE_CHROMOSOME(REASONATE_TOOLS_CHROMOSOME.out)
+    //REASONATE_TOOLS_CHROMOSOME(chrm_amr_ch)
+    //REASONATE_PIPELINE_CHROMOSOME(REASONATE_TOOLS_CHROMOSOME.out)
 
     //TRANSPOSON WITH REASONATE
-    REASONATE_TOOLS_PLASMID(plasmid_amr_ch)
-    REASONATE_PIPELINE_PLASMID(REASONATE_TOOLS_PLASMID.out)
+    //REASONATE_TOOLS_PLASMID(plasmid_amr_ch)
+    //REASONATE_PIPELINE_PLASMID(REASONATE_TOOLS_PLASMID.out)
 }
 
 /*
