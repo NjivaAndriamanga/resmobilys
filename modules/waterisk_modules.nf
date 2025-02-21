@@ -122,7 +122,7 @@ process DOWNLOAD_DBSCAN {
     """
 }
 
-process DOWNLOAD RGI_DATABASE {
+process DOWNLOAD_RGI_DATABASE {
     cache true
     output:
     path "card.json"
