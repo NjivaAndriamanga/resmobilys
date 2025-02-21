@@ -83,6 +83,8 @@ include { ABRICATE_PLASMID }            from '../modules/waterisk_modules.nf'
 include { ABRICATE_CHRM }               from '../modules/waterisk_modules.nf'
 include { AMRFINDER_CHRM}               from '../modules/waterisk_modules.nf'
 include { AMRFINDER_PLASMID}            from '../modules/waterisk_modules.nf'
+include { RGI_CHRM}                     from '../modules/waterisk_modules.nf'
+include { RGI_PLASMID}                  from '../modules/waterisk_modules.nf'
 include { PLASME_COMPLETE }             from '../modules/waterisk_modules.nf'
 include { PLASME_INCOMPLETE }           from '../modules/waterisk_modules.nf'
 include { ALIGN_READS_PLASMID }         from '../modules/waterisk_modules.nf'
@@ -184,8 +186,10 @@ workflow WATERISK {
     ABRICATE_PLASMID( plasmid_amr_ch )
     ABRICATE_CHRM( chrm_amr_ch)
     AMRFINDER_CHRM( chrm_amr_ch )
-    AMRFINDER_PLASMID( plasmid_amr_ch )
-
+    AMRFINDER_PLASMID( plasmid_amr_ch)
+    RGI_CHRM( chrm_amr_ch )
+    RGI_PLASMID( plasmid_amr_ch )
+    
     //Integron_finder
     //INTEGRON_FINDER_CHROMOSOME( chrm_amr_ch )
     //INTEGRON_FINDER_PLASMID( plasmid_amr_ch )

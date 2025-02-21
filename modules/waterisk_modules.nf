@@ -390,6 +390,38 @@ process AMRFINDER_CHRM {
     """
 }
 
+process RGI_CHRM {
+    label 'rgi'
+    publishDir "${params.output_dir}final_output/"
+    
+    input:
+    tuple val(barID) , path(chrm_fasta)
+    
+    output:
+    tuple val(barID), path(chrm_fasta), path("${barID}_chrm_rgi.txt")
+
+    script:
+    """
+    rgi main --input_sequence ${chrm_fasta} --output_file ${barID}_chrm_rgi --local --clean
+    """
+}
+
+process RGI_PLASMID {
+    label 'rgi'
+    publishDir "${params.output_dir}final_output/"
+    
+    input:
+    tuple val(barID) , path(plasmid_fasta)
+    
+    output:
+    tuple val(barID), path(plasmid_fasta), path("${barID}_plasmid_rgi.txt")
+
+    script:
+    """
+    rgi main --input_sequence ${plasmid_fasta} --output_file ${barID}_plasmid_rgi --local --clean
+    """
+}
+
 //Filter circular plasmid in a fasta file from a tab file
 process FILTER_CIRCULAR_PLASMID {
     publishDir "${params.output_dir}hybracter/"
