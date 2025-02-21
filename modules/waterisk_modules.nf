@@ -417,7 +417,8 @@ process RGI_CHRM {
     script:
     """
     rgi load --card_json ${card_json} --local
-    rgi main --input_sequence ${chrm_fasta} --output_file ${barID}_chrm_rgi --local --clean
+    rgi main --input_sequence ${chrm_fasta} --output_file chrm_rgi --local --clean
+    awk -F"\t" '{print FILENAME,\$2, \$3, \$4, \$5, \$9, \$15, \$16, \$17}' OFS="\t" chrm_rgi.txt > ${barID}_chrm_rgi.txt
     """
 }
 
@@ -436,7 +437,8 @@ process RGI_PLASMID {
     """
     if [ -s ${plasmid_fasta} ]; then
         rgi load --card_json ${card_json} --local
-        rgi main --input_sequence ${plasmid_fasta} --output_file ${barID}_plasmid_rgi --local --clean
+        rgi main --input_sequence ${plasmid_fasta} --output_file plasmid_rgi --local --clean
+        awk -F"\t" '{print FILENAME,\$2, \$3, \$4, \$5, \$9, \$15, \$16, \$17}' OFS="\t" plasmid_rgi.txt > ${barID}_chrm_rgi.txt
     else
         touch ${barID}_plasmid_rgi.txt
     fi
