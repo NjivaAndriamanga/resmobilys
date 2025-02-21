@@ -435,8 +435,10 @@ process RGI_PLASMID {
 
     script:
     """
-    rgi load --card_json ${card_json} --local
-    rgi main --input_sequence ${plasmid_fasta} --output_file ${barID}_plasmid_rgi --local --clean
+    if [ -s ${plasmid_fasta} ]; then
+        rgi load --card_json ${card_json} --local
+        rgi main --input_sequence ${plasmid_fasta} --output_file ${barID}_plasmid_rgi --local --clean
+    fi
     """
 }
 
