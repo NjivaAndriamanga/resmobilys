@@ -130,7 +130,6 @@ process DOWNLOAD_RGI_DATABASE {
     script:
     log.info "Downloading RGI database..."
     """
-    cd ${projectDir}
     wget https://card.mcmaster.ca/latest/data
     tar -xvf data ./card.json
     """
