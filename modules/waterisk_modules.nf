@@ -122,6 +122,20 @@ process DOWNLOAD_DBSCAN {
     """
 }
 
+process DOWNLOAD RGI_DATABASE {
+    cache true
+    output:
+    path "card.json"
+
+    script:
+    log.info "Downloading RGI database..."
+    """
+    cd ${projectDir}
+    wget https://card.mcmaster.ca/latest/data
+    tar -xvf data ./card.json
+    """
+}
+
 process DBSCAN_CHROMOSOME {
     publishDir "${params.output_dir}dbscan/"
     label "process_high"
@@ -395,6 +409,7 @@ process RGI_CHRM {
     publishDir "${params.output_dir}final_output/"
     
     input:
+    path card_json
     tuple val(barID) , path(chrm_fasta)
     
     output:
@@ -402,6 +417,7 @@ process RGI_CHRM {
 
     script:
     """
+    rgi load --card_json ${card_json} --local
     rgi main --input_sequence ${chrm_fasta} --output_file ${barID}_chrm_rgi --local --clean
     """
 }
@@ -411,6 +427,7 @@ process RGI_PLASMID {
     publishDir "${params.output_dir}final_output/"
     
     input:
+    path card_json
     tuple val(barID) , path(plasmid_fasta)
     
     output:
@@ -418,6 +435,7 @@ process RGI_PLASMID {
 
     script:
     """
+    rgi load --card_json ${card_json} --local
     rgi main --input_sequence ${plasmid_fasta} --output_file ${barID}_plasmid_rgi --local --clean
     """
 }

@@ -73,6 +73,7 @@ include { DOWNLOAD_PLASME_DATABASE }    from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_KRAKEN_DATABASE }    from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_VF_DATABASE }        from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_DBSCAN }             from '../modules/waterisk_modules.nf'
+include { DOWNLOAD_RGI_DATABASE }        from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_RAW_SAMPLES }      from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_SAMPLES}           from '../modules/waterisk_modules.nf'
 include { MERGE_SEPARATE_FASTQ }        from '../modules/waterisk_modules.nf'
@@ -121,6 +122,7 @@ workflow WATERISK {
     DOWNLOAD_KRAKEN_DATABASE().view()
     DOWNLOAD_VF_DATABASE().view()	
     DOWNLOAD_DBSCAN().view()
+    DOWNLOAD_RGI_DATABASE()
 
     /* if (params.raw == true){
         IDENTIFIED_RAW_SAMPLES(file(params.long_reads_dir), params.long_reads_dir)
@@ -187,9 +189,9 @@ workflow WATERISK {
     ABRICATE_CHRM( chrm_amr_ch)
     AMRFINDER_CHRM( chrm_amr_ch )
     AMRFINDER_PLASMID( plasmid_amr_ch)
-    RGI_CHRM( chrm_amr_ch )
-    RGI_PLASMID( plasmid_amr_ch )
-    
+    RGI_CHRM(DOWNLOAD_RGI_DATABASE.out, chrm_amr_ch )
+    RGI_PLASMID(DOWNLOAD_RGI_DATABASE.out, plasmid_amr_ch )
+
     //Integron_finder
     //INTEGRON_FINDER_CHROMOSOME( chrm_amr_ch )
     //INTEGRON_FINDER_PLASMID( plasmid_amr_ch )
