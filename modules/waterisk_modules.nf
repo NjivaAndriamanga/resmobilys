@@ -438,7 +438,7 @@ process RGI_PLASMID {
     if [ -s ${plasmid_fasta} ]; then
         rgi load --card_json ${card_json} --local
         rgi main --input_sequence ${plasmid_fasta} --output_file plasmid_rgi --local --clean
-        awk -F"\t" '{print FILENAME,\$2, \$3, \$4, \$5, \$9, \$15, \$16, \$17}' OFS="\t" plasmid_rgi.txt > ${barID}_chrm_rgi.txt
+        awk -F"\t" '{print FILENAME,\$2, \$3, \$4, \$5, \$9, \$15, \$16, \$17}' OFS="\t" plasmid_rgi.txt > ${barID}_plasmid_rgi.txt
     else
         touch ${barID}_plasmid_rgi.txt
     fi
