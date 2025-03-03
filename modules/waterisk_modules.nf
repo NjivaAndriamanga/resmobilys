@@ -166,7 +166,7 @@ process TN3_FINDER_CHROMOSOME {
     script:
     id = chromosome_fasta.getSimpleName()
     """
-    python3 ${projectDir}/bin/tn3-ta_finder/Tn3-TA_finder.py -f ${chromosome_fasta} -o ${barID}_tn3 -t ${task.cpus}
+    python3 ${projectDir}/bin/tn3-ta_finder/Tn3+TA_finder.py -f ${chromosome_fasta} -o ${barID}_tn3 -t ${task.cpus}
     if [ -f ${barID}_tn3/${id}.txt ]; then
         mv ${barID}_tn3/${id}.txt ${barID}_chromosome_tn3.txt
     else
@@ -188,7 +188,7 @@ process TN3_FINDER_PLASMID {
     script: 
     id = plasmid_fasta.getSimpleName()
     """
-    python3 ${projectDir}/bin/tn3-ta_finder/Tn3-TA_finder.py -f ${plasmid_fasta} -o ${barID}_tn3 -t ${task.cpus}
+    python3 ${projectDir}/bin/tn3-ta_finder/Tn3+TA_finder.py -f ${plasmid_fasta} -o ${barID}_tn3 -t ${task.cpus}
     if [ -f ${barID}_tn3/${id}.txt ]; then
         mv ${barID}_tn3/${id}.txt ${barID}_plasmid_tn3.txt
     else
