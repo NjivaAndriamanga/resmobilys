@@ -164,6 +164,7 @@ process TNFINDER_CORRECTION {
     sed -i '/Bio\\.Alphabet/d' ${projectDir}/bin/tn3-ta_finder/Tn3+TA_finder.py
     sed -i '/Bio\\.Alphabet/d' ${projectDir}/bin/tncomp_finder/TnComp_finder.py
     sed -i 's/gbk_record = SeqRecord(Seq(sequence, IUPAC\\.unambiguous_dna))/gbk_record = SeqRecord(Seq(sequence))/' ${projectDir}/bin/tncomp_finder/TnComp_finder.py
+    sed -i '/whole_seq = get_sequence(/a \\textended_seq = ""' ${projectDir}/bin/tncomp_finder/TnComp_finder.py
     output="TNFINDER CORRECTION OK"
     """
 }
