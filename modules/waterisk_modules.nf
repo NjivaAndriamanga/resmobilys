@@ -159,7 +159,6 @@ process TN3_FINDER_CHROMOSOME {
 
     input:
     tuple val(barID) ,path(chromosome_fasta)
-    val x
 
     output:
     tuple val(barID) ,path("${barID}_chromosome_tn3.txt")
@@ -182,7 +181,6 @@ process TN3_FINDER_PLASMID {
 
     input:
     tuple val(barID) ,path(plasmid_fasta)
-    val x
 
     output:
     tuple val(barID) ,path("${barID}_plasmid_tn3.txt")
@@ -205,7 +203,6 @@ process TNCOMP_FINDER_CHROMOSOME {
 
     input:
     tuple val(barID) ,path(chromosome_fasta)
-    val x
 
     output:
     tuple val(barID) ,path("${barID}_chromosome_tncomp.txt")
@@ -229,7 +226,6 @@ process TNCOMP_FINDER_PLASMID {
 
     input:
     tuple val(barID) ,path(plasmid_fasta)
-    val x
 
     output:
     tuple val(barID) ,path("${barID}_plasmid_tncomp.txt")
@@ -255,7 +251,6 @@ process DBSCAN_PLASMID {
 
     input:
     tuple val(barID) ,path(plasmid_fasta)
-    val x
 
     output:
     tuple val(barID) ,path("${barID}_plasmid_DBSCAN.txt")

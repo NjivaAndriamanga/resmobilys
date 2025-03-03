@@ -194,10 +194,10 @@ workflow WATERISK {
     RGI_PLASMID(DOWNLOAD_RGI_DATABASE.out, plasmid_amr_ch )
 
     // Transposan finder
-    TN3_FINDER_CHROMOSOME( chrm_amr_ch, DOWNLOAD_TNFINDER.out )
-    TN3_FINDER_PLASMID( plasmid_amr_ch, DOWNLOAD_TNFINDER.out )
-    TNCOMP_FINDER_CHROMOSOME( chrm_amr_ch, DOWNLOAD_TNFINDER.out )
-    TNCOMP_FINDER_PLASMID( plasmid_amr_ch, DOWNLOAD_TNFINDER.out )
+    TN3_FINDER_CHROMOSOME( chrm_amr_ch )
+    TN3_FINDER_PLASMID( plasmid_amr_ch )
+    TNCOMP_FINDER_CHROMOSOME( chrm_amr_ch )
+    TNCOMP_FINDER_PLASMID( plasmid_amr_ch )
 
     //Integron_finder
     //INTEGRON_FINDER_CHROMOSOME( chrm_amr_ch )
