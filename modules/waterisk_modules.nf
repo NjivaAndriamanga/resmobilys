@@ -94,7 +94,7 @@ process DOWNLOAD_DBSCAN {
     env output
 
     script:
-    log.info "Downloading DBSCAN database..."
+    log.info "Downloading DBSCAN tools and database..."
     """
     
     cd ${projectDir}
@@ -119,6 +119,30 @@ process DOWNLOAD_DBSCAN {
         output+="db for DBSCAN already exist. "
     fi
     
+    """
+}
+
+process DOWNLOAD_TNFINDER {
+    cache true
+
+    output:
+    env output
+
+    script:
+    log.info "Downloading tnfinder and tncompfinder script and database..."
+    """
+    cd ${projectDir}
+    if [ ! -d tn3-ta_finder ]; then
+        git clone https://github.com/danillo-alvarenga/tn3-ta_finder
+    else
+        output="tnfinder already exist"
+    fi
+
+    if [ ! -d tncomp_finder ]; then
+        git clone git clone https://github.com/danillo-alvarenga/tncomp_finder
+    else
+        output="tncompfinder already exist"
+    fi
     """
 }
 
@@ -151,6 +175,99 @@ process DBSCAN_CHROMOSOME {
     python ${projectDir}/DBSCAN-SWA/bin/dbscan-swa.py --thread_num ${task.cpus} --input ${chromosome_fasta} --output dbscan_output
     mv dbscan_output/bac_DBSCAN-SWA_prophage_summary.txt ${barID}_chrm_DBSCAN.txt
     """
+}
+
+process TN3_FINDER_CHROMOSOME {
+    publishDir "${params.output_dir}tnfinder/"
+    label "tnfinder"
+
+    input:
+    tuple val(barID) ,path(chromosome_fasta)
+    val x
+
+    output:
+    tuple val(barID) ,path("${barID}_chromosome_tn3.txt")
+
+    script:
+    id = chromosome_fasta.getSimpleName()
+    """
+    python ${projectDir}/tn3-ta_finder/tn3-ta_finder.py -f ${chromosome_fasta} -o ${barID}_tn3 -t ${task.cpus}
+    if [ -f ${barID}_tn3/${id}.txt ]; then
+        mv ${barID}_tn3/${id}.txt ${barID}_chromosome_tn3.txt
+    else
+        touch ${barID}_chromosome_tn3.txt
+    fi
+    """
+}
+
+process TN3_FINDER_PLASMID {
+    publishDir "${params.output_dir}tnfinder/"
+    label "tnfinder"
+
+    input:
+    tuple val(barID) ,path(plasmid_fasta)
+    val x
+
+    output:
+    tuple val(barID) ,path("${barID}_plasmid_tn3.txt")
+
+    script: 
+    id = plasmid_fasta.getSimpleName()
+    """
+    python ${projectDir}/tn3-ta_finder/tn3-ta_finder.py -f ${plasmid_fasta} -o ${barID}_tn3 -t ${task.cpus}
+    if [ -f ${barID}_tn3/${id}.txt ]; then
+        mv ${barID}_tn3/${id}.txt ${barID}_plasmid_tn3.txt
+    else
+        touch ${barID}_plasmid_tn3.txt
+    fi
+    """
+}
+
+process TNCOMP_FINDER_CHROMOSOME {
+    publishDir "${params.output_dir}tncompfinder/"
+    label "tnfinder"
+
+    input:
+    tuple val(barID) ,path(chromosome_fasta)
+    val x
+
+    output:
+    tuple val(barID) ,path("${barID}_chromosome_tncomp.txt")
+
+    script:
+    id = chromosome_fasta.getSimpleName()
+    """
+    python ${projectDir}/tncomp_finder/tncomp_finder.py -f ${chromosome_fasta} -o ${barID}_tncomp -p ${task.cpus}
+    if [ -f ${barID}_tncomp/${id}.txt ]; then
+        mv ${barID}_tncomp/${id}.txt ${barID}_chromosome_tncomp.txt
+    else
+        touch ${barID}_chromosome_tncomp.txt
+    fi
+    """
+}
+
+
+process TNCOMP_FINDER_PLASMID {
+    publishDir "${params.output_dir}tncompfinder/"
+    label "tnfinder"
+
+    input:
+    tuple val(barID) ,path(plasmid_fasta)
+    val x
+
+    output:
+    tuple val(barID) ,path("${barID}_plasmid_tncomp.txt")
+
+    script:
+    id = plasmid_fasta.getSimpleName()
+    """
+    python ${projectDir}/tncomp_finder/tncomp_finder.py -f ${plasmid_fasta} -o ${barID}_tncomp -p ${task.cpus}
+    if [ -f ${barID}_tncomp/${id}.txt ]; then
+        mv ${barID}_tncomp/${id}.txt ${barID}_plasmid_tncomp.txt
+    else
+        touch ${barID}_plasmid_tncomp.txt
+    fi
+    """ 
 }
 
 /*

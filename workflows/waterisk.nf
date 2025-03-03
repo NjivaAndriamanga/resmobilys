@@ -105,10 +105,11 @@ include { KRAKEN }                      from '../modules/waterisk_modules.nf'
 include { VF_BLAST }                    from '../modules/waterisk_modules.nf'
 include { DBSCAN_CHROMOSOME }           from '../modules/waterisk_modules.nf'
 include { DBSCAN_PLASMID }              from '../modules/waterisk_modules.nf'
-include { REASONATE_TOOLS_CHROMOSOME }  from '../modules/waterisk_modules.nf'
-include { REASONATE_PIPELINE_CHROMOSOME }     from '../modules/waterisk_modules.nf'
-include { REASONATE_TOOLS_PLASMID }     from '../modules/waterisk_modules.nf'
-include { REASONATE_PIPELINE_PLASMID }  from '../modules/waterisk_modules.nf'
+include { TN3_FINDER_CHROMOSOME }       from '../modules/waterisk_modules.nf'
+include { TN3_FINDER_PLASMID }          from '../modules/waterisk_modules.nf'
+include { TNCOMP_FINDER_CHROMOSOME }    from '../modules/waterisk_modules.nf'
+include { TNCOMP_FINDER_PLASMID }       from '../modules/waterisk_modules.nf'
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -123,6 +124,7 @@ workflow WATERISK {
     DOWNLOAD_VF_DATABASE().view()	
     DOWNLOAD_DBSCAN().view()
     DOWNLOAD_RGI_DATABASE()
+    DOWNLOAD_TNFINDER()
 
     /* if (params.raw == true){
         IDENTIFIED_RAW_SAMPLES(file(params.long_reads_dir), params.long_reads_dir)
@@ -192,6 +194,12 @@ workflow WATERISK {
     RGI_CHRM(DOWNLOAD_RGI_DATABASE.out, chrm_amr_ch )
     RGI_PLASMID(DOWNLOAD_RGI_DATABASE.out, plasmid_amr_ch )
 
+    // Transposan finder
+    TN3_FINDER_CHROMOSOME( chrm_amr_ch, DOWNLOAD_TNFINDER.out )
+    TN3_FINDER_PLASMID( plasmid_amr_ch, DOWNLOAD_TNFINDER.out )
+    TNCOMP_FINDER_CHROMOSOME( chrm_amr_ch, DOWNLOAD_TNFINDER.out )
+    TNCOMP_FINDER_PLASMID( plasmid_amr_ch, DOWNLOAD_TNFINDER.out )
+
     //Integron_finder
     //INTEGRON_FINDER_CHROMOSOME( chrm_amr_ch )
     //INTEGRON_FINDER_PLASMID( plasmid_amr_ch )
@@ -228,15 +236,6 @@ workflow WATERISK {
     //Virulence factor
     //fasta_ch = chrm_amr_ch.concat(plasmid_amr_ch)
     //VF_BLAST(fasta_ch)
-
-
-    //TRANSPOSON WITH REASONATE
-    //REASONATE_TOOLS_CHROMOSOME(chrm_amr_ch)
-    //REASONATE_PIPELINE_CHROMOSOME(REASONATE_TOOLS_CHROMOSOME.out)
-
-    //TRANSPOSON WITH REASONATE
-    //REASONATE_TOOLS_PLASMID(plasmid_amr_ch)
-    //REASONATE_PIPELINE_PLASMID(REASONATE_TOOLS_PLASMID.out)
 }
 
 /*
