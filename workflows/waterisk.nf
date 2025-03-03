@@ -105,6 +105,7 @@ include { KRAKEN }                      from '../modules/waterisk_modules.nf'
 include { VF_BLAST }                    from '../modules/waterisk_modules.nf'
 include { DBSCAN_CHROMOSOME }           from '../modules/waterisk_modules.nf'
 include { DBSCAN_PLASMID }              from '../modules/waterisk_modules.nf'
+include { TNFINDER_CORRECTION }         from '../modules/waterisk_modules.nf'
 include { TN3_FINDER_CHROMOSOME }       from '../modules/waterisk_modules.nf'
 include { TN3_FINDER_PLASMID }          from '../modules/waterisk_modules.nf'
 include { TNCOMP_FINDER_CHROMOSOME }    from '../modules/waterisk_modules.nf'
@@ -194,10 +195,11 @@ workflow WATERISK {
     RGI_PLASMID(DOWNLOAD_RGI_DATABASE.out, plasmid_amr_ch )
 
     // Transposan finder
-    TN3_FINDER_CHROMOSOME( chrm_amr_ch )
-    TN3_FINDER_PLASMID( plasmid_amr_ch )
-    TNCOMP_FINDER_CHROMOSOME( chrm_amr_ch )
-    TNCOMP_FINDER_PLASMID( plasmid_amr_ch )
+    TNFINDER_CORRECTION()
+    TN3_FINDER_CHROMOSOME( chrm_amr_ch, TNFINDER_CORRECTION.out )
+    TN3_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
+    TNCOMP_FINDER_CHROMOSOME( chrm_amr_ch , TNFINDER_CORRECTION.out )
+    TNCOMP_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
 
     //Integron_finder
     //INTEGRON_FINDER_CHROMOSOME( chrm_amr_ch )
