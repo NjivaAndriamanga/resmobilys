@@ -1,0 +1,6 @@
+[submodule "bin/tn3-ta_finder"]
+	path = bin/tn3-ta_finder
+	url = https://github.com/danillo-alvarenga/tn3-ta_finder
+[submodule "bin/tncomp_finder"]
+	path = bin/tncomp_finder
+	url = https://github.com/danillo-alvarenga/tncomp_finder
