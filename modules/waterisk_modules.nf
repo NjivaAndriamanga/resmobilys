@@ -124,7 +124,7 @@ process DOWNLOAD_DBSCAN {
 
 process DOWNLOAD_TNFINDER {
     cache true
-
+    label "tnfinder"
     output:
     env output
 
