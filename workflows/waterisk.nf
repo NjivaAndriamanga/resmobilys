@@ -124,7 +124,6 @@ workflow WATERISK {
     DOWNLOAD_VF_DATABASE().view()	
     DOWNLOAD_DBSCAN().view()
     DOWNLOAD_RGI_DATABASE()
-    DOWNLOAD_TNFINDER()
 
     /* if (params.raw == true){
         IDENTIFIED_RAW_SAMPLES(file(params.long_reads_dir), params.long_reads_dir)
