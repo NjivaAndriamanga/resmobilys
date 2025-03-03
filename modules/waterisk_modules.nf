@@ -153,6 +153,7 @@ process DBSCAN_CHROMOSOME {
     """
 }
 
+//TN3 script is outdated. Need to be updated (Temporary solution for the moment with sed)
 process TN3_FINDER_CHROMOSOME {
     publishDir "${params.output_dir}tnfinder/"
     label "tnfinder"
@@ -166,6 +167,7 @@ process TN3_FINDER_CHROMOSOME {
     script:
     id = chromosome_fasta.getSimpleName()
     """
+    sed -i '/Bio\.Alphabet/d' ${projectDir}/bin/tn3-ta_finder/Tn3+TA_finder.py
     python3 ${projectDir}/bin/tn3-ta_finder/Tn3+TA_finder.py -f ${chromosome_fasta} -o ${barID}_tn3 -t ${task.cpus}
     if [ -f ${barID}_tn3/${id}.txt ]; then
         mv ${barID}_tn3/${id}.txt ${barID}_chromosome_tn3.txt
@@ -210,6 +212,8 @@ process TNCOMP_FINDER_CHROMOSOME {
     script:
     id = chromosome_fasta.getSimpleName()
     """
+    sed -i '/Bio\.Alphabet/d' ${projectDir}/bin/tncomp_finder/TnComp_finder.py
+    sed -i 's/gbk_record = SeqRecord(Seq(sequence, IUPAC\.unambiguous_dna))/gbk_record = SeqRecord(Seq(sequence))/' ${projectDir}/bin/tncomp_finder/TnComp_finder.py
     python3 ${projectDir}/bin/tncomp_finder/TnComp_finder.py -f ${chromosome_fasta} -o ${barID}_tncomp -p ${task.cpus}
     if [ -f ${barID}_tncomp/${id}.txt ]; then
         mv ${barID}_tncomp/${id}.txt ${barID}_chromosome_tncomp.txt
@@ -233,6 +237,8 @@ process TNCOMP_FINDER_PLASMID {
     script:
     id = plasmid_fasta.getSimpleName()
     """
+    sed -i '/Bio\.Alphabet/d' ${projectDir}/bin/tncomp_finder/TnComp_finder.py
+    sed -i 's/gbk_record = SeqRecord(Seq(sequence, IUPAC\.unambiguous_dna))/gbk_record = SeqRecord(Seq(sequence))/' ${projectDir}/bin/tncomp_finder/TnComp_finder.py
     python3 ${projectDir}/bin/tncomp_finder/TnComp_finder.py -f ${plasmid_fasta} -o ${barID}_tncomp -p ${task.cpus}
     if [ -f ${barID}_tncomp/${id}.txt ]; then
         mv ${barID}_tncomp/${id}.txt ${barID}_plasmid_tncomp.txt
