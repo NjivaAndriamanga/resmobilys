@@ -187,19 +187,19 @@ workflow WATERISK {
     chrm_amr_ch = complete_circular_chrm_ch.concat(complete_chrm_ch).concat(incomplete_chrm_ch)
     plasmid_amr_ch = complete_circular_plasmid_ch.concat(complete_plasmid_ch).concat(incomplete_plasmid_ch) 
 
-    ABRICATE_PLASMID( plasmid_amr_ch )
-    ABRICATE_CHRM( chrm_amr_ch)
-    AMRFINDER_CHRM( chrm_amr_ch )
-    AMRFINDER_PLASMID( plasmid_amr_ch)
-    RGI_CHRM(DOWNLOAD_RGI_DATABASE.out, chrm_amr_ch )
-    RGI_PLASMID(DOWNLOAD_RGI_DATABASE.out, plasmid_amr_ch )
+    //ABRICATE_PLASMID( plasmid_amr_ch )
+    //ABRICATE_CHRM( chrm_amr_ch)
+    //AMRFINDER_CHRM( chrm_amr_ch )
+    //AMRFINDER_PLASMID( plasmid_amr_ch)
+    //RGI_CHRM(DOWNLOAD_RGI_DATABASE.out, chrm_amr_ch )
+    //RGI_PLASMID(DOWNLOAD_RGI_DATABASE.out, plasmid_amr_ch )
 
     // Transposan finder
-    TNFINDER_CORRECTION()
-    TN3_FINDER_CHROMOSOME( chrm_amr_ch, TNFINDER_CORRECTION.out )
-    TN3_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
-    TNCOMP_FINDER_CHROMOSOME( chrm_amr_ch , TNFINDER_CORRECTION.out )
-    TNCOMP_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
+    //TNFINDER_CORRECTION()
+    //TN3_FINDER_CHROMOSOME( chrm_amr_ch, TNFINDER_CORRECTION.out )
+    //TN3_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
+    //TNCOMP_FINDER_CHROMOSOME( chrm_amr_ch , TNFINDER_CORRECTION.out )
+    //TNCOMP_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
 
     //Integron_finder
     //INTEGRON_FINDER_CHROMOSOME( chrm_amr_ch )
@@ -207,7 +207,7 @@ workflow WATERISK {
     //INTEGRON_FORMAT( INTEGRON_FINDER_CHROMOSOME.out.concat(INTEGRON_FINDER_PLASMID.out))
 
     //BUSCO
-    //BUSCO( chrm_amr_ch )
+    BUSCO( chrm_amr_ch )
 
     //DBSCAN
     //DBSCAN_CHROMOSOME( chrm_amr_ch , DOWNLOAD_DBSCAN.out )
@@ -229,10 +229,10 @@ workflow WATERISK {
     //MOB_CLUSTER(MERGE_TAXA.out, plasmid_merge, MERGE_TYPE.out)
 
     //KRAKEN
-    //if (params.kraken_db != "null" && params.kraken_taxonomy == true) {
-    //    KRAKEN(chrm_amr_ch,DOWNLOAD_KRAKEN_DATABASE.out)
-    //    kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
-    //}
+    if (params.kraken_db != "null" && params.kraken_taxonomy == true) {
+        KRAKEN(chrm_amr_ch,DOWNLOAD_KRAKEN_DATABASE.out)
+        kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
+    }
     
     //Virulence factor
     //fasta_ch = chrm_amr_ch.concat(plasmid_amr_ch)
