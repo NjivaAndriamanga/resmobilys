@@ -169,6 +169,22 @@
           "fa_icon": "fas fa-memory",
           "hidden": true,
           "help_text": "Use to set an upper-limit for the memory requirement for each process. Should be a string e.g. `--max_memory '1GB'`"
+        },
+        "default_cpus": {
+          "type": "integer",
+          "description": "Defaul CPUs for any single job.",
+          "default": 8,
+          "fa_icon": "fas fa-microchip",
+          "hidden": true,
+          "help_text": "Use to set a default CPUs requirement for each process. Should be a string e.g. `--default_cpus '1GB'`"
+        },
+        "default_memory": {
+          "type": "string",
+          "description": "Defaul memory for any single job.",
+          "default": "8GB",
+          "fa_icon": "fas fa-microchip",
+          "hidden": true,
+          "help_text": "Use to set a default CPUs requirement for each process. Should be a string e.g. `--default_cpus '1GB'`"
         }
       }
     }

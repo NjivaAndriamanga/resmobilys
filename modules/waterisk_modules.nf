@@ -171,6 +171,7 @@ process TNFINDER_CORRECTION {
 }
 
 process TN3_FINDER_CHROMOSOME {
+    cache true
     publishDir "${params.output_dir}tnfinder/"
     label "tnfinder"
 
@@ -217,6 +218,7 @@ process TN3_FINDER_PLASMID {
 }
 
 process TNCOMP_FINDER_CHROMOSOME {
+    cache true
     publishDir "${params.output_dir}tncompfinder/"
     label "tnfinder"
 
