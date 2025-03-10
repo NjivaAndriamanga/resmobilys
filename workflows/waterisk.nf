@@ -87,10 +87,8 @@ include { AMRFINDER_PLASMID}            from '../modules/waterisk_modules.nf'
 include { RGI_CHRM}                     from '../modules/waterisk_modules.nf'
 include { RGI_PLASMID}                  from '../modules/waterisk_modules.nf'
 include { PLASME_COMPLETE }             from '../modules/waterisk_modules.nf'
+include { PLASME }                      from '../modules/waterisk_modules.nf'
 include { PLASME_INCOMPLETE }           from '../modules/waterisk_modules.nf'
-include { ALIGN_READS_PLASMID }         from '../modules/waterisk_modules.nf'
-include { ASSEMBLY_PLASMID }            from '../modules/waterisk_modules.nf'
-include { ASSEMBLY_CHRM }               from '../modules/waterisk_modules.nf'
 include { BUSCO }                       from '../modules/waterisk_modules.nf'
 include { CHANGE_PLASMID_NAME }         from '../modules/waterisk_modules.nf'
 include { MOB_TYPER }                   from '../modules/waterisk_modules.nf'
@@ -175,17 +173,20 @@ workflow WATERISK {
     complete_chrm_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, chromosome]}
     complete_plasmid_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, plasmid]}
     
+    //For incomplete assembly, use plasme to infer chrm and plasmid contig
+    PLASME(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLASME_DATABASE.out)
+
     //Incomplete assembly, align reads and filter plasmid reads for incomplete assembly
-    PLASME_INCOMPLETE(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLASME_DATABASE.out)
-    ALIGN_READS_PLASMID(PLASME_INCOMPLETE.out.inferred_plasmid)
-    ASSEMBLY_PLASMID(ALIGN_READS_PLASMID.out.plasmid_reads)
-    ASSEMBLY_CHRM(ALIGN_READS_PLASMID.out.chrm_reads)
-    incomplete_plasmid_ch = ASSEMBLY_PLASMID.out
-    incomplete_chrm_ch = ASSEMBLY_CHRM.out
+    //PLASME_INCOMPLETE(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLASME_DATABASE.out)
+    //ALIGN_READS_PLASMID(PLASME_INCOMPLETE.out.inferred_plasmid)
+    //ASSEMBLY_PLASMID(ALIGN_READS_PLASMID.out.plasmid_reads)
+    //ASSEMBLY_CHRM(ALIGN_READS_PLASMID.out.chrm_reads)
+    //incomplete_plasmid_ch = ASSEMBLY_PLASMID.out
+    //incomplete_chrm_ch = ASSEMBLY_CHRM.out
     
     //AMR detection
-    chrm_amr_ch = complete_circular_chrm_ch.concat(complete_chrm_ch).concat(incomplete_chrm_ch)
-    plasmid_amr_ch = complete_circular_plasmid_ch.concat(complete_plasmid_ch).concat(incomplete_plasmid_ch) 
+    chrm_amr_ch = complete_circular_chrm_ch.concat(complete_chrm_ch).concat(PLASME.out.inferred_chrm)
+    plasmid_amr_ch = complete_circular_plasmid_ch.concat(complete_plasmid_ch).concat(PLASME.out.inferred_plasmid) 
 
     ABRICATE_PLASMID( plasmid_amr_ch )
     ABRICATE_CHRM( chrm_amr_ch)

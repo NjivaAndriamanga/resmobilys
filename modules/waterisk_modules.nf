@@ -601,6 +601,27 @@ process PLASME_COMPLETE {
     """
 }
 
+process PLASME {
+    label 'plasme'
+    publishDir "${params.output_dir}plasme_output/"
+
+    input:
+    tuple val(barID), path(fastq), path(sample_fasta)
+    val x
+
+    output:
+    tuple val(barID), path("${barID}_plasme_plasmid.fasta"), emit: inferred_plasmid
+    tuple val(barID), path("${barID}_plasme_chrm.fasta"), emit: inferred_chrm
+
+    script:
+    """
+    PLASMe.py ${sample_fasta} ${barID}_plasme_plasmid.fasta -d ${params.plasme_db}
+    awk ' { print \$1 }' ${barID}_plasme_plasmid.fasta_report.csv > chrm_contig.txt
+    seqkit grep -v -f chrm_contig.txt ${sample_fasta} -o ${barID}_plasme_chrm.fasta
+    
+    """
+}
+
 process PLASME_INCOMPLETE {
     label 'plasme'
     publishDir "${params.output_dir}plasme_output/"
@@ -610,8 +631,8 @@ process PLASME_INCOMPLETE {
     val x
 
     output:
-    tuple val(barID), path(fastq), path("${barID}_plasme_chrm.fasta"), path("${barID}_plasme_plasmid.fasta"), emit: inferred_plasmid
-    val x
+    tuple val(barID), path("${barID}_plasme_plasmid.fasta"), emit: inferred_plasmid
+    tuple val(barID), path("${barID}_plasme_chrm.fasta"), emit: inferred_chrms
 
     script:
     """
