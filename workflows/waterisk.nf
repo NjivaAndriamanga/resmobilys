@@ -192,6 +192,8 @@ workflow WATERISK {
     ABRICATE_CHRM( chrm_amr_ch)
     RGI_CHRM(DOWNLOAD_RGI_DATABASE.out, chrm_amr_ch )
     RGI_PLASMID(DOWNLOAD_RGI_DATABASE.out, plasmid_amr_ch )
+    AMRFINDER_CHRM( chrm_amr_ch )
+    AMRFINDER_PLASMID( plasmid_amr_ch )
 
     // Transposan finder
     TNFINDER_CORRECTION()
