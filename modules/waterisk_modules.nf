@@ -40,6 +40,7 @@ process DOWNLOAD_PLASME_DATABASE {
 
 process DOWNLOAD_KRAKEN_DATABASE {
     cache true
+
     output:
     env output
 
@@ -67,6 +68,7 @@ process DOWNLOAD_KRAKEN_DATABASE {
 
 process DOWNLOAD_VF_DATABASE {
     cache true
+
     output:
     env output
 
@@ -90,6 +92,7 @@ process DOWNLOAD_VF_DATABASE {
 
 process DOWNLOAD_DBSCAN {
     cache true
+
     output:
     env output
 
@@ -124,6 +127,7 @@ process DOWNLOAD_DBSCAN {
 
 process DOWNLOAD_RGI_DATABASE {
     cache true
+
     output:
     path "card.json"
 
@@ -136,7 +140,7 @@ process DOWNLOAD_RGI_DATABASE {
 }
 
 process DBSCAN_CHROMOSOME {
-    publishDir "${params.output_dir}dbscan/"
+    //publishDir "${params.output_dir}dbscan/"
     label "process_high"
 
     input:
@@ -155,6 +159,7 @@ process DBSCAN_CHROMOSOME {
 
 //TN3 script is outdated. Need to be updated (Temporary solution for the moment with sed)
 process TNFINDER_CORRECTION {
+    label "process_single"
     
     output:
     env output
