@@ -160,7 +160,7 @@ process DBSCAN_CHROMOSOME {
 //TN3 script is outdated. Need to be updated (Temporary solution for the moment with sed)
 process TNFINDER_CORRECTION {
     label "process_single"
-    
+
     output:
     env output
 
