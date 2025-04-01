@@ -392,7 +392,6 @@ For incomplete assembly, contigs are written in sample_final.fasta
 process ASSEMBLE_GENOME {
     cache true
     label 'process_high'
-    publishDir "${params.output_dir}hybracter/"
     cpus { task.attempt < 2 ? task.cpus : 1 } //If blastx in dnaapler doesn't found hit fot certain seq length, there is a segmentation fault (temporary fix: reduce cpus to 1)
     errorStrategy { task.attempt < 3 ? 'retry' : 'ignore'}
 
@@ -440,7 +439,6 @@ Busco assembly evaluation
 */
 process BUSCO {
     label 'busco'
-    publishDir "${params.output_dir}busco/"
 
     input:
     tuple val(barID), path(fasta)
@@ -459,7 +457,7 @@ Identify AMR gene on plasmid. Abricate with megares to identify heavy and efflux
 Resistance to drugs identified with abricate are remove with grep
 */
 process ABRICATE_PLASMID {
-    publishDir "${params.output_dir}final_output/"
+    label 'abricate'
 
     input:
     tuple val(barID) ,path(plasmid_fasta)
@@ -474,7 +472,7 @@ process ABRICATE_PLASMID {
 }
 
 process ABRICATE_CHRM {
-    publishDir "${params.output_dir}final_output/"
+    label 'abricate'
 
     input:
     tuple val(barID), path(chrm_fasta)
@@ -490,7 +488,6 @@ process ABRICATE_CHRM {
 
 process AMRFINDER_PLASMID {
     label 'amrfinder'
-    publishDir "${params.output_dir}final_output/"
     
     input:
     tuple val(barID) , path(plasmid_fasta)
@@ -506,7 +503,6 @@ process AMRFINDER_PLASMID {
 
 process AMRFINDER_CHRM {
     label 'amrfinder'
-    publishDir "${params.output_dir}final_output/"
     
     input:
     tuple val(barID) , path(chrm_fasta)
@@ -522,7 +518,6 @@ process AMRFINDER_CHRM {
 
 process RGI_CHRM {
     label 'rgi'
-    publishDir "${params.output_dir}final_output/"
     
     input:
     path card_json
@@ -541,7 +536,6 @@ process RGI_CHRM {
 
 process RGI_PLASMID {
     label 'rgi'
-    publishDir "${params.output_dir}final_output/"
     
     input:
     path card_json
@@ -564,7 +558,6 @@ process RGI_PLASMID {
 
 //Filter circular plasmid in a fasta file from a tab file
 process FILTER_CIRCULAR_PLASMID {
-    publishDir "${params.output_dir}hybracter/"
 
     input:
     tuple val(barID), path(tab_file), path(chromosome),path(putative_plasmid)
@@ -585,7 +578,6 @@ process FILTER_CIRCULAR_PLASMID {
 //Infer contig from a fasta file
 process PLASME_COMPLETE {
     label 'plasme'
-    publishDir "${params.output_dir}plasme_output/"
 
     input:
     tuple val(barID), path(chromosome), path(plasmid), path(putative_plasmid)
@@ -608,7 +600,6 @@ process PLASME_COMPLETE {
 
 process PLASME {
     label 'plasme'
-    publishDir "${params.output_dir}plasme_output/"
 
     input:
     tuple val(barID), path(fastq), path(sample_fasta)
@@ -629,7 +620,6 @@ process PLASME {
 
 process PLASME_INCOMPLETE {
     label 'plasme'
-    publishDir "${params.output_dir}plasme_output/"
 
     input:
     tuple val(barID), path(fastq), path(sample_fasta)
@@ -729,7 +719,7 @@ process ASSEMBLY_CHRM {
 Add BarID for each plasmids id
 */
 process CHANGE_PLASMID_NAME {
-    cpus 1
+    label 'process_single'
 
     input:
     tuple val(barID) ,path(plasmid_fasta)
@@ -759,7 +749,7 @@ process MOB_TYPER {
 }
 
 process MERGE_TYPE {
-    publishDir "${params.output_dir}plasmid_annotation/"
+    label 'merge'
 
     input:
     path(all_plasmid_type)
@@ -791,7 +781,7 @@ process CREATE_TAXA {
 }
 
 process MERGE_TAXA {
-    publishDir "${params.output_dir}plasmid_annotation/"
+    label 'merge'
 
     input:
     path(all_plasmid_tax)
@@ -808,7 +798,6 @@ process MERGE_TAXA {
 
 process MOB_CLUSTER {
     label 'mob'
-    publishDir "${params.output_dir}plasmid_annotation/"
 
     input:
     path(plasmids_tax)
@@ -827,7 +816,6 @@ process MOB_CLUSTER {
 
 process INTEGRON_FINDER_PLASMID {
     label 'integron_finder'
-    publishDir "${params.output_dir}intergron_finder/"
 
     input:
     tuple val(barID) ,path(plasmid_fasta)
@@ -845,7 +833,6 @@ process INTEGRON_FINDER_PLASMID {
 
 process INTEGRON_FINDER_CHROMOSOME {
     label 'integron_finder'
-    publishDir "${params.output_dir}intergron_finder/"
 
     input:
     tuple val(barID) ,path(chromosome_fasta)
@@ -865,7 +852,7 @@ process INTEGRON_FINDER_CHROMOSOME {
 Format integron_finder output to GFF3. 
 */
 process INTEGRON_FORMAT {
-    publishDir "${params.output_dir}intergron_finder/"
+    label 'integron_finder'
 
     input:
     tuple val(barID) ,path(integron)
@@ -903,7 +890,6 @@ process INTEGRON_FORMAT {
 
 process KRAKEN {
     label 'process_high'
-    publishDir "${params.output_dir}kraken/"
 
     input:
     tuple val(barID) ,path(chromosome_fasta)
@@ -926,8 +912,6 @@ process KRAKEN {
 Blast for virulence factors and keeps track of unique values (gene) in column 2
 */
 process VF_BLAST {
-    publishDir "${params.output_dir}vf_blast/"
-    label 'process_high'
 
     input:
     tuple val(barID) ,path(fasta)
