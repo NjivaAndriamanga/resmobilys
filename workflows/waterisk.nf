@@ -74,7 +74,6 @@ include { DOWNLOAD_KRAKEN_DATABASE }    from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_VF_DATABASE }        from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_DBSCAN }             from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_RGI_DATABASE }       from '../modules/waterisk_modules.nf'
-include { IDENTIFIED_RAW_SAMPLES }      from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_SAMPLES}           from '../modules/waterisk_modules.nf'
 include { MERGE_SEPARATE_FASTQ }        from '../modules/waterisk_modules.nf'
 include { CLEAN_LONG_READS }            from '../modules/waterisk_modules.nf'
@@ -124,12 +123,6 @@ workflow WATERISK {
     DOWNLOAD_DBSCAN().view()
     DOWNLOAD_RGI_DATABASE()
 
-    /* if (params.raw == true){
-        IDENTIFIED_RAW_SAMPLES(file(params.long_reads_dir), params.long_reads_dir)
-        (fastq) = MERGE_SEPARATE_FASTQ(IDENTIFIED_SAMPLES.out.flatten())
-    }
-    */
-
     IDENTIFIED_SAMPLES(ch_input)
     fastq_long_reads_ch = IDENTIFIED_SAMPLES.out.long_reads
     genome_size_ch = IDENTIFIED_SAMPLES.out.genome_size
@@ -177,67 +170,67 @@ workflow WATERISK {
     PLASME(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLASME_DATABASE.out)
 
     //Incomplete assembly, align reads and filter plasmid reads for incomplete assembly
-    //PLASME_INCOMPLETE(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLASME_DATABASE.out)
-    //ALIGN_READS_PLASMID(PLASME_INCOMPLETE.out.inferred_plasmid)
-    //ASSEMBLY_PLASMID(ALIGN_READS_PLASMID.out.plasmid_reads)
-    //ASSEMBLY_CHRM(ALIGN_READS_PLASMID.out.chrm_reads)
-    //incomplete_plasmid_ch = ASSEMBLY_PLASMID.out
-    //incomplete_chrm_ch = ASSEMBLY_CHRM.out
+    PLASME_INCOMPLETE(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLASME_DATABASE.out)
+    ALIGN_READS_PLASMID(PLASME_INCOMPLETE.out.inferred_plasmid)
+    ASSEMBLY_PLASMID(ALIGN_READS_PLASMID.out.plasmid_reads)
+    ASSEMBLY_CHRM(ALIGN_READS_PLASMID.out.chrm_reads)
+    incomplete_plasmid_ch = ASSEMBLY_PLASMID.out
+    incomplete_chrm_ch = ASSEMBLY_CHRM.out
     
     //AMR detection
     chrm_amr_ch = complete_circular_chrm_ch.concat(complete_chrm_ch).concat(PLASME.out.inferred_chrm)
     plasmid_amr_ch = complete_circular_plasmid_ch.concat(complete_plasmid_ch).concat(PLASME.out.inferred_plasmid) 
 
-    // ABRICATE_PLASMID( plasmid_amr_ch )
-    // ABRICATE_CHRM( chrm_amr_ch)
-    // RGI_CHRM(DOWNLOAD_RGI_DATABASE.out, chrm_amr_ch )
-    // RGI_PLASMID(DOWNLOAD_RGI_DATABASE.out, plasmid_amr_ch )
-    // AMRFINDER_CHRM( chrm_amr_ch )
-    // AMRFINDER_PLASMID( plasmid_amr_ch )
+    ABRICATE_PLASMID( plasmid_amr_ch )
+    ABRICATE_CHRM( chrm_amr_ch)
+    RGI_CHRM(DOWNLOAD_RGI_DATABASE.out, chrm_amr_ch )
+    RGI_PLASMID(DOWNLOAD_RGI_DATABASE.out, plasmid_amr_ch )
+    AMRFINDER_CHRM( chrm_amr_ch )
+    AMRFINDER_PLASMID( plasmid_amr_ch )
 
     // Transposan finder
-    // TNFINDER_CORRECTION()
-    // TN3_FINDER_CHROMOSOME( chrm_amr_ch, TNFINDER_CORRECTION.out )
-    // TN3_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
-    // TNCOMP_FINDER_CHROMOSOME( chrm_amr_ch , TNFINDER_CORRECTION.out )
-    // TNCOMP_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
+    TNFINDER_CORRECTION()
+    TN3_FINDER_CHROMOSOME( chrm_amr_ch, TNFINDER_CORRECTION.out )
+    TN3_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
+    TNCOMP_FINDER_CHROMOSOME( chrm_amr_ch , TNFINDER_CORRECTION.out )
+    TNCOMP_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
 
     //Integron_finder
-    // INTEGRON_FINDER_CHROMOSOME( chrm_amr_ch )
-    // INTEGRON_FINDER_PLASMID( plasmid_amr_ch )
-    // INTEGRON_FORMAT( INTEGRON_FINDER_CHROMOSOME.out.concat(INTEGRON_FINDER_PLASMID.out))
+    INTEGRON_FINDER_CHROMOSOME( chrm_amr_ch )
+    INTEGRON_FINDER_PLASMID( plasmid_amr_ch )
+    INTEGRON_FORMAT( INTEGRON_FINDER_CHROMOSOME.out.concat(INTEGRON_FINDER_PLASMID.out))
 
-    // //BUSCO
-    // BUSCO( chrm_amr_ch )
+    //BUSCO
+    BUSCO( chrm_amr_ch )
 
-    // //DBSCAN
-    // DBSCAN_CHROMOSOME( chrm_amr_ch , DOWNLOAD_DBSCAN.out )
-    // DBSCAN_PLASMID( plasmid_amr_ch , DOWNLOAD_DBSCAN.out )
+    //DBSCAN
+    DBSCAN_CHROMOSOME( chrm_amr_ch , DOWNLOAD_DBSCAN.out )
+    DBSCAN_PLASMID( plasmid_amr_ch , DOWNLOAD_DBSCAN.out )
 
     // // Plasmid typing and clustering
-    // CHANGE_PLASMID_NAME( plasmid_amr_ch)
-    // MOB_TYPER(CHANGE_PLASMID_NAME.out)
+    CHANGE_PLASMID_NAME( plasmid_amr_ch)
+    MOB_TYPER(CHANGE_PLASMID_NAME.out)
 
-    // plasmid_merge = CHANGE_PLASMID_NAME.out.map{barID, plasmid -> plasmid }.collectFile(name:"plasmid_merge.fasta", storeDir:"${params.output_dir}plasmid_annotation/")
+    plasmid_merge = CHANGE_PLASMID_NAME.out.map{barID, plasmid -> plasmid }.collectFile(name:"plasmid_merge.fasta", storeDir:"${params.output_dir}plasmid_annotation/")
 
-    // type_to_merge = MOB_TYPER.out.map{barID, type -> type }.collectFile()
-    // MERGE_TYPE(type_to_merge)
+    type_to_merge = MOB_TYPER.out.map{barID, type -> type }.collectFile()
+    MERGE_TYPE(type_to_merge)
 
     // CREATE_TAXA(MOB_TYPER.out)
-    // taxa_to_merge = CREATE_TAXA.out.collectFile()
-    // MERGE_TAXA(taxa_to_merge)
+    taxa_to_merge = CREATE_TAXA.out.collectFile()
+    MERGE_TAXA(taxa_to_merge)
 
-    // MOB_CLUSTER(MERGE_TAXA.out, plasmid_merge, MERGE_TYPE.out)
+    MOB_CLUSTER(MERGE_TAXA.out, plasmid_merge, MERGE_TYPE.out)
 
     // //KRAKEN
-    // if (params.kraken_db != "null" && params.kraken_taxonomy == true) {
-    //     KRAKEN(chrm_amr_ch,DOWNLOAD_KRAKEN_DATABASE.out)
-    //     kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
-    // }
+    if (params.kraken_db != "null" && params.kraken_taxonomy == true) {
+        KRAKEN(chrm_amr_ch,DOWNLOAD_KRAKEN_DATABASE.out)
+        kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
+    }
     
     // //Virulence factor
-    // fasta_ch = chrm_amr_ch.concat(plasmid_amr_ch)
-    // VF_BLAST(fasta_ch)
+    fasta_ch = chrm_amr_ch.concat(plasmid_amr_ch)
+    VF_BLAST(fasta_ch)
 }
 
 /*

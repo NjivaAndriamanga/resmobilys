@@ -11,16 +11,8 @@
       "description": "",
       "default": "",
       "properties": {
-        "assembly": {
-          "type": "string",
-          "default": null,
-          "description": "Long reads assembly or hybrid ",
-          "errorMessage": "No assembly method provided",
-          "enum": ["long_reads","hybrid"]
-        },
         "output_dir": {
           "type": "string",
-          "default": "waterisk_output/",
           "description": "Output directory for the pipeline",
           "format": "directory-path"
         },
@@ -32,6 +24,13 @@
           "exists": true,
           "errorMessage": "Check your personnal config file or use the --index_file option",
           "mimetype": "text/csv"
+        },
+        "assembly": {
+          "type": "string",
+          "default": null,
+          "description": "Long reads assembly or hybrid ",
+          "errorMessage": "No assembly method provided",
+          "enum": ["long_reads","hybrid"]
         }
       },
       "required": ["assembly","index_file"]
@@ -82,11 +81,10 @@
         },
         "flyeModel": {
           "type": "string",
-          "default": "--nano-hq",
           "description": "Flye assembly model",
           "enum": ["--nano-hq","--nano-corr","--nano-raw","--pacbio-raw","--pacbio-corr","--pacbio-hifi"]
         }
-        }
+      }
     },
     "Further_parameters": {
       "title": "Further parameters",
@@ -94,11 +92,6 @@
       "description": "",
       "default": "",
       "properties": {
-        "raw": {
-          "type": "boolean",
-          "default": false,
-          "description": "set to true if fastq file are separate in multiple fastq file"
-        },
         "amr_db": {
           "type": "string",
           "default": "megares",
