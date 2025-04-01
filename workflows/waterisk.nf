@@ -207,7 +207,7 @@ workflow WATERISK {
     DBSCAN_CHROMOSOME( chrm_amr_ch , DOWNLOAD_DBSCAN.out )
     DBSCAN_PLASMID( plasmid_amr_ch , DOWNLOAD_DBSCAN.out )
 
-    // // Plasmid typing and clustering
+    // Plasmid typing and clustering
     CHANGE_PLASMID_NAME( plasmid_amr_ch)
     MOB_TYPER(CHANGE_PLASMID_NAME.out)
 
@@ -216,7 +216,7 @@ workflow WATERISK {
     type_to_merge = MOB_TYPER.out.map{barID, type -> type }.collectFile()
     MERGE_TYPE(type_to_merge)
 
-    // CREATE_TAXA(MOB_TYPER.out)
+    CREATE_TAXA(MOB_TYPER.out)
     taxa_to_merge = CREATE_TAXA.out.collectFile()
     MERGE_TAXA(taxa_to_merge)
 
