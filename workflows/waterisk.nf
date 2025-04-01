@@ -170,12 +170,12 @@ workflow WATERISK {
     PLASME(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLASME_DATABASE.out)
 
     //Incomplete assembly, align reads and filter plasmid reads for incomplete assembly
-    PLASME_INCOMPLETE(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLASME_DATABASE.out)
-    ALIGN_READS_PLASMID(PLASME_INCOMPLETE.out.inferred_plasmid)
-    ASSEMBLY_PLASMID(ALIGN_READS_PLASMID.out.plasmid_reads)
-    ASSEMBLY_CHRM(ALIGN_READS_PLASMID.out.chrm_reads)
-    incomplete_plasmid_ch = ASSEMBLY_PLASMID.out
-    incomplete_chrm_ch = ASSEMBLY_CHRM.out
+    // PLASME_INCOMPLETE(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLASME_DATABASE.out)
+    // ALIGN_READS_PLASMID(PLASME_INCOMPLETE.out.inferred_plasmid)
+    // ASSEMBLY_PLASMID(ALIGN_READS_PLASMID.out.plasmid_reads)
+    // ASSEMBLY_CHRM(ALIGN_READS_PLASMID.out.chrm_reads)
+    // incomplete_plasmid_ch = ASSEMBLY_PLASMID.out
+    // incomplete_chrm_ch = ASSEMBLY_CHRM.out
     
     //AMR detection
     chrm_amr_ch = complete_circular_chrm_ch.concat(complete_chrm_ch).concat(PLASME.out.inferred_chrm)
