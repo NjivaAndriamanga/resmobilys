@@ -92,8 +92,7 @@ include { MERGE_TYPE }                  from '../modules/waterisk_modules.nf'
 include { CREATE_TAXA }                 from '../modules/waterisk_modules.nf'
 include { MERGE_TAXA }                  from '../modules/waterisk_modules.nf'
 include { MOB_CLUSTER }                 from '../modules/waterisk_modules.nf'
-include { INTEGRON_FINDER_CHROMOSOME}   from '../modules/waterisk_modules.nf'
-include { INTEGRON_FINDER_PLASMID }     from '../modules/waterisk_modules.nf'
+include { INTEGRON_FINDER}              from '../modules/waterisk_modules.nf'
 include { INTEGRON_FORMAT }             from '../modules/waterisk_modules.nf'
 include { KRAKEN }                      from '../modules/waterisk_modules.nf'
 include { VF_BLAST }                    from '../modules/waterisk_modules.nf'
@@ -192,9 +191,8 @@ workflow WATERISK {
     // TNCOMP_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
 
     //Integron_finder
-    // INTEGRON_FINDER_CHROMOSOME( chrm_amr_ch )
-    // INTEGRON_FINDER_PLASMID( plasmid_amr_ch )
-    // INTEGRON_FORMAT( INTEGRON_FINDER_CHROMOSOME.out.concat(INTEGRON_FINDER_PLASMID.out))
+    INTEGRON_FINDER( contig_ch )
+    INTEGRON_FORMAT( INTEGRON_FINDER.out)
 
     //BUSCO
     // BUSCO( chrm_amr_ch )

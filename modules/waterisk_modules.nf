@@ -766,37 +766,20 @@ process MOB_CLUSTER {
     """
 }
 
-process INTEGRON_FINDER_PLASMID {
+process INTEGRON_FINDER {
     label 'integron_finder'
 
     input:
-    tuple val(barID) ,path(plasmid_fasta)
+    tuple val(barID) ,path(fasta), val(type)
 
     output:
-    tuple val(barID) ,path("${barID}_plasmid_integron.txt")
+    tuple val(barID) ,path("${barID}_${type}_integron.txt"), val(type)
 
     script:
-    file_name = plasmid_fasta.getSimpleName()
+    file_name = fasta.getSimpleName()
     """
-    integron_finder --local-max ${plasmid_fasta}
-    mv Results_Integron_Finder_${file_name}/${file_name}.integrons ${barID}_plasmid_integron.txt
-    """
-}
-
-process INTEGRON_FINDER_CHROMOSOME {
-    label 'integron_finder'
-
-    input:
-    tuple val(barID) ,path(chromosome_fasta)
-
-    output: 
-    tuple val(barID) ,path("${barID}_chromosome_integron.txt") 
-
-    script:
-    file_name = chromosome_fasta.getSimpleName()
-    """
-    integron_finder --local-max ${chromosome_fasta}
-    mv Results_Integron_Finder_${file_name}/${file_name}.integrons ${barID}_chromosome_integron.txt
+    integron_finder --local-max ${fasta}
+    mv Results_Integron_Finder_${file_name}/${file_name}.integrons ${barID}_${type}_integron.txt
     """
 }
 
@@ -807,10 +790,10 @@ process INTEGRON_FORMAT {
     label 'integron_finder'
 
     input:
-    tuple val(barID) ,path(integron)
+    tuple val(barID) ,path(integron), val(type)
 
     output:
-    tuple val(barID) ,path("${file_name}_summary.txt")
+    tuple val(barID) ,path("${file_name}_summary.txt"), val(type)
 
     script:
     file_name = integron.getSimpleName()
