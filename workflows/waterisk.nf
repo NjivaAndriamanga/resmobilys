@@ -80,8 +80,7 @@ include { CLEAN_LONG_READS }            from '../modules/waterisk_modules.nf'
 include { ASSEMBLE_GENOME }             from '../modules/waterisk_modules.nf'
 include { FILTER_CIRCULAR_PLASMID }     from '../modules/waterisk_modules.nf'
 include { ABRICATE }                    from '../modules/waterisk_modules.nf'
-include { AMRFINDER_CHRM}               from '../modules/waterisk_modules.nf'
-include { AMRFINDER_PLASMID}            from '../modules/waterisk_modules.nf'
+include { AMRFINDER}                    from '../modules/waterisk_modules.nf'
 include { RGI}                          from '../modules/waterisk_modules.nf'
 include { PLASME_COMPLETE }             from '../modules/waterisk_modules.nf'
 include { PLASME }                      from '../modules/waterisk_modules.nf'
@@ -183,10 +182,8 @@ workflow WATERISK {
 
     ABRICATE(contig_ch)
     RGI(DOWNLOAD_RGI_DATABASE.out, contig_ch)
+    AMRFINDER( contig_ch )
     
-    // AMRFINDER_CHRM( chrm_amr_ch )
-    // AMRFINDER_PLASMID( plasmid_amr_ch )
-
     // Transposan finder
     // TNFINDER_CORRECTION()
     // TN3_FINDER_CHROMOSOME( chrm_amr_ch, TNFINDER_CORRECTION.out )

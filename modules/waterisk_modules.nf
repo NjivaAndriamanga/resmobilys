@@ -471,33 +471,18 @@ process ABRICATE {
     """
 }
 
-process AMRFINDER_PLASMID {
+process AMRFINDER {
     label 'amrfinder'
     
     input:
-    tuple val(barID) , path(plasmid_fasta)
+    tuple val(barID) , path(fasta), val(type)
     
     output:
-    tuple val(barID), path(plasmid_fasta), path("${barID}_plasmid_arg.txt")
+    tuple val(barID), path(fasta), path("${barID}_${type}_arg.txt"), val(type)
 
     script:
     """
-    amrfinder --nucleotide ${plasmid_fasta} > ${barID}_plasmid_arg.txt
-    """
-}
-
-process AMRFINDER_CHRM {
-    label 'amrfinder'
-    
-    input:
-    tuple val(barID) , path(chrm_fasta)
-    
-    output:
-    tuple val(barID), path(chrm_fasta), path("${barID}_chrm_arg.txt")
-
-    script:
-    """
-    amrfinder --nucleotide ${chrm_fasta} > ${barID}_chrm_arg.txt
+    amrfinder --nucleotide ${fasta} > ${barID}_${type}_arg.txt
     """
 }
 
