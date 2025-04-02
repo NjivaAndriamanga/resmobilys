@@ -456,33 +456,18 @@ process BUSCO {
 Identify AMR gene on plasmid. Abricate with megares to identify heavy and efflux pump. AMR finder plus for ARG.
 Resistance to drugs identified with abricate are remove with grep
 */
-process ABRICATE_PLASMID {
+process ABRICATE {
     label 'abricate'
 
     input:
-    tuple val(barID) ,path(plasmid_fasta)
+    tuple val(barID), path(fasta), val(type)
 
     output:
-    tuple val(barID), path (plasmid_fasta),path("${barID}_plasmid_amr.txt"), emit: plasmid_amr
+    tuple val(barID), path(fasta), path("${barID}_${type}_amr.txt"), val(type), emit: amr
 
     script:
     """
-    abricate -db ${params.amr_db} ${plasmid_fasta} | grep -v "Drugs" > ${barID}_plasmid_amr.txt
-    """
-}
-
-process ABRICATE_CHRM {
-    label 'abricate'
-
-    input:
-    tuple val(barID), path(chrm_fasta)
-
-    output:
-    tuple val(barID), path (chrm_fasta),path("${barID}_chrm_amr.txt"), emit: chrm_amr
-    
-    script:
-    """
-    abricate -db ${params.amr_db} ${chrm_fasta} | grep -v "Drugs" > ${barID}_chrm_amr.txt
+    abricate -db ${params.amr_db} ${fasta} | grep -v "Drugs" > ${barID}_${type}_amr.txt
     """
 }
 
@@ -606,8 +591,8 @@ process PLASME {
     val x
 
     output:
-    tuple val(barID), path("${barID}_plasme_plasmid.fasta"), emit: inferred_plasmid
-    tuple val(barID), path("${barID}_plasme_chrm.fasta"), emit: inferred_chrm
+    tuple val(barID), path("${barID}_plasme_plasmid.fasta"), val("plasmid"), emit: inferred_plasmid
+    tuple val(barID), path("${barID}_plasme_chrm.fasta"), val("chrm"), emit: inferred_chrm
 
     script:
     """

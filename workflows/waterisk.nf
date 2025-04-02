@@ -79,8 +79,7 @@ include { MERGE_SEPARATE_FASTQ }        from '../modules/waterisk_modules.nf'
 include { CLEAN_LONG_READS }            from '../modules/waterisk_modules.nf'
 include { ASSEMBLE_GENOME }             from '../modules/waterisk_modules.nf'
 include { FILTER_CIRCULAR_PLASMID }     from '../modules/waterisk_modules.nf'
-include { ABRICATE_PLASMID }            from '../modules/waterisk_modules.nf'
-include { ABRICATE_CHRM }               from '../modules/waterisk_modules.nf'
+include { ABRICATE }            from '../modules/waterisk_modules.nf'
 include { AMRFINDER_CHRM}               from '../modules/waterisk_modules.nf'
 include { AMRFINDER_PLASMID}            from '../modules/waterisk_modules.nf'
 include { RGI_CHRM}                     from '../modules/waterisk_modules.nf'
@@ -145,11 +144,11 @@ workflow WATERISK {
     //Filtering complete where all plasmid is circular (1), complete but with non-circular plasmid (2) and incomplete (3)
     complete_assembly_ch = ASSEMBLE_GENOME.out.complete_assembly
 
-    complete_circular_ch = ASSEMBLE_GENOME.out.complete_assembly //1 Will be directly analyzed
+    complete_circular_ch = ASSEMBLE_GENOME.out.complete_assembly //1 Will be directly analyzed if all contigs are circular
         .filter{ barID, fastq, contig_stats, plassembler, chromosome, plasmids -> 
             check_plasmidAllCircular(contig_stats)}
-    complete_circular_chrm_ch = complete_circular_ch.map{ barID, fastq, contig, plassembler, chromosome, plasmid -> [barID, chromosome]}
-    complete_circular_plasmid_ch = complete_circular_ch.map{ barID, fastq, contig, plassembler, chromosome, plasmid -> [barID, plasmid]}
+    complete_circular_chrm_ch = complete_circular_ch.map{ barID, fastq, contig, plassembler, chromosome, plasmid -> [barID, chromosome, "chrm"]}
+    complete_circular_plasmid_ch = complete_circular_ch.map{ barID, fastq, contig, plassembler, chromosome, plasmid -> [barID, plasmid, "plasmid"]}
     
 
     complete_non_circular_ch = complete_assembly_ch //2
@@ -163,8 +162,8 @@ workflow WATERISK {
                                                                                                                 [ barID, contig_stats, chromosome,plasmids]}
     FILTER_CIRCULAR_PLASMID(putitative_plasmid_ch)
     PLASME_COMPLETE(FILTER_CIRCULAR_PLASMID.out, DOWNLOAD_PLASME_DATABASE.out)
-    complete_chrm_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, chromosome]}
-    complete_plasmid_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, plasmid]}
+    plasme_complete_chrm_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, chromosome, "chrm"]}
+    plasme_complete_plasmid_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, plasmid, "plasmid"]}
     
     //For incomplete assembly, use plasme to infer chrm and plasmid contig
     PLASME(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLASME_DATABASE.out)
@@ -178,59 +177,59 @@ workflow WATERISK {
     // incomplete_chrm_ch = ASSEMBLY_CHRM.out
     
     //AMR detection
-    chrm_amr_ch = complete_circular_chrm_ch.concat(complete_chrm_ch).concat(PLASME.out.inferred_chrm)
-    plasmid_amr_ch = complete_circular_plasmid_ch.concat(complete_plasmid_ch).concat(PLASME.out.inferred_plasmid) 
+    chrm_amr_ch = complete_circular_chrm_ch.concat(plasme_complete_chrm_ch).concat(PLASME.out.inferred_chrm)
+    plasmid_amr_ch = complete_circular_plasmid_ch.concat(plasme_complete_plasmid_ch).concat(PLASME.out.inferred_plasmid)
 
-    ABRICATE_PLASMID( plasmid_amr_ch )
-    ABRICATE_CHRM( chrm_amr_ch)
-    RGI_CHRM(DOWNLOAD_RGI_DATABASE.out, chrm_amr_ch )
-    RGI_PLASMID(DOWNLOAD_RGI_DATABASE.out, plasmid_amr_ch )
-    AMRFINDER_CHRM( chrm_amr_ch )
-    AMRFINDER_PLASMID( plasmid_amr_ch )
+    ABRICATE_PLASMID(chrm_amr_ch.concat(plasmid_amr_ch))
+    
+    // RGI_CHRM(DOWNLOAD_RGI_DATABASE.out, chrm_amr_ch )
+    // RGI_PLASMID(DOWNLOAD_RGI_DATABASE.out, plasmid_amr_ch )
+    // AMRFINDER_CHRM( chrm_amr_ch )
+    // AMRFINDER_PLASMID( plasmid_amr_ch )
 
     // Transposan finder
-    TNFINDER_CORRECTION()
-    TN3_FINDER_CHROMOSOME( chrm_amr_ch, TNFINDER_CORRECTION.out )
-    TN3_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
-    TNCOMP_FINDER_CHROMOSOME( chrm_amr_ch , TNFINDER_CORRECTION.out )
-    TNCOMP_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
+    // TNFINDER_CORRECTION()
+    // TN3_FINDER_CHROMOSOME( chrm_amr_ch, TNFINDER_CORRECTION.out )
+    // TN3_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
+    // TNCOMP_FINDER_CHROMOSOME( chrm_amr_ch , TNFINDER_CORRECTION.out )
+    // TNCOMP_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
 
     //Integron_finder
-    INTEGRON_FINDER_CHROMOSOME( chrm_amr_ch )
-    INTEGRON_FINDER_PLASMID( plasmid_amr_ch )
-    INTEGRON_FORMAT( INTEGRON_FINDER_CHROMOSOME.out.concat(INTEGRON_FINDER_PLASMID.out))
+    // INTEGRON_FINDER_CHROMOSOME( chrm_amr_ch )
+    // INTEGRON_FINDER_PLASMID( plasmid_amr_ch )
+    // INTEGRON_FORMAT( INTEGRON_FINDER_CHROMOSOME.out.concat(INTEGRON_FINDER_PLASMID.out))
 
     //BUSCO
-    BUSCO( chrm_amr_ch )
+    // BUSCO( chrm_amr_ch )
 
     //DBSCAN
-    DBSCAN_CHROMOSOME( chrm_amr_ch , DOWNLOAD_DBSCAN.out )
-    DBSCAN_PLASMID( plasmid_amr_ch , DOWNLOAD_DBSCAN.out )
+    // DBSCAN_CHROMOSOME( chrm_amr_ch , DOWNLOAD_DBSCAN.out )
+    // DBSCAN_PLASMID( plasmid_amr_ch , DOWNLOAD_DBSCAN.out )
 
     // Plasmid typing and clustering
-    CHANGE_PLASMID_NAME( plasmid_amr_ch)
-    MOB_TYPER(CHANGE_PLASMID_NAME.out)
+    // CHANGE_PLASMID_NAME( plasmid_amr_ch)
+    // MOB_TYPER(CHANGE_PLASMID_NAME.out)
 
-    plasmid_merge = CHANGE_PLASMID_NAME.out.map{barID, plasmid -> plasmid }.collectFile(name:"plasmid_merge.fasta", storeDir:"${params.output_dir}plasmid_annotation/")
+    // plasmid_merge = CHANGE_PLASMID_NAME.out.map{barID, plasmid -> plasmid }.collectFile(name:"plasmid_merge.fasta", storeDir:"${params.output_dir}plasmid_annotation/")
 
-    type_to_merge = MOB_TYPER.out.map{barID, type -> type }.collectFile()
-    MERGE_TYPE(type_to_merge)
+    // type_to_merge = MOB_TYPER.out.map{barID, type -> type }.collectFile()
+    // MERGE_TYPE(type_to_merge)
 
-    CREATE_TAXA(MOB_TYPER.out)
-    taxa_to_merge = CREATE_TAXA.out.collectFile()
-    MERGE_TAXA(taxa_to_merge)
+    // CREATE_TAXA(MOB_TYPER.out)
+    // taxa_to_merge = CREATE_TAXA.out.collectFile()
+    // MERGE_TAXA(taxa_to_merge)
 
-    MOB_CLUSTER(MERGE_TAXA.out, plasmid_merge, MERGE_TYPE.out)
+    // MOB_CLUSTER(MERGE_TAXA.out, plasmid_merge, MERGE_TYPE.out)
 
-    // //KRAKEN
-    if (params.kraken_db != "null" && params.kraken_taxonomy == true) {
-        KRAKEN(chrm_amr_ch,DOWNLOAD_KRAKEN_DATABASE.out)
-        kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
-    }
+    //KRAKEN
+    // if (params.kraken_db != "null" && params.kraken_taxonomy == true) {
+    //     KRAKEN(chrm_amr_ch,DOWNLOAD_KRAKEN_DATABASE.out)
+    //     kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
+    // }
     
     // //Virulence factor
-    fasta_ch = chrm_amr_ch.concat(plasmid_amr_ch)
-    VF_BLAST(fasta_ch)
+    // fasta_ch = chrm_amr_ch.concat(plasmid_amr_ch)
+    // VF_BLAST(fasta_ch)
 }
 
 /*
