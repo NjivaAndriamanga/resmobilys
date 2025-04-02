@@ -16,7 +16,7 @@
         },
         "genome_size": {
           "type": "integer",
-          "errorMessage": "Approximate genome size must be an integer. If unknown, set to 0."
+          "errorMessage": "Approximate genome size must be an integer in bp. If unknown, set to 0."
         },
         "sr1": {
           "type": "string",
