@@ -180,8 +180,8 @@ workflow WATERISK {
     chrm_amr_ch = complete_circular_chrm_ch.concat(plasme_complete_chrm_ch).concat(PLASME.out.inferred_chrm)
     plasmid_amr_ch = complete_circular_plasmid_ch.concat(plasme_complete_plasmid_ch).concat(PLASME.out.inferred_plasmid)
 
-    ABRICATE_PLASMID(chrm_amr_ch.concat(plasmid_amr_ch))
-    
+    ABRICATE(chrm_amr_ch.concat(plasmid_amr_ch))
+
     // RGI_CHRM(DOWNLOAD_RGI_DATABASE.out, chrm_amr_ch )
     // RGI_PLASMID(DOWNLOAD_RGI_DATABASE.out, plasmid_amr_ch )
     // AMRFINDER_CHRM( chrm_amr_ch )
