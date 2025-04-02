@@ -1,7 +1,7 @@
 
 log.info "\n"
 log.info "========================================================================================="
-log.info "Welcome to the WATERISK pipeline. For any questions or remarks, please contact the author \n"
+log.info "Welcome to the RESMOBILYS pipeline. For any questions or remarks, please contact the author \n"
 log.info "=========================================================================================="
 log.info "\n"
 
