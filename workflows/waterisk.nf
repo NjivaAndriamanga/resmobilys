@@ -198,8 +198,7 @@ workflow WATERISK {
     // BUSCO( chrm_amr_ch )
 
     //DBSCAN
-    // DBSCAN_CHROMOSOME( chrm_amr_ch , DOWNLOAD_DBSCAN.out )
-    // DBSCAN_PLASMID( plasmid_amr_ch , DOWNLOAD_DBSCAN.out )
+    DBSCAN( contig_ch , DOWNLOAD_DBSCAN.out )
 
     // Plasmid typing and clustering
     // CHANGE_PLASMID_NAME( plasmid_amr_ch)

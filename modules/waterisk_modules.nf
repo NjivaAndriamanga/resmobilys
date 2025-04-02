@@ -139,21 +139,32 @@ process DOWNLOAD_RGI_DATABASE {
     """
 }
 
-process DBSCAN_CHROMOSOME {
-    //publishDir "${params.output_dir}dbscan/"
+/*
+DBSCAN output an exit status 1 when no prophage is found for some fasta. This message is ignored for now
+*/
+process DBSCAN {
     label "process_high"
 
     input:
-    tuple val(barID) ,path(chromosome_fasta)
+    tuple val(barID) ,path(fasta), val(type)
     val x
 
     output:
-    tuple val(barID) ,path("${barID}_chrm_DBSCAN.txt")
+    tuple val(barID) ,path("${barID}_${type}_DBSCAN.txt"), val(type)
 
     script:
     """
-    python ${projectDir}/DBSCAN-SWA/bin/dbscan-swa.py --thread_num ${task.cpus} --input ${chromosome_fasta} --output dbscan_output
-    mv dbscan_output/bac_DBSCAN-SWA_prophage_summary.txt ${barID}_chrm_DBSCAN.txt
+    touch ${barID}_${type}_DBSCAN.txt
+    if [[ -s ${fasta} ]]; then
+        set +e
+        python ${projectDir}/DBSCAN-SWA/bin/dbscan-swa.py --thread_num ${task.cpus} --input ${fasta} --output dbscan_output
+        if [[ \$? -ne 0 ]]; then
+            echo "DBSCAN script failed because 0 prophages were found, but continuing..."
+        else
+            mv dbscan_output/bac_DBSCAN-SWA_prophage_summary.txt ${barID}_${type}_DBSCAN.txt
+        fi
+        set -e
+    fi
     """
 }
 
@@ -270,35 +281,7 @@ process TNCOMP_FINDER_PLASMID {
     """ 
 }
 
-/*
-DBSCAN output an exit status 1 when no prophage is found for some fasta. This message is ignored for now
-*/
-process DBSCAN_PLASMID {
-    publishDir "${params.output_dir}dbscan/"
-    label "process_high"
 
-    input:
-    tuple val(barID) ,path(plasmid_fasta)
-    val x
-
-    output:
-    tuple val(barID) ,path("${barID}_plasmid_DBSCAN.txt")
-
-    script:
-    """
-    touch ${barID}_plasmid_DBSCAN.txt
-    if [[ -s ${plasmid_fasta} ]]; then
-        set +e
-        python ${projectDir}/DBSCAN-SWA/bin/dbscan-swa.py --thread_num ${task.cpus} --input ${plasmid_fasta} --output dbscan_output
-        if [[ \$? -ne 0 ]]; then
-            echo "DBSCAN script failed because 0 prophages were found, but continuing..."
-        else
-            mv dbscan_output/bac_DBSCAN-SWA_prophage_summary.txt ${barID}_plasmid_DBSCAN.txt
-        fi
-        set -e
-    fi
-    """
-}
 
 /*
 List all barcodes contain in the input directory from miniON output
