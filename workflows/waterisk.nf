@@ -79,11 +79,10 @@ include { MERGE_SEPARATE_FASTQ }        from '../modules/waterisk_modules.nf'
 include { CLEAN_LONG_READS }            from '../modules/waterisk_modules.nf'
 include { ASSEMBLE_GENOME }             from '../modules/waterisk_modules.nf'
 include { FILTER_CIRCULAR_PLASMID }     from '../modules/waterisk_modules.nf'
-include { ABRICATE }            from '../modules/waterisk_modules.nf'
+include { ABRICATE }                    from '../modules/waterisk_modules.nf'
 include { AMRFINDER_CHRM}               from '../modules/waterisk_modules.nf'
 include { AMRFINDER_PLASMID}            from '../modules/waterisk_modules.nf'
-include { RGI_CHRM}                     from '../modules/waterisk_modules.nf'
-include { RGI_PLASMID}                  from '../modules/waterisk_modules.nf'
+include { RGI}                          from '../modules/waterisk_modules.nf'
 include { PLASME_COMPLETE }             from '../modules/waterisk_modules.nf'
 include { PLASME }                      from '../modules/waterisk_modules.nf'
 include { PLASME_INCOMPLETE }           from '../modules/waterisk_modules.nf'
@@ -180,10 +179,11 @@ workflow WATERISK {
     chrm_amr_ch = complete_circular_chrm_ch.concat(plasme_complete_chrm_ch).concat(PLASME.out.inferred_chrm)
     plasmid_amr_ch = complete_circular_plasmid_ch.concat(plasme_complete_plasmid_ch).concat(PLASME.out.inferred_plasmid)
 
-    ABRICATE(chrm_amr_ch.concat(plasmid_amr_ch))
+    contig_ch = chrm_amr_ch.concat(plasmid_amr_ch)
 
-    // RGI_CHRM(DOWNLOAD_RGI_DATABASE.out, chrm_amr_ch )
-    // RGI_PLASMID(DOWNLOAD_RGI_DATABASE.out, plasmid_amr_ch )
+    ABRICATE(contig_ch)
+    RGI(DOWNLOAD_RGI_DATABASE.out, contig_ch)
+    
     // AMRFINDER_CHRM( chrm_amr_ch )
     // AMRFINDER_PLASMID( plasmid_amr_ch )
 

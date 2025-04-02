@@ -501,44 +501,26 @@ process AMRFINDER_CHRM {
     """
 }
 
-process RGI_CHRM {
+process RGI {
     label 'rgi'
     
     input:
     path card_json
-    tuple val(barID) , path(chrm_fasta)
+    tuple val(barID) , path(fasta), val(type)
     
     output:
-    tuple val(barID), path(chrm_fasta), path("${barID}_chrm_rgi.txt")
-
+    tuple val(barID), path(fasta), path("${barID}_${type}_rgi.txt"), val(type)
+    
     script:
     """
-    rgi load --card_json ${card_json} --local
-    rgi main --input_sequence ${chrm_fasta} --output_file chrm_rgi --local --clean
-    awk -F"\t" '{print "${barID}",\$2, \$3, \$4, \$5, \$9, \$15, \$16, \$17}' OFS="\t" chrm_rgi.txt > ${barID}_chrm_rgi.txt
-    """
-}
-
-process RGI_PLASMID {
-    label 'rgi'
-    
-    input:
-    path card_json
-    tuple val(barID) , path(plasmid_fasta)
-    
-    output:
-    tuple val(barID), path(plasmid_fasta), path("${barID}_plasmid_rgi.txt")
-
-    script:
-    """
-    if [ -s ${plasmid_fasta} ]; then
+    if [ -s ${fasta} ]; then
         rgi load --card_json ${card_json} --local
-        rgi main --input_sequence ${plasmid_fasta} --output_file plasmid_rgi --local --clean
-        awk -F"\t" '{print "${barID}",\$2, \$3, \$4, \$5, \$9, \$15, \$16, \$17}' OFS="\t" plasmid_rgi.txt > ${barID}_plasmid_rgi.txt
+        rgi main --input_sequence ${fasta} --output_file rgi --local --clean
+        awk -F"\t" '{print "${barID}",\$2, \$3, \$4, \$5, \$9, \$15, \$16, \$17}' OFS="\t" rgi.txt > ${barID}_${type}_rgi.txt
     else
-        touch ${barID}_plasmid_rgi.txt
+        touch ${barID}_${type}_rgi.txt
     fi
-    """
+    """ 
 }
 
 //Filter circular plasmid in a fasta file from a tab file
