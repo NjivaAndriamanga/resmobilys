@@ -183,7 +183,7 @@ workflow WATERISK {
     
     // Transposan finder
     TNFINDER_CORRECTION()
-    TN3_FINDER_CHROMOSOME( contig_ch, TNFINDER_CORRECTION.out )
+    TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )
     // TNCOMP_FINDER_CHROMOSOME( chrm_amr_ch , TNFINDER_CORRECTION.out )
     // TNCOMP_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
 
