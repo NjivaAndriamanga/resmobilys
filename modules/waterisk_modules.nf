@@ -186,77 +186,28 @@ process TNFINDER_CORRECTION {
     """
 }
 
-process TN3_FINDER_CHROMOSOME {
+process TN3_FINDER {
     cache true
-    publishDir "${params.output_dir}tnfinder/"
     label "tnfinder","process_high"
 
     input:
-    tuple val(barID) ,path(chromosome_fasta)
+    tuple val(barID) ,path(fasta), val(type)
     val x
 
     output:
-    tuple val(barID) ,path("${barID}_chromosome_tn3.txt")
+    tuple val(barID) ,path("${barID}_${type}_tn3.txt")
 
     script:
-    id = chromosome_fasta.getSimpleName()
+    id = fasta.getSimpleName()
     """
-    python3 ${projectDir}/bin/tn3-ta_finder/Tn3+TA_finder.py -f ${chromosome_fasta} -o ${barID}_tn3 -t ${task.cpus}
+    python3 ${projectDir}/bin/tn3-ta_finder/Tn3+TA_finder.py -f ${fasta} -o ${barID}_tn3 -t ${task.cpus}
     if [ -f ${barID}_tn3/${id}.txt ]; then
-        mv ${barID}_tn3/${id}.txt ${barID}_chromosome_tn3.txt
+        mv ${barID}_tn3/${id}.txt ${barID}_${type}_tn3.txt
     else
-        touch ${barID}_chromosome_tn3.txt
+        touch ${barID}_${type}_tn3.txt
     fi
     """
 }
-
-process TN3_FINDER_PLASMID {
-    publishDir "${params.output_dir}tnfinder/"
-    label "tnfinder"
-
-    input:
-    tuple val(barID) ,path(plasmid_fasta)
-    val x
-
-    output:
-    tuple val(barID) ,path("${barID}_plasmid_tn3.txt")
-
-    script: 
-    id = plasmid_fasta.getSimpleName()
-    """
-    python3 ${projectDir}/bin/tn3-ta_finder/Tn3+TA_finder.py -f ${plasmid_fasta} -o ${barID}_tn3 -t ${task.cpus}
-    if [ -f ${barID}_tn3/${id}.txt ]; then
-        mv ${barID}_tn3/${id}.txt ${barID}_plasmid_tn3.txt
-    else
-        touch ${barID}_plasmid_tn3.txt
-    fi
-    """
-}
-
-process TNCOMP_FINDER_CHROMOSOME {
-    cache true
-    publishDir "${params.output_dir}tncompfinder/"
-    label "tnfinder","process_high"
-
-    input:
-    tuple val(barID) ,path(chromosome_fasta)
-    val x
-
-    output:
-    tuple val(barID) ,path("${barID}_chromosome_tncomp.txt")
-
-    script:
-    id = chromosome_fasta.getSimpleName()
-    """
-    python3 ${projectDir}/bin/tncomp_finder/TnComp_finder.py -f ${chromosome_fasta} -o ${barID}_tncomp -p ${task.cpus}
-    if [ -f ${barID}_tncomp/${id}.txt ]; then
-        mv ${barID}_tncomp/${id}.txt ${barID}_chromosome_tncomp.txt
-    else
-        touch ${barID}_chromosome_tncomp.txt
-    fi
-    """
-}
-
 
 process TNCOMP_FINDER_PLASMID {
     publishDir "${params.output_dir}tncompfinder/"

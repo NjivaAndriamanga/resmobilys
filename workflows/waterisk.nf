@@ -92,14 +92,13 @@ include { MERGE_TYPE }                  from '../modules/waterisk_modules.nf'
 include { CREATE_TAXA }                 from '../modules/waterisk_modules.nf'
 include { MERGE_TAXA }                  from '../modules/waterisk_modules.nf'
 include { MOB_CLUSTER }                 from '../modules/waterisk_modules.nf'
-include { INTEGRON_FINDER}              from '../modules/waterisk_modules.nf'
+include { INTEGRON_FINDER }             from '../modules/waterisk_modules.nf'
 include { INTEGRON_FORMAT }             from '../modules/waterisk_modules.nf'
 include { KRAKEN }                      from '../modules/waterisk_modules.nf'
 include { VF_BLAST }                    from '../modules/waterisk_modules.nf'
-include { DBSCAN }           from '../modules/waterisk_modules.nf'
+include { DBSCAN }                      from '../modules/waterisk_modules.nf'
 include { TNFINDER_CORRECTION }         from '../modules/waterisk_modules.nf'
-include { TN3_FINDER_CHROMOSOME }       from '../modules/waterisk_modules.nf'
-include { TN3_FINDER_PLASMID }          from '../modules/waterisk_modules.nf'
+include { TN3_FINDER }                  from '../modules/waterisk_modules.nf'
 include { TNCOMP_FINDER_CHROMOSOME }    from '../modules/waterisk_modules.nf'
 include { TNCOMP_FINDER_PLASMID }       from '../modules/waterisk_modules.nf'
 
@@ -183,9 +182,8 @@ workflow WATERISK {
     AMRFINDER( contig_ch )
     
     // Transposan finder
-    // TNFINDER_CORRECTION()
-    // TN3_FINDER_CHROMOSOME( chrm_amr_ch, TNFINDER_CORRECTION.out )
-    // TN3_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
+    TNFINDER_CORRECTION()
+    TN3_FINDER_CHROMOSOME( contig_ch, TNFINDER_CORRECTION.out )
     // TNCOMP_FINDER_CHROMOSOME( chrm_amr_ch , TNFINDER_CORRECTION.out )
     // TNCOMP_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
 
