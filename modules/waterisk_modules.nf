@@ -1,5 +1,4 @@
 
-
 /*
 This process will download the plasme database from github and unzip it in the same directory as the main script (main.nf)
 Run PLasme.py script to unzip and install the dabatase (avoid conflict when accessing the database during plasme process)
@@ -231,8 +230,6 @@ process TNCOMP_FINDER {
     """ 
 }
 
-
-
 /*
 List all barcodes contain in the input directory from miniON output
 */
@@ -378,6 +375,7 @@ process BUSCO {
 
     output:
     path("${barID}_busco.txt")
+
     script:
     """
     busco -i ${fasta} -m genome -l ${params.lineage_db} -o ${barID}_busco
@@ -499,7 +497,6 @@ process PLASME {
     PLASMe.py ${sample_fasta} ${barID}_plasme_plasmid.fasta -d ${params.plasme_db}
     awk ' { print \$1 }' ${barID}_plasme_plasmid.fasta_report.csv > chrm_contig.txt
     seqkit grep -v -f chrm_contig.txt ${sample_fasta} -o ${barID}_plasme_chrm.fasta
-    
     """
 }
 
@@ -519,7 +516,6 @@ process PLASME_INCOMPLETE {
     PLASMe.py ${sample_fasta} ${barID}_plasme_plasmid.fasta -d ${params.plasme_db}
     awk ' { print \$1 }' ${barID}_plasme_plasmid.fasta_report.csv > chrm_contig.txt
     seqkit grep -v -f chrm_contig.txt ${sample_fasta} -o ${barID}_plasme_chrm.fasta
-    
     """
 }   
 
@@ -547,7 +543,6 @@ process ALIGN_READS_PLASMID {
 
     samtools view -b -f 4 aln_sorted.bam > ${barID}_unmapped_reads.bam
     samtools fastq ${barID}_unmapped_reads.bam > ${barID}_unmapped_reads.fastq
-
     """
 }
 
@@ -661,7 +656,6 @@ process CREATE_TAXA {
     script:
     """
     tail -n +2 ${plasmid_type} | cut -f1 -d\$'\t' | awk  -F'\t' '{print \$1 "\t${barID}"}' >> plasmid_tax.txt
-
     """
 }
 
@@ -752,7 +746,6 @@ process INTEGRON_FORMAT {
             print replicon[id], "integron_finder", id,  min_pos[id], max_pos[id], ".","+", "0",  type[id]
         }
     }' ${integron} > ${file_name}_summary.txt
-
     """
 }
 
@@ -772,7 +765,6 @@ process KRAKEN {
     echo "${barID} \n" >> ${barID}_kraken.txt
     cat kraken.txt >> ${barID}_kraken.txt
     echo "\n" >> ${barID}_kraken.txt
-
     """
 }
 
@@ -782,7 +774,7 @@ Blast for virulence factors and keeps track of unique values (gene) in column 2
 process VF_BLAST {
 
     input:
-    tuple val(barID) ,path(fasta)
+    tuple val(barID) ,path(fasta), val(type)
 
     output:
     tuple val(barID) ,path("${sample}_vf_blast.txt")
