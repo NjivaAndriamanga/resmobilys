@@ -142,6 +142,7 @@ process DOWNLOAD_RGI_DATABASE {
 DBSCAN output an exit status 1 when no prophage is found for some fasta. This message is ignored for now
 */
 process DBSCAN {
+    tag "${barID}_${type}"
     label "process_high"
 
     input:
@@ -186,6 +187,7 @@ process TNFINDER_CORRECTION {
 }
 
 process TN3_FINDER {
+    tag "${barID}_${type}"
     cache true
     label "tnfinder","process_high"
 
@@ -209,6 +211,7 @@ process TN3_FINDER {
 }
 
 process TNCOMP_FINDER {
+    tag "${barID}_${type}"
     label "tnfinder","process_high"
 
     input:
@@ -254,6 +257,7 @@ process IDENTIFIED_RAW_SAMPLES {
 */
 process IDENTIFIED_SAMPLES {
     cache true
+
     input:
     tuple path(fastq), val(genome_size), path(sr1), path(sr2)
 
@@ -291,9 +295,9 @@ process MERGE_SEPARATE_FASTQ {
 Long reads trimming by length and quality score and filtering with cutadapt. Asses reads quality before and reads filtering with fastqc. The two reports are merged with multiqc
 */
 process CLEAN_LONG_READS {
+    tag "${barID}"
     cache true
     label "process_high"
-    publishDir "${params.output_dir}trimmed_output/"
     
     input:
     tuple val(barID), path(query)
@@ -320,6 +324,7 @@ Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_su
 For incomplete assembly, contigs are written in sample_final.fasta
 */
 process ASSEMBLE_GENOME {
+    tag "${barID}"
     cache true
     label 'process_high'
     cpus { task.attempt < 2 ? task.cpus : 1 } //If blastx in dnaapler doesn't found hit fot certain seq length, there is a segmentation fault (temporary fix: reduce cpus to 1)
@@ -368,6 +373,7 @@ process ASSEMBLE_GENOME {
 Busco assembly evaluation
 */
 process BUSCO {
+    tag "${barID}"
     label 'busco'
 
     input:
@@ -388,6 +394,7 @@ Identify AMR gene on plasmid. Abricate with megares to identify heavy and efflux
 Resistance to drugs identified with abricate are remove with grep
 */
 process ABRICATE {
+    tag "${barID}_${type}"
     label 'abricate'
 
     input:
@@ -403,6 +410,7 @@ process ABRICATE {
 }
 
 process AMRFINDER {
+    tag "${barID}_${type}"
     label 'amrfinder'
     
     input:
@@ -418,6 +426,7 @@ process AMRFINDER {
 }
 
 process RGI {
+    tag "${barID}_${type}"
     label 'rgi'
     
     input:
@@ -441,6 +450,7 @@ process RGI {
 
 //Filter circular plasmid in a fasta file from a tab file
 process FILTER_CIRCULAR_PLASMID {
+    tag "${barID}"
 
     input:
     tuple val(barID), path(tab_file), path(chromosome),path(putative_plasmid)
@@ -460,6 +470,7 @@ process FILTER_CIRCULAR_PLASMID {
 
 //Infer contig from a fasta file
 process PLASME_COMPLETE {
+    tag "${barID}"
     label 'plasme'
 
     input:
@@ -482,6 +493,7 @@ process PLASME_COMPLETE {
 }
 
 process PLASME {
+    tag "${barID}"
     label 'plasme'
 
     input:
@@ -501,6 +513,7 @@ process PLASME {
 }
 
 process PLASME_INCOMPLETE {
+    tag "${barID}"
     label 'plasme'
 
     input:
@@ -522,6 +535,7 @@ process PLASME_INCOMPLETE {
 
 //Align and filtered reads on infered plasmid.
 process ALIGN_READS_PLASMID {
+    tag "${barID}"
     label 'process_high'
     
     input:
@@ -548,6 +562,7 @@ process ALIGN_READS_PLASMID {
 
 //Plasmid assembly with unicycler
 process ASSEMBLY_PLASMID {
+    tag "${barID}"
     label 'process_high'
     publishDir "${params.output_dir}plasme_assembly/"
     errorStrategy "ignore" //When depth is low, assembly is not possible and there is no result
@@ -599,6 +614,7 @@ process ASSEMBLY_CHRM {
 Add BarID for each plasmids id
 */
 process CHANGE_PLASMID_NAME {
+    tag "${barID}"
     label 'process_single'
 
     input:
@@ -614,6 +630,7 @@ process CHANGE_PLASMID_NAME {
 }
 
 process MOB_TYPER {
+    tag "${barID}"
     label 'mob'
 
     input:
@@ -646,6 +663,7 @@ process MERGE_TYPE {
 
 
 process CREATE_TAXA {
+    tag "${barID}"
 
     input:
     tuple val(barID) ,path(plasmid_type)
@@ -694,6 +712,7 @@ process MOB_CLUSTER {
 }
 
 process INTEGRON_FINDER {
+    tag "${barID}_${type}"
     label 'integron_finder'
 
     input:
@@ -714,6 +733,7 @@ process INTEGRON_FINDER {
 Format integron_finder output to GFF3. 
 */
 process INTEGRON_FORMAT {
+    tag "${barID}_${type}"
     label 'integron_finder'
 
     input:
@@ -750,6 +770,7 @@ process INTEGRON_FORMAT {
 }
 
 process KRAKEN {
+    tag "${barID}"
     label 'process_high'
 
     input:
@@ -772,7 +793,8 @@ process KRAKEN {
 Blast for virulence factors and keeps track of unique values (gene) in column 2
 */
 process VF_BLAST {
-
+    tag "${barID}_${type}"
+    
     input:
     tuple val(barID) ,path(fasta), val(type)
 
