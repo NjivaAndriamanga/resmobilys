@@ -99,7 +99,7 @@ include { VF_BLAST }                    from '../modules/waterisk_modules.nf'
 include { DBSCAN }                      from '../modules/waterisk_modules.nf'
 include { TNFINDER_CORRECTION }         from '../modules/waterisk_modules.nf'
 include { TN3_FINDER }                  from '../modules/waterisk_modules.nf'
-include { TNCOMP_FINDER_PLASMID }       from '../modules/waterisk_modules.nf'
+include { TNCOMP_FINDER }               from '../modules/waterisk_modules.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -183,8 +183,7 @@ workflow WATERISK {
     // Transposan finder
     TNFINDER_CORRECTION()
     TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )
-    // TNCOMP_FINDER_CHROMOSOME( chrm_amr_ch , TNFINDER_CORRECTION.out )
-    // TNCOMP_FINDER_PLASMID( plasmid_amr_ch , TNFINDER_CORRECTION.out )
+    TNCOMP_FINDER( contig_ch , TNFINDER_CORRECTION.out )
 
     //Integron_finder
     INTEGRON_FINDER( contig_ch )

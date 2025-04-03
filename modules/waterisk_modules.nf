@@ -209,25 +209,24 @@ process TN3_FINDER {
     """
 }
 
-process TNCOMP_FINDER_PLASMID {
-    publishDir "${params.output_dir}tncompfinder/"
-    label "tnfinder"
+process TNCOMP_FINDER {
+    label "tnfinder","process_high"
 
     input:
-    tuple val(barID) ,path(plasmid_fasta)
+    tuple val(barID) ,path(fasta), val(type)
     val x
 
     output:
-    tuple val(barID) ,path("${barID}_plasmid_tncomp.txt")
+    tuple val(barID) ,path("${barID}_${type}_tncomp.txt")
 
     script:
-    id = plasmid_fasta.getSimpleName()
+    id = fasta.getSimpleName()
     """
-    python3 ${projectDir}/bin/tncomp_finder/TnComp_finder.py -f ${plasmid_fasta} -o ${barID}_tncomp -p ${task.cpus}
+    python3 ${projectDir}/bin/tncomp_finder/TnComp_finder.py -f ${fasta} -o ${barID}_tncomp -p ${task.cpus}
     if [ -f ${barID}_tncomp/${id}.txt ]; then
-        mv ${barID}_tncomp/${id}.txt ${barID}_plasmid_tncomp.txt
+        mv ${barID}_tncomp/${id}.txt ${barID}_${type}_tncomp.txt
     else
-        touch ${barID}_plasmid_tncomp.txt
+        touch ${barID}_${type}_tncomp.txt
     fi
     """ 
 }
