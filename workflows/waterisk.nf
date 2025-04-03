@@ -99,7 +99,6 @@ include { VF_BLAST }                    from '../modules/waterisk_modules.nf'
 include { DBSCAN }                      from '../modules/waterisk_modules.nf'
 include { TNFINDER_CORRECTION }         from '../modules/waterisk_modules.nf'
 include { TN3_FINDER }                  from '../modules/waterisk_modules.nf'
-include { TNCOMP_FINDER_CHROMOSOME }    from '../modules/waterisk_modules.nf'
 include { TNCOMP_FINDER_PLASMID }       from '../modules/waterisk_modules.nf'
 
 /*
