@@ -193,7 +193,7 @@ workflow WATERISK {
     // BUSCO( chrm_amr_ch.map{barID, contig, type -> [barID, contig]} )
 
     //DBSCAN
-    // DBSCAN( contig_ch , DOWNLOAD_DBSCAN.out )
+    DBSCAN( contig_ch , DOWNLOAD_DBSCAN.out )
 
     // Plasmid typing and clustering
     // CHANGE_PLASMID_NAME( plasmid_amr_ch.map{barID, contig, type -> [barID, contig]} )
