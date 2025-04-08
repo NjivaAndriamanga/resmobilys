@@ -171,13 +171,13 @@ workflow WATERISK {
     // incomplete_chrm_ch = ASSEMBLY_CHRM.out
     
     //AMR detection
-    // chrm_amr_ch = complete_circular_chrm_ch.concat(plasme_complete_chrm_ch).concat(PLASME.out.inferred_chrm)
-    // plasmid_amr_ch = complete_circular_plasmid_ch.concat(plasme_complete_plasmid_ch).concat(PLASME.out.inferred_plasmid)
+    chrm_amr_ch = complete_circular_chrm_ch.concat(plasme_complete_chrm_ch).concat(PLASME.out.inferred_chrm)
+    plasmid_amr_ch = complete_circular_plasmid_ch.concat(plasme_complete_plasmid_ch).concat(PLASME.out.inferred_plasmid)
 
-    // contig_ch = chrm_amr_ch.concat(plasmid_amr_ch)
+    contig_ch = chrm_amr_ch.concat(plasmid_amr_ch)
 
-    // ABRICATE(contig_ch)
-    // RGI(DOWNLOAD_RGI_DATABASE.out, contig_ch)
+    ABRICATE(contig_ch)
+    RGI(DOWNLOAD_RGI_DATABASE.out, contig_ch)
     // AMRFINDER( contig_ch )
     
     // Transposan finder
