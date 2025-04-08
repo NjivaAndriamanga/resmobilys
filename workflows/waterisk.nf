@@ -186,8 +186,8 @@ workflow WATERISK {
     // TNCOMP_FINDER( contig_ch , TNFINDER_CORRECTION.out )
 
     //Integron_finder
-    // INTEGRON_FINDER( contig_ch )
-    // INTEGRON_FORMAT( INTEGRON_FINDER.out)
+    INTEGRON_FINDER( contig_ch )
+    INTEGRON_FORMAT( INTEGRON_FINDER.out)
 
     //BUSCO
     // BUSCO( chrm_amr_ch.map{barID, contig, type -> [barID, contig]} )

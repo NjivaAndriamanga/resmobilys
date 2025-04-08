@@ -740,7 +740,7 @@ process INTEGRON_FORMAT {
     tuple val(barID) ,path(integron), val(type)
 
     output:
-    tuple val(barID) ,path("${file_name}_summary.txt"), val(type)
+    tuple val(barID) ,path("${file_name}_summary.gff"), val(type)
 
     script:
     file_name = integron.getSimpleName()
@@ -765,7 +765,7 @@ process INTEGRON_FORMAT {
         for (id in seen) {
             print replicon[id], "integron_finder", id,  min_pos[id], max_pos[id], ".","+", "0",  type[id]
         }
-    }' ${integron} > ${file_name}_summary.txt
+    }' ${integron} > ${file_name}_summary.gff
     """
 }
 
