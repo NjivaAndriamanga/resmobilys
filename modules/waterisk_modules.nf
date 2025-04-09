@@ -163,7 +163,7 @@ process DBSCAN {
             echo "DBSCAN script failed because 0 prophages were found, but continuing..."
         else
             mv dbscan_output/bac_DBSCAN-SWA_prophage_summary.txt DBSCAN.txt
-            awk 'BEGIN {FS=OFS="\t"} NF==11 { $1=""; sub(/^\t/, ""); print; next } { print }' DBSCAN.txt > ${barID}_${type}_DBSCAN.txt
+            awk 'BEGIN {FS=OFS="\t"} NF==11 { \$1=""; sub(/^\t/, ""); print; next } { print }' DBSCAN.txt > ${barID}_${type}_DBSCAN.txt
         fi
         set -e
     fi
