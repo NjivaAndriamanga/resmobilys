@@ -182,8 +182,8 @@ workflow WATERISK {
     
     // Transposan finder
     // TNFINDER_CORRECTION()
-    // TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )
-    // TNCOMP_FINDER( contig_ch , TNFINDER_CORRECTION.out )
+    TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )
+    TNCOMP_FINDER( contig_ch , TNFINDER_CORRECTION.out )
 
     //Integron_finder
     INTEGRON_FINDER( contig_ch )
