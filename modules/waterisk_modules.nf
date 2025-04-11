@@ -178,11 +178,12 @@ process DBSCAN2GFF {
     tuple val(barID), path(dbscan)
     
     output:
-    tuple val(barID), path("${barID}_${type}_DBSCAN.gff3")
+    tuple val(barID), path("${id}.gff3")
     
     script:
+    id = dbscan.getSimpleName()
     """
-    awk -f dbscan2gff.sh ${dbscan} > ${barID}_${type}_DBSCAN.gff3
+    awk -f dbscan2gff.sh ${dbscan} > ${id}.gff3
     """
     
 }
@@ -474,11 +475,12 @@ process RGI2GFF {
     tuple val(barID), path(rgitxt)
 
     output:
-    tuple val(barID), path("${barID}_${type}_rgi.gff")
+    tuple val(barID), path("${id}.gff")
 
     script:
+    id = rgitxt.getSimpleName()
     """
-    awk -f rgi2gff.sh $rgitxt > ${barID}_${type}_rgi.gff
+    awk -f rgi2gff.sh $rgitxt > ${id}_rgi.gff
     """
 }
 
