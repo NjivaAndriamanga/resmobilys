@@ -98,6 +98,7 @@ include { INTEGRON_FORMAT }             from '../modules/waterisk_modules.nf'
 include { KRAKEN }                      from '../modules/waterisk_modules.nf'
 include { VF_BLAST }                    from '../modules/waterisk_modules.nf'
 include { DBSCAN }                      from '../modules/waterisk_modules.nf'
+include { DBSCAN2GFF }                  from '../modules/waterisk_modules.nf'
 include { TNFINDER_CORRECTION }         from '../modules/waterisk_modules.nf'
 include { TN3_FINDER }                  from '../modules/waterisk_modules.nf'
 include { TNCOMP_FINDER }               from '../modules/waterisk_modules.nf'
@@ -196,6 +197,9 @@ workflow WATERISK {
 
     //DBSCAN
     DBSCAN( contig_ch , DOWNLOAD_DBSCAN.out )
+
+    //DBSCAN2GFF
+    DBSCAN2GFF( DBSCAN.out )
 
     // Plasmid typing and clustering
     // CHANGE_PLASMID_NAME( plasmid_amr_ch.map{barID, contig, type -> [barID, contig]} )

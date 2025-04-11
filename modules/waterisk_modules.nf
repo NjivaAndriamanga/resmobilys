@@ -151,7 +151,7 @@ process DBSCAN {
     val x
 
     output:
-    tuple val(barID) ,path("${barID}_${type}_DBSCAN.txt"), val(type)
+    tuple val(barID) ,path("${barID}_${type}_DBSCAN.txt")
 
     script:
     """
@@ -168,6 +168,23 @@ process DBSCAN {
         set -e
     fi
     """
+}
+
+process DBSCAN2GFF {
+    tag "${barID}_${type}"
+    label "process_single"
+    
+    input:
+    tuple val(barID), path(dbscan)
+    
+    output:
+    tuple val(barID), path("${barID}_${type}_DBSCAN.gff3")
+    
+    script:
+    """
+    awk -f dbscan2gff.sh ${dbscan} > ${barID}_${type}_DBSCAN.gff3
+    """
+    
 }
 
 //TN3 script is outdated. Need to be updated (Temporary solution for the moment with sed)
