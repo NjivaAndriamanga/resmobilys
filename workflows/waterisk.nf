@@ -82,6 +82,7 @@ include { FILTER_CIRCULAR_PLASMID }     from '../modules/waterisk_modules.nf'
 include { ABRICATE }                    from '../modules/waterisk_modules.nf'
 include { AMRFINDER}                    from '../modules/waterisk_modules.nf'
 include { RGI}                          from '../modules/waterisk_modules.nf'
+include { RGI2GFF}                      from '../modules/waterisk_modules.nf'
 include { PLASME_COMPLETE }             from '../modules/waterisk_modules.nf'
 include { PLASME }                      from '../modules/waterisk_modules.nf'
 include { PLASME_INCOMPLETE }           from '../modules/waterisk_modules.nf'
@@ -178,6 +179,7 @@ workflow WATERISK {
 
     ABRICATE(contig_ch)
     RGI(DOWNLOAD_RGI_DATABASE.out, contig_ch)
+    RGI2GFF(RGI.out)
     // AMRFINDER( contig_ch )
     
     // Transposan finder

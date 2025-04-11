@@ -436,7 +436,7 @@ process RGI {
     tuple val(barID) , path(fasta), val(type)
     
     output:
-    tuple val(barID), path(fasta), path("${barID}_${type}_rgi.txt"), val(type)
+    tuple val(barID), path("${barID}_${type}_rgi.txt")
     
     script:
     """
@@ -448,6 +448,21 @@ process RGI {
         touch ${barID}_${type}_rgi.txt
     fi
     """ 
+}
+
+process RGI2GFF {
+    tag "${barID}_${type}"
+    
+    input:
+    tuple val(barID), path(rgitxt)
+
+    output:
+    tuple val(barID), path("${barID}_${type}_rgi.gff")
+
+    script:
+    """
+    awk -f rgi2gff.sh $rgitxt > ${barID}_${type}_rgi.gff
+    """
 }
 
 //Filter circular plasmid in a fasta file from a tab file
