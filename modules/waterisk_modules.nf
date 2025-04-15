@@ -183,7 +183,7 @@ process DBSCAN2GFF {
     script:
     id = dbscan.getSimpleName()
     """
-    awk -f dbscan2gff.sh ${dbscan} > ${id}.gff3
+    awk -f ${projectDir}/bin/GFF_parsing/dbscan2gff.sh ${dbscan} > ${id}.gff3
     """
     
 }
