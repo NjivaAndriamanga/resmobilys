@@ -475,7 +475,7 @@ process RGI2GFF {
     tuple val(barID), path(rgitxt)
 
     output:
-    tuple val(barID), path("${id}.gff")
+    tuple val(barID), path("${id}_rgi.gff")
 
     script:
     id = rgitxt.getSimpleName()
