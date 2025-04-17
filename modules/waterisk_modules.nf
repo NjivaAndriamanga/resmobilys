@@ -89,7 +89,7 @@ process DOWNLOAD_VF_DATABASE {
     """
 }
 
-process DOWNLOAD_DBSCAN {
+process PREPROCESSING_DBSCANDB_CHMOD {
     cache true
 
     output:
@@ -107,6 +107,11 @@ process DOWNLOAD_DBSCAN {
     export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/bin
     export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/software/diamond
     output="DBSCAN OK. "
+
+    chmod -R bin/PLASMe/bin
+    chmod -R bin/GFF_parsing
+    chmod bin/tncomp_finder/TnComp_finder.py
+    chmod bin/tn3-ta_finder/Tn3+TA_finder.py
 
     cd ${projectDir}/bin/DBSCAN-SWA
     if [ ! -d db ]; then

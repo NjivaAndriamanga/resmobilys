@@ -72,7 +72,7 @@ def write_value = { value -> "test.txt" >> value + "\n" }
 include { DOWNLOAD_PLASME_DATABASE }    from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_KRAKEN_DATABASE }    from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_VF_DATABASE }        from '../modules/waterisk_modules.nf'
-include { DOWNLOAD_DBSCAN }             from '../modules/waterisk_modules.nf'
+include { PREPROCESSING_DBSCANDB_CHMOD }             from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_RGI_DATABASE }       from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_SAMPLES}           from '../modules/waterisk_modules.nf'
 include { MERGE_SEPARATE_FASTQ }        from '../modules/waterisk_modules.nf'
@@ -115,7 +115,7 @@ workflow WATERISK {
     DOWNLOAD_PLASME_DATABASE().view()
     DOWNLOAD_KRAKEN_DATABASE().view()
     DOWNLOAD_VF_DATABASE().view()	
-    DOWNLOAD_DBSCAN().view()
+    PREPROCESSING_DBSCANDB_CHMOD().view()
     DOWNLOAD_RGI_DATABASE()
 
     IDENTIFIED_SAMPLES(ch_input)
@@ -196,7 +196,7 @@ workflow WATERISK {
     // BUSCO( chrm_amr_ch.map{barID, contig, type -> [barID, contig]} )
 
     //DBSCAN
-    DBSCAN( contig_ch , DOWNLOAD_DBSCAN.out )
+    DBSCAN( contig_ch , PREPROCESSING_DBSCANDB_CHMOD.out )
 
     //DBSCAN2GFF
     DBSCAN2GFF( DBSCAN.out )
