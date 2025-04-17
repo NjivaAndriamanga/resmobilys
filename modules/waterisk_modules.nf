@@ -101,11 +101,11 @@ process DOWNLOAD_DBSCAN {
     
     cd ${projectDir}
    
-    chmod u+x -R DBSCAN-SWA/bin
-    chmod u+x -R DBSCAN-SWA/software
-    export PATH=$PATH:${projectDir}/DBSCAN-SWA/software/blast+/bin
-    export PATH=$PATH:${projectDir}/DBSCAN-SWA/bin
-    export PATH=$PATH:${projectDir}/DBSCAN-SWA/software/diamond
+    chmod u+x -R bin/DBSCAN-SWA/bin
+    chmod u+x -R bin/DBSCAN-SWA/software
+    export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/software/blast+/bin
+    export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/bin
+    export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/software/diamond
     output="DBSCAN OK. "
 
     cd ${projectDir}/bin/DBSCAN-SWA
