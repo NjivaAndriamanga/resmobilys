@@ -15,3 +15,4 @@ containers/
 VF_db/
 k2_standard_08gb_20240904/
 DBSCAN-SWA/
+bin/__pycache__/*
