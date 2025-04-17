@@ -39,6 +39,7 @@ Follow the instructions at the Singularity website
 
 # Clone the project repository
 git clone https://github.com/yourusername/ResMobiLys.git
+git submodule init
 cd ResMobiLys
 ```
 
@@ -46,7 +47,7 @@ cd ResMobiLys
 Prepare an `index_file.csv` containing metadata for your samples. Then, run the pipeline as follows:
 
 ```bash
-nextflow run main.nf --input index_file.csv -profile singularity
+nextflow run waterisk -profile slurm/local,singularity/apptainer -resume -c waterisk/personal.config
 ```
 
 ### **Configuration Options**
