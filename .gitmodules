@@ -7,3 +7,6 @@
 [submodule "bin/PLASMe"]
 	path = bin/PLASMe
 	url = https://github.com/HubertTang/PLASMe
+[submodule "bin/DBSCAN-SWA"]
+	path = bin/DBSCAN-SWA
+	url = https://github.com/HIT-ImmunologyLab/DBSCAN-SWA
