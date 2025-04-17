@@ -4,3 +4,6 @@
 [submodule "bin/tncomp_finder"]
 	path = bin/tncomp_finder
 	url = https://github.com/danillo-alvarenga/tncomp_finder
+[submodule "bin/PLASMe"]
+	path = bin/PLASMe
+	url = https://github.com/HubertTang/PLASMe
