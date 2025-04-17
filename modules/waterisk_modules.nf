@@ -517,7 +517,7 @@ process PLASME_COMPLETE {
     tuple val(barID), path("${barID}_final_chrm.fasta"), path("${barID}_final_plasmid.fasta")
     
     """
-    PLASMe.py ${putative_plasmid} ${barID}_plasme.fasta -d ${params.plasme_db}
+    ${projectDir}/bin/PLASMe/PLASMe.py ${putative_plasmid} ${barID}_plasme.fasta -d ${params.plasme_db}
     awk ' { print \$1 }' ${barID}_plasme.fasta_report.csv > chrm_contig.txt
     seqkit grep --invert-match -f chrm_contig.txt ${putative_plasmid} -o ${barID}_plasme_chrm.fasta
     cat ${barID}_plasme_chrm.fasta > ${barID}_final_chrm.fasta
@@ -542,7 +542,7 @@ process PLASME {
 
     script:
     """
-    PLASMe.py ${sample_fasta} ${barID}_plasme_plasmid.fasta -d ${params.plasme_db}
+    ${projectDir}/bin/PLASMe/PLASMe.py ${sample_fasta} ${barID}_plasme_plasmid.fasta -d ${params.plasme_db}
     awk ' { print \$1 }' ${barID}_plasme_plasmid.fasta_report.csv > chrm_contig.txt
     seqkit grep -v -f chrm_contig.txt ${sample_fasta} -o ${barID}_plasme_chrm.fasta
     """
@@ -562,7 +562,7 @@ process PLASME_INCOMPLETE {
 
     script:
     """
-    PLASMe.py ${sample_fasta} ${barID}_plasme_plasmid.fasta -d ${params.plasme_db}
+    ${projectDir}/bin/PLASMe/PLASMe.py ${sample_fasta} ${barID}_plasme_plasmid.fasta -d ${params.plasme_db}
     awk ' { print \$1 }' ${barID}_plasme_plasmid.fasta_report.csv > chrm_contig.txt
     seqkit grep -v -f chrm_contig.txt ${sample_fasta} -o ${barID}_plasme_chrm.fasta
     """
