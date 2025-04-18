@@ -108,7 +108,7 @@ process PREPROCESSING_DBSCANDB_CHMOD {
     export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/software/diamond
     output="DBSCAN OK. "
 
-    chmod u+x -R bin/PLASMe/bin
+    chmod u+x -R bin/PLASMe
     chmod u+x -R bin/GFF_parsing
     chmod u+x bin/tncomp_finder/TnComp_finder.py
     chmod u+x bin/tn3-ta_finder/Tn3+TA_finder.py
