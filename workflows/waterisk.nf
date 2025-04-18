@@ -102,6 +102,7 @@ include { DBSCAN2GFF }                  from '../modules/waterisk_modules.nf'
 include { TNFINDER_CORRECTION }         from '../modules/waterisk_modules.nf'
 include { TN3_FINDER }                  from '../modules/waterisk_modules.nf'
 include { TNCOMP_FINDER }               from '../modules/waterisk_modules.nf'
+include { TNFINDER2GFF }                from '../modules/waterisk_modules.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -187,6 +188,9 @@ workflow WATERISK {
     TNFINDER_CORRECTION()
     TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )
     TNCOMP_FINDER( contig_ch , TNFINDER_CORRECTION.out )
+
+    //TN2GFF
+    TNFINDER2GFF (TN3_FINDER.out)
 
     //Integron_finder
     INTEGRON_FINDER( contig_ch )

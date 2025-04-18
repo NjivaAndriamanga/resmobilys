@@ -254,6 +254,22 @@ process TNCOMP_FINDER {
     """ 
 }
 
+process TNFINDER2GFF {
+    tag 
+
+    input:
+    tuple val(barID) ,path(tn_output)
+
+    output:
+    tuple val(barID), path("${id}_tnfinder.gff")
+
+    script:
+    id = tn_output.getSimpleName()
+    """
+    awk -f ${projectDir}/bin/GFF_parsing/tnfindershort.sh ${tn_output} > tnshsort.txt
+    awk -f ${projectDir}/bin/GFF_parsing/tn2gff.sh tnshort > ${id}_tnfinder.gff
+    """
+}
 /*
 List all barcodes contain in the input directory from miniON output
 */
