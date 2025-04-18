@@ -108,10 +108,10 @@ process PREPROCESSING_DBSCANDB_CHMOD {
     export PATH=$PATH:${projectDir}/bin/DBSCAN-SWA/software/diamond
     output="DBSCAN OK. "
 
-    chmod -R bin/PLASMe/bin
-    chmod -R bin/GFF_parsing
-    chmod bin/tncomp_finder/TnComp_finder.py
-    chmod bin/tn3-ta_finder/Tn3+TA_finder.py
+    chmod u+x -R bin/PLASMe/bin
+    chmod u+x -R bin/GFF_parsing
+    chmod u+x bin/tncomp_finder/TnComp_finder.py
+    chmod u+x bin/tn3-ta_finder/Tn3+TA_finder.py
 
     cd ${projectDir}/bin/DBSCAN-SWA
     if [ ! -d db ]; then
