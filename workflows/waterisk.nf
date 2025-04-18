@@ -202,28 +202,28 @@ workflow WATERISK {
     DBSCAN2GFF( DBSCAN.out )
 
     // Plasmid typing and clustering
-    // CHANGE_PLASMID_NAME( plasmid_amr_ch.map{barID, contig, type -> [barID, contig]} )
-    // MOB_TYPER(CHANGE_PLASMID_NAME.out)
+    CHANGE_PLASMID_NAME( plasmid_amr_ch.map{barID, contig, type -> [barID, contig]} )
+    MOB_TYPER(CHANGE_PLASMID_NAME.out)
 
-    // plasmid_merge = CHANGE_PLASMID_NAME.out.map{barID, plasmid -> plasmid }.collectFile(name:"plasmid_merge.fasta", storeDir:"${params.output_dir}plasmid_annotation/")
+    plasmid_merge = CHANGE_PLASMID_NAME.out.map{barID, plasmid -> plasmid }.collectFile(name:"plasmid_merge.fasta", storeDir:"${params.output_dir}plasmid_annotation/")
 
-    // type_to_merge = MOB_TYPER.out.map{barID, type -> type }.collectFile()
-    // MERGE_TYPE(type_to_merge)
+    type_to_merge = MOB_TYPER.out.map{barID, type -> type }.collectFile()
+    MERGE_TYPE(type_to_merge)
 
-    // CREATE_TAXA(MOB_TYPER.out)
-    // taxa_to_merge = CREATE_TAXA.out.collectFile()
-    // MERGE_TAXA(taxa_to_merge)
+    CREATE_TAXA(MOB_TYPER.out)
+    taxa_to_merge = CREATE_TAXA.out.collectFile()
+    MERGE_TAXA(taxa_to_merge)
 
-    // MOB_CLUSTER(MERGE_TAXA.out, plasmid_merge, MERGE_TYPE.out)
+    MOB_CLUSTER(MERGE_TAXA.out, plasmid_merge, MERGE_TYPE.out)
 
     //KRAKEN
-    // if (params.kraken_db != "null" && params.kraken_taxonomy == true) {
-    //     KRAKEN(chrm_amr_ch.map{barID, contig, type -> [barID, contig]},DOWNLOAD_KRAKEN_DATABASE.out)
-    //     kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
-    // }
+    if (params.kraken_db != "null" && params.kraken_taxonomy == true) {
+        KRAKEN(chrm_amr_ch.map{barID, contig, type -> [barID, contig]},DOWNLOAD_KRAKEN_DATABASE.out)
+        kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
+    }
     
     //Virulence factor
-    // VF_BLAST(contig_ch)
+    VF_BLAST(contig_ch)
 }
 
 /*
