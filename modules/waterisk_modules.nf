@@ -256,6 +256,7 @@ process TNCOMP_FINDER {
 
 process TNFINDER2GFF {
     tag "${barID}"
+    label "tnfinder"
 
     input:
     tuple val(barID) ,path(tn_output)
