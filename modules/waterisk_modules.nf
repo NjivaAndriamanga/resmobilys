@@ -526,6 +526,7 @@ process FILTER_CIRCULAR_PLASMID {
 process PLASME_COMPLETE {
     tag "${barID}"
     label 'plasme'
+    errorStrategy "ignore"
 
     input:
     tuple val(barID), path(chromosome), path(plasmid), path(putative_plasmid)
