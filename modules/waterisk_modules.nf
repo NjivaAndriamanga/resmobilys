@@ -17,24 +17,34 @@ process DOWNLOAD_PLASME_DATABASE {
 
     script:
 
-    if (params.plasme_download_db == true) {
-        log.info "Downloading plasme database..."
-        """
-        cd ${projectDir}
-        if [ ! -d DB ]; then 
-            echo "Download plasme db in tar format"
-            tar -xvf DB.tar.gz
-            output="PLASME DB OK"
-        else
-            output=" Plamse DB already exist"
-        fi
-        """
-    }
-    else if (params.plasme_download_db == false) {
-        """
-        output="DB are already provided"
-        """
-    }
+    
+    log.info "Downloading plasme database..."
+    """
+    cd ${projectDir}
+    if [ ! -d DB ]; then 
+        echo "Download plasme db in tar format"
+        tar -xvf DB.tar.gz
+        output="PLASME DB OK"
+    else
+        output=" Plamse DB already exist"
+    fi
+    """
+
+}
+
+process DOWNLOAD_PLATON_DATABASE {
+    cache true
+    
+    output:
+    env output
+
+    script:
+    """
+    cd ${projectDir}
+    wget https://zenodo.org/record/4066768/files/db.tar.gz
+    tar -xzf db.tar.gz
+    rm db.tar.gz
+    """
 }
 
 process DOWNLOAD_KRAKEN_DATABASE {
@@ -564,6 +574,27 @@ process PLASME {
     python ${projectDir}/bin/PLASMe/PLASMe.py ${sample_fasta} ${barID}_plasme_plasmid.fasta -d ${params.plasme_db}
     awk ' { print \$1 }' ${barID}_plasme_plasmid.fasta_report.csv > chrm_contig.txt
     seqkit grep -v -f chrm_contig.txt ${sample_fasta} -o ${barID}_plasme_chrm.fasta
+    """
+}
+
+process PLATON {
+    tag "${barID}"
+    label "platon"
+
+    input:
+    tuple val(barID), path(fastq), path(sample_fasta)
+    val x
+
+    output:
+    tuple val(barID), path("${barID}_platon_plasmid.fasta"), val("plasmid"), emit: inferred_plasmid
+    tuple val(barID), path("${barID}_platon_chrm.fasta"), val("chrm"), emit: inferred_chrm
+
+    script:
+    name = sample_fasta.getSimpleName()
+    """
+    platon --db db --output platon_results --threads 12 draft-w-plasmids.fna
+    mv platon_results/${name}.chromosome.fasta ${barID}_platon_chrm.fasta
+    mv platon_results/${name}.chromosome.fasta "${barID}_platon_chrm.fasta
     """
 }
 

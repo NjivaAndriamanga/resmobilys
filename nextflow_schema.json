@@ -99,6 +99,12 @@
       "description": "",
       "default": "",
       "properties": {
+        "plasmid": {
+          "type": "string",
+          "default": "plasme",
+          "description": "Plasmid prediction tool",
+          "enum": ["plasme","platon"]
+        },
         "amr_db": {
           "type": "string",
           "default": "megares",
@@ -121,6 +127,12 @@
           "type": "string",
           "default": "${projectDir}/DB",
           "description": "plasme database directory",
+          "format": "directory-path"
+        },
+        "platon_db": {
+          "type": "string",
+          "default": "${projectDir}/DB",
+          "description": "platon database directory",
           "format": "directory-path"
         },
         "kraken_db": {

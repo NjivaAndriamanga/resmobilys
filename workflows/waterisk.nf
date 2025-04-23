@@ -84,8 +84,10 @@ include { AMRFINDER}                    from '../modules/waterisk_modules.nf'
 include { RGI}                          from '../modules/waterisk_modules.nf'
 include { RGI2GFF}                      from '../modules/waterisk_modules.nf'
 include { PLASME_COMPLETE }             from '../modules/waterisk_modules.nf'
+include { PLATON}                       from '../modules/waterisk_modules.nf'
 include { PLASME }                      from '../modules/waterisk_modules.nf'
 include { PLASME_INCOMPLETE }           from '../modules/waterisk_modules.nf'
+include { PLATON_INCOMPLETE }           from '../modules/waterisk_modules.nf'
 include { BUSCO }                       from '../modules/waterisk_modules.nf'
 include { CHANGE_PLASMID_NAME }         from '../modules/waterisk_modules.nf'
 include { MOB_TYPER }                   from '../modules/waterisk_modules.nf'
@@ -158,24 +160,32 @@ workflow WATERISK {
     putitative_plasmid_ch = complete_non_circular_ch.map{ barID, fastq, contig_stats, plassembler, chromosome, plasmids -> 
                                                                                                                 [ barID, contig_stats, chromosome,plasmids]}
     FILTER_CIRCULAR_PLASMID(putitative_plasmid_ch)
-    PLASME_COMPLETE(FILTER_CIRCULAR_PLASMID.out, DOWNLOAD_PLASME_DATABASE.out)
-    plasme_complete_chrm_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, chromosome, "chrm"]}
-    plasme_complete_plasmid_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, plasmid, "plasmid"]}
-    
-    //For incomplete assembly, use plasme to infer chrm and plasmid contig
-    PLASME(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLASME_DATABASE.out)
 
-    //Incomplete assembly, align reads and filter plasmid reads for incomplete assembly
-    // PLASME_INCOMPLETE(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLASME_DATABASE.out)
-    // ALIGN_READS_PLASMID(PLASME_INCOMPLETE.out.inferred_plasmid)
-    // ASSEMBLY_PLASMID(ALIGN_READS_PLASMID.out.plasmid_reads)
-    // ASSEMBLY_CHRM(ALIGN_READS_PLASMID.out.chrm_reads)
-    // incomplete_plasmid_ch = ASSEMBLY_PLASMID.out
-    // incomplete_chrm_ch = ASSEMBLY_CHRM.out
+    if(params.plasmid == "plasme") {
+        PLASME_COMPLETE(FILTER_CIRCULAR_PLASMID.out, DOWNLOAD_PLASME_DATABASE.out)
+        plasme_complete_chrm_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, chromosome, "chrm"]}
+        plasme_complete_plasmid_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, plasmid, "plasmid"]}
+        
+        //For incomplete assembly, use plasme to infer chrm and plasmid contig
+        PLASME(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLASME_DATABASE.out)
+
+        //AMR detection
+        chrm_amr_ch = complete_circular_chrm_ch.concat(plasme_complete_chrm_ch).concat(PLASME.out.inferred_chrm)
+        plasmid_amr_ch = complete_circular_plasmid_ch.concat(plasme_complete_plasmid_ch).concat(PLASME.out.inferred_plasmid)
+    }
+    if(params.plasmid == "platon") {
+        PLATON_COMPLETE(FILTER_CIRCULAR_PLASMID.out, DOWNLOAD_PLATON_DATABASE.out)
+        platon_complete_chrm_ch = PLATON_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, chromosome, "chrm"]}
+        platon_complete_plasmid_ch = PLATON_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, plasmid, "plasmid"]}
+        
+        //For incomplete assembly, use plasme to infer chrm and plasmid contig
+        PLATON(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLATON_DATABASE.out)
+        
+        //AMR detection
+        chrm_amr_ch = complete_circular_chrm_ch.concat(platon_complete_chrm_ch).concat(PLATON.out.inferred_chrm)
+        plasmid_amr_ch = complete_circular_plasmid_ch.concat(platon_complete_plasmid_ch).concat(PLATON.out.inferred_plasmid)
+    }
     
-    //AMR detection
-    chrm_amr_ch = complete_circular_chrm_ch.concat(plasme_complete_chrm_ch).concat(PLASME.out.inferred_chrm)
-    plasmid_amr_ch = complete_circular_plasmid_ch.concat(plasme_complete_plasmid_ch).concat(PLASME.out.inferred_plasmid)
 
     contig_ch = chrm_amr_ch.concat(plasmid_amr_ch)
 
@@ -229,6 +239,15 @@ workflow WATERISK {
     //Virulence factor
     VF_BLAST(contig_ch)
 }
+
+
+//Incomplete assembly, align reads and filter plasmid reads for incomplete assembly
+        // PLASME_INCOMPLETE(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLASME_DATABASE.out)
+        // ALIGN_READS_PLASMID(PLASME_INCOMPLETE.out.inferred_plasmid)
+        // ASSEMBLY_PLASMID(ALIGN_READS_PLASMID.out.plasmid_reads)
+        // ASSEMBLY_CHRM(ALIGN_READS_PLASMID.out.chrm_reads)
+        // incomplete_plasmid_ch = ASSEMBLY_PLASMID.out
+        // incomplete_chrm_ch = ASSEMBLY_CHRM.out
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
