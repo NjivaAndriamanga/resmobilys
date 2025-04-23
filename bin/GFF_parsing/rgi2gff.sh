@@ -5,7 +5,11 @@ BEGIN {
 
 NR > 1 {
     # Match sequence ID pattern: chromosome/plasmid/contig/reads/etc
-    match($2, /[a-zA-Z]+[0-9]+/, a)
+    if (match($2, /[a-zA-Z]+[0-9]+/, a)) {
+    	seqid = substr($2,RSTART, RLENGTH)
+    } else {
+    	seqid = $2
+    }
     seqid = a[0]
 
     # Build the attribute field with ID, Note, and DRUG

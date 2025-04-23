@@ -503,12 +503,12 @@ process RGI2GFF {
     tuple val(barID), path(rgitxt)
 
     output:
-    tuple val(barID), path("${id}_rgi.gff")
+    tuple val(barID), path("${id}.gff")
 
     script:
     id = rgitxt.getSimpleName()
     """
-    awk -f ${projectDir}/bin/GFF_parsing/rgi2gff.sh $rgitxt > ${id}_rgi.gff
+    awk -f ${projectDir}/bin/GFF_parsing/rgi2gff.sh $rgitxt > ${id}.gff
     """
 }
 
