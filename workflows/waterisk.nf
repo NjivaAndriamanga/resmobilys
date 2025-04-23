@@ -70,6 +70,7 @@ def write_value = { value -> "test.txt" >> value + "\n" }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 include { DOWNLOAD_PLASME_DATABASE }    from '../modules/waterisk_modules.nf'
+include { DOWNLOAD_PLATON_DATABASE}     from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_KRAKEN_DATABASE }    from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_VF_DATABASE }        from '../modules/waterisk_modules.nf'
 include { PREPROCESSING_DBSCANDB_CHMOD }             from '../modules/waterisk_modules.nf'
@@ -116,6 +117,7 @@ workflow WATERISK {
 
     //download tools and databases
     DOWNLOAD_PLASME_DATABASE().view()
+    DOWNLOAD_PLATON_DATABASE().view()
     DOWNLOAD_KRAKEN_DATABASE().view()
     DOWNLOAD_VF_DATABASE().view()	
     PREPROCESSING_DBSCANDB_CHMOD().view()

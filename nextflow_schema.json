@@ -131,7 +131,7 @@
         },
         "platon_db": {
           "type": "string",
-          "default": "${projectDir}/DB",
+          "default": "${projectDir}/db",
           "description": "platon database directory",
           "format": "directory-path"
         },
