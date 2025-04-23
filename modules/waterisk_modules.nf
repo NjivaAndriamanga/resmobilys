@@ -611,7 +611,7 @@ process PLATON_COMPLETE {
     tuple val(barID), path("${barID}_final_chrm.fasta"), path("${barID}_final_plasmid.fasta")
 
     script:
-    name = sample_fasta.getSimpleName()
+    name = putative_plasmid.getSimpleName()
     """
     python --db ${params.platon_db} --output platon_results ${putative_plasmid}
     mv platon_results/${name}.chromosome.fasta ${barID}_final_chrm.fasta
