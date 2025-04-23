@@ -532,6 +532,26 @@ process FILTER_CIRCULAR_PLASMID {
     """    
 }
 
+process PLASME {
+    tag "${barID}"
+    label 'plasme'
+
+    input:
+    tuple val(barID), path(fastq), path(sample_fasta)
+    val x
+
+    output:
+    tuple val(barID), path("${barID}_plasme_plasmid.fasta"), val("plasmid"), emit: inferred_plasmid
+    tuple val(barID), path("${barID}_plasme_chrm.fasta"), val("chrm"), emit: inferred_chrm
+
+    script:
+    """
+    python ${projectDir}/bin/PLASMe/PLASMe.py ${sample_fasta} ${barID}_plasme_plasmid.fasta -d ${params.plasme_db}
+    awk ' { print \$1 }' ${barID}_plasme_plasmid.fasta_report.csv > chrm_contig.txt
+    seqkit grep -v -f chrm_contig.txt ${sample_fasta} -o ${barID}_plasme_chrm.fasta
+    """
+}
+
 //Infer contig from a fasta file
 process PLASME_COMPLETE {
     tag "${barID}"
@@ -557,29 +577,9 @@ process PLASME_COMPLETE {
     """
 }
 
-process PLASME {
-    tag "${barID}"
-    label 'plasme'
-
-    input:
-    tuple val(barID), path(fastq), path(sample_fasta)
-    val x
-
-    output:
-    tuple val(barID), path("${barID}_plasme_plasmid.fasta"), val("plasmid"), emit: inferred_plasmid
-    tuple val(barID), path("${barID}_plasme_chrm.fasta"), val("chrm"), emit: inferred_chrm
-
-    script:
-    """
-    python ${projectDir}/bin/PLASMe/PLASMe.py ${sample_fasta} ${barID}_plasme_plasmid.fasta -d ${params.plasme_db}
-    awk ' { print \$1 }' ${barID}_plasme_plasmid.fasta_report.csv > chrm_contig.txt
-    seqkit grep -v -f chrm_contig.txt ${sample_fasta} -o ${barID}_plasme_chrm.fasta
-    """
-}
-
 process PLATON {
     tag "${barID}"
-    label "platon"
+    label "platon","process_high"
 
     input:
     tuple val(barID), path(fastq), path(sample_fasta)
@@ -592,9 +592,30 @@ process PLATON {
     script:
     name = sample_fasta.getSimpleName()
     """
-    platon --db db --output platon_results --threads 12 draft-w-plasmids.fna
+    platon --db ${params.platon_db} --output platon_results ${sample_fasta}
     mv platon_results/${name}.chromosome.fasta ${barID}_platon_chrm.fasta
-    mv platon_results/${name}.chromosome.fasta "${barID}_platon_chrm.fasta
+    mv platon_results/${name}.plasmid.fasta "${barID}_platon_chrm.fasta
+    """
+}
+
+process PLATON_COMPLETE {
+    tag "${barID}"
+    label 'platon','process_high'
+    errorStrategy "ignore"
+
+    input:
+    tuple val(barID), path(chromosome), path(plasmid), path(putative_plasmid)
+    val x
+
+    output:
+    tuple val(barID), path("${barID}_final_chrm.fasta"), path("${barID}_final_plasmid.fasta")
+
+    """
+    python --db ${params.platon_db} --output platon_results ${putative_plasmid}
+    mv platon_results/${name}.chromosome.fasta ${barID}_final_chrm.fasta
+    mv platon_results/${name}.plasmid.fasta ${barID}_final_plasmid.fasta
+    cat ${chromosome} >> ${barID}_final_chrm.fasta
+    cat ${plasmid} >> ${barID}_final_plasmid.fasta
     """
 }
 

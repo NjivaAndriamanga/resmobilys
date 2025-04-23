@@ -88,7 +88,7 @@ include { PLASME_COMPLETE }             from '../modules/waterisk_modules.nf'
 include { PLATON}                       from '../modules/waterisk_modules.nf'
 include { PLASME }                      from '../modules/waterisk_modules.nf'
 include { PLASME_INCOMPLETE }           from '../modules/waterisk_modules.nf'
-include { PLATON_INCOMPLETE }           from '../modules/waterisk_modules.nf'
+include { PLATON_COMPLETE }             from '../modules/waterisk_modules.nf'
 include { BUSCO }                       from '../modules/waterisk_modules.nf'
 include { CHANGE_PLASMID_NAME }         from '../modules/waterisk_modules.nf'
 include { MOB_TYPER }                   from '../modules/waterisk_modules.nf'
@@ -188,7 +188,6 @@ workflow WATERISK {
         plasmid_amr_ch = complete_circular_plasmid_ch.concat(platon_complete_plasmid_ch).concat(PLATON.out.inferred_plasmid)
     }
     
-
     contig_ch = chrm_amr_ch.concat(plasmid_amr_ch)
 
     ABRICATE(contig_ch)
