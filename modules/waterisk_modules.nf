@@ -602,6 +602,8 @@ process PLATON_COMPLETE {
     tag "${barID}"
     label 'platon','process_high'
     errorStrategy "ignore"
+    errorStrategy 'retry'
+    maxRetries 1  // retry once if Platon fails
 
     input:
     tuple val(barID), path(chromosome), path(plasmid), path(putative_plasmid)
@@ -612,13 +614,21 @@ process PLATON_COMPLETE {
 
     script:
     name = putative_plasmid.getSimpleName()
-    """
-    platon --db ${params.platon_db} --output platon_results ${putative_plasmid}
-    mv platon_results/${name}.chromosome.fasta ${barID}_final_chrm.fasta
-    mv platon_results/${name}.plasmid.fasta ${barID}_final_plasmid.fasta
-    cat ${chromosome} >> ${barID}_final_chrm.fasta
-    cat ${plasmid} >> ${barID}_final_plasmid.fasta
-    """
+    if ( task.attempt == 1)
+        """
+        platon --db ${params.platon_db} --output platon_results ${putative_plasmid}
+        mv platon_results/${name}.chromosome.fasta ${barID}_final_chrm.fasta
+        mv platon_results/${name}.plasmid.fasta ${barID}_final_plasmid.fasta
+        cat ${chromosome} >> ${barID}_final_chrm.fasta
+        cat ${plasmid} >> ${barID}_final_plasmid.fasta
+        """
+    else
+        """
+        # Retry attempt: skip Platon, just copy input
+        cat ${chromosome} >> ${barID}_final_chrm.fasta
+        cat ${plasmid} >> ${barID}_final_chrm.fasta
+        touch ${barID}_final_plasmid.fasta
+        """
 }
 
 process PLASME_INCOMPLETE {
