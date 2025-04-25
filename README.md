@@ -31,12 +31,12 @@ Ensure the following dependencies are installed before running **ResMobiLys**:
 
 ### ✅ Nextflow
 
-Install Nextflow by following the instructions [here](https://www.nextflow.io/docs/latest/install.html).
+Install Nextflow by following the instructions [here](https://www.nextflow.io/docs/latest/install.html)
 
 ### ✅ Apptainer/Singularity or Docker
 
-- To install **Apptainer/Singularity**, follow the guide [here](https://apptainer.org/docs/admin/main/installation.html).
-- To install **Docker**, follow the guide [here](https://www.docker.com/get-started/).
+- To install **Apptainer/Singularity**, follow the guide [here](https://apptainer.org/docs/admin/main/installation.html)
+- To install **Docker**, follow the guide [here](https://www.docker.com/get-started/)
 
 ### ✅ Clone the ResMobiLys Repository
 
