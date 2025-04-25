@@ -28,20 +28,29 @@ ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resist
 ## **Installation**
 Ensure the following dependencies are installed before running ResMobiLys:
 
+### **Nextflow**
 To install nextflow: 
 Via conda: here
 Manually: here
 
+### **Apptainer/singularity or Docker**
 To install singularity:
-Follow the instructions at the Singularity website
+Follow the instructions at the Apptainer/Singularity website
 
+To install docker:
+Follow the instruction at the Docker website
+
+### Clone ResMobilYs respository
 ```bash
 
-# Clone the project repository
+# Clone the project repository 
 git clone https://github.com/yourusername/ResMobiLys.git
-git submodule init
-cd ResMobiLys
+git submodule update --init --recursive
 ```
+### **Database**
+Most of the database are provided but only PLASMe database must be downloaded manually.
+Download the database at zenodo : https://zenodo.org/record/8046934/files/DB.zip?download=1
+Move and unzip the the database inside Resmobilys directory
 
 ## **Usage**
 Prepare an `index_file.csv` containing metadata for your samples. Then, run the pipeline as follows:
