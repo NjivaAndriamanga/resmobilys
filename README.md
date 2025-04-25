@@ -80,16 +80,16 @@ If you use ResMobiLys in your research, please cite it as follows:
 Publication in process...
 ```
  ResMobilYs integrates the output of the following tools :
-- Hybracter
-- Kraken2
-- Busco
-- Abricate
-- MEGARes
-- VFDB
-- PLASMe
-- IntegronFinder
-- DBSCAN-SWA
-- TnFinder
-- Mob-suite
+- Hybracter (Bouras et al. 2024)
+- Kraken2 (Wood, Lu, et Langmead 2019)
+- Busco (Manni et al. 2021)
+- Abricate (https://github.com/tseemann/abricate)
+- MEGARes (Bonin et al. 2023)
+- VFDB (Dong et al. 2024)
+- PLASMe (Tang et al. 2023)
+- IntegronFinder (Néron et al. 2022)
+- DBSCAN-SWA (Gan et al. 2022)
+- TnFinder (Ross et al. 2021)
+- Mob-suite (Robertson et Nash 2018)
 ## **Contact**
 If you have any questions or support, please open an issue.
