@@ -75,6 +75,11 @@ Upon successful execution, ResMobiLys generates:
 
 ## **Citation**
 If you use ResMobiLys in your research, please cite it as follows:
+
+```
+Publication in process...
+```
+ ResMobilYs integrates the output of the following tools :
 - Hybracter
 - Kraken2
 - Busco
@@ -86,10 +91,5 @@ If you use ResMobiLys in your research, please cite it as follows:
 - DBSCAN-SWA
 - TnFinder
 - Mob-suite
-- 
-```
-Publication in process...
-```
- ResMobilYs integrates the output of the following tools :
 ## **Contact**
 If you have any questions or support, please open an issue.
