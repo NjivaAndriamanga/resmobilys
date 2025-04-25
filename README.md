@@ -75,9 +75,21 @@ Upon successful execution, ResMobiLys generates:
 
 ## **Citation**
 If you use ResMobiLys in your research, please cite it as follows:
+- Hybracter
+- Kraken2
+- Busco
+- Abricate
+- MEGARes
+- VFDB
+- PLASMe
+- IntegronFinder
+- DBSCAN-SWA
+- TnFinder
+- Mob-suite
+- 
 ```
 Publication in process...
 ```
-
+ ResMobilYs integrates the output of the following tools :
 ## **Contact**
 If you have any questions or support, please open an issue.
