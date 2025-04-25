@@ -25,32 +25,36 @@ ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resist
   - Table listing resistance genes and their MGE associations
   - Detailed list of plasmids, integrons, and transposable elements with notes on their potential interactions
 
-## **Installation**
-Ensure the following dependencies are installed before running ResMobiLys:
+## 🚀 Installation
 
-### **Nextflow**
-To install nextflow: 
-Via conda: here
-Manually: here
+Ensure the following dependencies are installed before running **ResMobiLys**:
 
-### **Apptainer/singularity or Docker**
-To install singularity:
-Follow the instructions at the Apptainer/Singularity website
+### ✅ Nextflow
 
-To install docker:
-Follow the instruction at the Docker website
+Install Nextflow by following the instructions [here](https://www.nextflow.io/docs/latest/install.html).
 
-### Clone ResMobilYs respository
+### ✅ Apptainer/Singularity or Docker
+
+- To install **Apptainer/Singularity**, follow the guide [here](https://apptainer.org/docs/admin/main/installation.html).
+- To install **Docker**, follow the guide [here](https://www.docker.com/get-started/).
+
+### ✅ Clone the ResMobiLys Repository
+
 ```bash
-
-# Clone the project repository 
+# Clone the project repository
 git clone https://github.com/yourusername/ResMobiLys.git
+cd ResMobiLys
 git submodule update --init --recursive
 ```
-### **Database**
-Most of the database are provided but only PLASMe database must be downloaded manually.
-Download the database at zenodo : https://zenodo.org/record/8046934/files/DB.zip?download=1
-Move and unzip the the database inside Resmobilys directory
+
+## 📦 Database
+
+Most databases are already provided, but the **PLASMe** database must be downloaded manually.
+
+1. Download the database from Zenodo:  
+   👉 [Download PLASMe database](https://zenodo.org/record/8046934/files/DB.zip?download=1)
+
+2. Move and unzip the database inside the `ResMobiLys` directory
 
 ## **Usage**
 Prepare an `index_file.csv` containing metadata for your samples. Then, run the pipeline as follows:
