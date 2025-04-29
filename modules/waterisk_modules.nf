@@ -506,7 +506,6 @@ process RGI2GFF {
     script:
     id = rgitxt.getSimpleName()
     """
-    echo "test"
     awk -v pre=${barID} -f ${projectDir}/bin/GFF_parsing/rgi2gff.sh $rgitxt > ${id}.gff
     """
 }
