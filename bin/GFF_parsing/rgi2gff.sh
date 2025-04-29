@@ -12,5 +12,5 @@ NR > 1 {
     }
 
     attr = "Note=" $9 ",DRUG=" $7
-    print seqid, "RGI", $6, $3, $4, ".", $5, "0", attr
+    print pre"_"seqid, "RGI", $6, $3, $4, ".", $5, "0", attr
 }
