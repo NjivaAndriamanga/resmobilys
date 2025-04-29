@@ -23,8 +23,6 @@ process DOWNLOAD_PLASME_DATABASE {
     cd ${projectDir}
     if [ ! -d DB ]; then 
         echo "Download plasme db in tar format"
-        tar -xvf DB.tar.gz
-        output="PLASME DB OK"
     else
         output=" Plamse DB already exist"
     fi
