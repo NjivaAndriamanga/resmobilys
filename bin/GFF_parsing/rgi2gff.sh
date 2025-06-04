@@ -11,6 +11,6 @@ NR > 1 {
         seqid = $2
     }
 
-    attr = "FAMILY=" $9 ",CLASS=" $7, ",MECANISM=" $8
+    attr = "FAMILY=" $9 ",CLASS=" $7 ",MECANISM=" $8
     print pre"_"seqid, "RGI", $6, $3, $4, ".", $5, "0", attr
 }

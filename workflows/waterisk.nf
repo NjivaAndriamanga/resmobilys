@@ -229,7 +229,7 @@ workflow WATERISK {
     taxa_to_merge = CREATE_TAXA.out.collectFile()
     MERGE_TAXA(taxa_to_merge)
 
-    MOB_CLUSTER(MERGE_TAXA.out, plasmid_merge, MERGE_TYPE.out)
+    //MOB_CLUSTER(MERGE_TAXA.out, plasmid_merge, MERGE_TYPE.out)
 
     //KRAKEN
     if (params.kraken_db != "null" && params.kraken_taxonomy == true) {
