@@ -254,8 +254,8 @@ process TNCOMP_FINDER {
     id = fasta.getSimpleName()
     """
     python3 ${projectDir}/bin/tncomp_finder/TnComp_finder.py -f ${fasta} -o ${barID}_tncomp -p ${task.cpus}
-    if [ -f ${barID}_tncomp/${id}.txt ]; then
-        mv ${barID}_tncomp/${id}.txt ${barID}_${type}_tncomp.txt
+    if [ -f ${barID}_tncomp/${id}_composite.txt ]; then
+        mv ${barID}_tncomp/${id}_composite.txt ${barID}_${type}_tncomp.txt
     else
         touch ${barID}_${type}_tncomp.txt
     fi
