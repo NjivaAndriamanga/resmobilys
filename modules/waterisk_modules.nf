@@ -293,7 +293,7 @@ process TNFINDERCOMP2GFF {
     script:
     id = tcomp_output.getSimpleName()
     """
-    awk -f ${projectDir}/bin/GFF_parsing/tcomp_short.sh ${tcomp_output} > tcompshort.txt
+    awk -f ${projectDir}/bin/GFF_parsing/tncomp_short.sh ${tcomp_output} > tcompshort.txt
     awk -f ${projectDir}/bin/GFF_parsing/tcomp2gff.sh tcompshort.txt > ${id}_tnfindercomp.gff
     """
 }
