@@ -257,7 +257,7 @@ process TNCOMP_FINDER {
     id = fasta.getSimpleName()
     """
     seqkit split -i -f ${fasta}
-    for f in ${fasta}.split; do
+    for f in ${fasta}.split/*; do
         python3 ${projectDir}/bin/tncomp_finder/TnComp_finder.py -f \${f} -o tncomp -p ${task.cpus}
         if find tncomp -name "*composite.txt" | grep -q .; then
             cat tncomp/*composite.txt > ${barID}_${type}_tncomp.txt
