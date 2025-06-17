@@ -239,6 +239,9 @@ process TN3_FINDER {
     """
 }
 
+/*
+Du to an output issue, multifasta file need to be split in single fasta files then the resuslt are merged
+*/
 process TNCOMP_FINDER {
     tag "${barID}_${type}"
     label "tnfinder","process_high"
@@ -248,17 +251,23 @@ process TNCOMP_FINDER {
     val x
 
     output:
-    tuple val(barID) ,path("${barID}_${type}_tncomp.txt")
+    tuple val(barID) ,path("${barID}_${type}_tncomp_final.txt")
 
     script:
     id = fasta.getSimpleName()
     """
-    python3 ${projectDir}/bin/tncomp_finder/TnComp_finder.py -f ${fasta} -o ${barID}_tncomp -p ${task.cpus}
-    if [ -f ${barID}_tncomp/${id}_composite.txt ]; then
-        mv ${barID}_tncomp/${id}_composite.txt ${barID}_${type}_tncomp.txt
-    else
-        touch ${barID}_${type}_tncomp.txt
-    fi
+    seqkit split -i -f ${fasta}
+    for f in ${fasta}.split; do
+        python3 ${projectDir}/bin/tncomp_finder/TnComp_finder.py -f \${f} -o tncomp -p ${task.cpus}
+        if find tncomp -name "*composite.txt" | grep -q .; then
+            cat tncomp/*composite.txt ${barID}_${type}_tncomp.txt
+        else
+            touch ${barID}_${type}_tncomp.txt
+        fi
+        cat ${barID}_${type}_tncomp.txt >> ${barID}_${type}_tncomp_final.txt
+        rm ${barID}_${type}_tncomp.txt
+        rm -r tncomp
+    done
     """ 
 }
 
@@ -295,7 +304,6 @@ process TNFINDERCOMP2GFF {
     """
     awk -f ${projectDir}/bin/GFF_parsing/tncomp_short.sh ${tcomp_output} > tcompshort.txt
     awk -f ${projectDir}/bin/GFF_parsing/tcomp2gff.sh tcompshort.txt > ${id}_tnfindercomp.gff
-    echo ""
     """
 }
 /*
