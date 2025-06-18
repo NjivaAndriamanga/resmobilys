@@ -256,18 +256,22 @@ process TNCOMP_FINDER {
     script:
     id = fasta.getSimpleName()
     """
-    seqkit split -i -f ${fasta}
-    for f in ${fasta}.split/*; do
-        python3 ${projectDir}/bin/tncomp_finder/TnComp_finder.py -f \${f} -o tncomp -p ${task.cpus}
-        if find tncomp -name "*composite.txt" | grep -q .; then
-            cat tncomp/*composite.txt > ${barID}_${type}_tncomp.txt
-        else
-            touch ${barID}_${type}_tncomp.txt
-        fi
-        cat ${barID}_${type}_tncomp.txt >> ${barID}_${type}_tncomp_final.txt
-        rm ${barID}_${type}_tncomp.txt
-        rm -r tncomp
-    done
+    if [ ! -s ${fasta} ]; then
+        touch ${barID}_${type}_tncomp_final.txt
+    else
+        seqkit split -i -f ${fasta}
+        for f in ${fasta}.split/*; do
+            python3 ${projectDir}/bin/tncomp_finder/TnComp_finder.py -f \${f} -o tncomp -p ${task.cpus}
+            if find tncomp -name "*composite.txt" | grep -q .; then
+                cat tncomp/*composite.txt > ${barID}_${type}_tncomp.txt
+            else
+                touch ${barID}_${type}_tncomp.txt
+            fi
+            cat ${barID}_${type}_tncomp.txt >> ${barID}_${type}_tncomp_final.txt
+            rm ${barID}_${type}_tncomp.txt
+            rm -r tncomp
+        done
+    fi
     """ 
 }
 
