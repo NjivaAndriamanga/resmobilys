@@ -256,7 +256,7 @@ process TNCOMP_FINDER {
     script:
     id = fasta.getSimpleName()
     """
-    if [ ! -s ${fasta} ]; then
+    if [ "$(wc -l < ${fasta})" -eq 0 ]; then
         touch ${barID}_${type}_tncomp_final.txt
     else
         seqkit split -i -f ${fasta}
