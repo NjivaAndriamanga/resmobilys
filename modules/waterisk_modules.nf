@@ -164,6 +164,7 @@ process DBSCAN {
 
     script:
     """
+    echo "test"
     touch ${barID}_${type}_DBSCAN.txt
     if [[ -s ${fasta} ]]; then
         set +e
