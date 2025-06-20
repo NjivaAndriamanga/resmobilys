@@ -164,11 +164,10 @@ process DBSCAN {
 
     script:
     """
-    echo "test"
     touch ${barID}_${type}_DBSCAN.txt
     if [[ -s ${fasta} ]]; then
         set +e
-        python ${projectDir}/bin/DBSCAN-SWA/bin/dbscan-swa.py --thread_num ${task.cpus} --input ${fasta} --output dbscan_output
+        python3 ${projectDir}/bin/DBSCAN-SWA/bin/dbscan-swa.py --thread_num ${task.cpus} --input ${fasta} --output dbscan_output
         if [[ \$? -ne 0 ]]; then
             echo "DBSCAN script failed because 0 prophages were found, but continuing..."
         else
