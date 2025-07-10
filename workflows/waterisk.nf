@@ -107,7 +107,7 @@ include { TN3_FINDER }                  from '../modules/waterisk_modules.nf'
 include { TNCOMP_FINDER }               from '../modules/waterisk_modules.nf'
 include { TNFINDER2GFF }                from '../modules/waterisk_modules.nf'
 include { TNFINDERCOMP2GFF}             from '../modules/waterisk_modules.nf'
-include { ISESCAN }                     from '../modules/waterisk_modules.nf'
+include { ISESCAN }                     from '../modules/waterisk_modules.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
