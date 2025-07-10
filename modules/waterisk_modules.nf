@@ -239,6 +239,25 @@ process TN3_FINDER {
     """
 }
 
+process ISESCAN {
+    tag "${barID}_${type}"
+    cache true
+    label "process_high"
+
+    input:
+    tuple val(barID) ,path(fasta), val(type)
+
+    output:
+    tuple val(barID) ,path("${barID}_${type}_IS.csv")
+
+    script:
+    id = fasta.getSimpleName()
+    """
+    isescan --seqfile ${fasta} --output ${id}_isescan --threads ${task.cpus}
+    mv ${id}_isescan/${fasta}.csv ${barID}_${type}_IS.csv
+    """
+}
+
 /*
 Du to an output issue, multifasta file need to be split in single fasta files then the resuslt are merged
 */
@@ -937,6 +956,7 @@ process KRAKEN {
     echo "\n" >> ${barID}_kraken.txt
     """
 }
+
 
 /*
 Blast for virulence factors and keeps track of unique values (gene) in column 2
