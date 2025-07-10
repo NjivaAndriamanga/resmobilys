@@ -253,7 +253,7 @@ process ISESCAN {
     script:
     id = fasta.getSimpleName()
     """
-    isescan --seqfile ${fasta} --output ${id}_isescan --threads ${task.cpus}
+    isescan.py --seqfile ${fasta} --output ${id}_isescan --threads ${task.cpus}
     mv ${id}_isescan/${fasta}.csv ${barID}_${type}_IS.csv
     """
 }
