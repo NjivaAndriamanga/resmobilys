@@ -255,7 +255,8 @@ process ISESCAN {
     """
     if [ -s ${fasta} ]; then
         isescan.py --seqfile ${fasta} --output ${id}_isescan --nthread ${task.cpus}
-        mv ${id}_isescan/${fasta}.csv ${barID}_${type}_IS.csv
+        [ -f "${id}_isescan/${fasta}.csv" ] && mv "${id}_isescan/${fasta}.csv" "${barID}_${type}_IS.csv" || touch "${barID}_${type}_IS.csv"
+
     else
         touch ${barID}_${type}_IS.csv
     fi
