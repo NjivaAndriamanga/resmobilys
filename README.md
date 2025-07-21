@@ -42,8 +42,8 @@ Install Nextflow by following the instructions [here](https://www.nextflow.io/do
 
 ```bash
 # Clone the project repository
-git clone https://github.com/yourusername/ResMobiLys.git
-cd ResMobiLys
+git clone https://github.com/NjivaAndriamanga/resmobilys.git
+cd resmobilys
 git submodule update --init --recursive
 ```
 
