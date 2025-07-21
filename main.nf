@@ -30,7 +30,7 @@ workflow RESMOBILYS_NF {
 }
 
 workflow {
-    WATERISK_NF ()
+    RESMOBILYS_NF ()
 }
 
 /*
