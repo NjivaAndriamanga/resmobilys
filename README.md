@@ -53,8 +53,14 @@ Most databases are already provided, but the **PLASMe** database must be downloa
 
 1. Download the database from Zenodo:  
    👉 [Download PLASMe database](https://zenodo.org/record/8046934/files/DB.zip?download=1)
+```bash
+#Download and unzip plasme database
+wget https://zenodo.org/record/8046934/files/DB.zip
+xport UNZIP_DISABLE_ZIPBOMB_DETECTION=TRUE
+unzip DB.zip
+```
 
-2. Move and unzip the database inside the `ResMobiLys` directory
+3. Move and unzip the database inside the `ResMobiLys` directory
 
 ## **Usage**
 Prepare an `index_file.csv` containing metadata for your samples. Then, run the pipeline as follows:
