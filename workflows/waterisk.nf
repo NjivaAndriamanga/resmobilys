@@ -115,7 +115,7 @@ include { ISESCAN }                     from '../modules/waterisk_modules.nf'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-workflow WATERISK {
+workflow RESMOBILYS {
 
     //download tools and databases
     DOWNLOAD_PLASME_DATABASE().view()

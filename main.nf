@@ -2,9 +2,9 @@
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    WATERISK
+    RESMOBILYS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/NjivaAndriamanga/waterisk
+    Github : https://github.com/NjivaAndriamanga/resmobilys
     Website: https://XXX
 ----------------------------------------------------------------------------------------
 */
@@ -18,15 +18,15 @@ nextflow.enable.dsl = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { WATERISK } from './workflows/waterisk.nf'
+include { RESMOBILYS } from './workflows/waterisk.nf'
 
 
 //
 // WORKFLOW: Run main WATERISK analysis pipeline
 //
 
-workflow WATERISK_NF {
-    WATERISK()
+workflow RESMOBILYS_NF {
+    RESMOBILYS()
 }
 
 workflow {
