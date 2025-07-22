@@ -924,14 +924,15 @@ process INTEGRON_FORMAT {
         print "##gff-version 3";  # Print GFF version header first
         }
     \$1 ~ /^integron_/ && \$11 ~ /(complete|CALIN)/ {
-        if (!seen[\$1]++) {
-            min_pos[\$1] = \$4
-            max_pos[\$1] = \$5
-            type[\$1] = \$11
-            replicon[\$1] = \$2
+        key = \$1 "_" \$2
+        if (!seen[\$key]++) {
+            min_pos[\$key] = \$4
+            max_pos[\$key] = \$5
+            type[\$key] = \$11
+            replicon[\$key] = \$2
         } else {
-            if (\$4 < min_pos[\$1]) min_pos[\$1] = \$4
-            if (\$5 > max_pos[\$1]) max_pos[\$1] = \$5
+            if (\$4 < min_pos[\$key]) min_pos[\$key] = \$4
+            if (\$5 > max_pos[\$key]) max_pos[\$key] = \$5
         }
     }
     END {
