@@ -937,9 +937,8 @@ process INTEGRON_FORMAT {
     }
     END {
         for (id in seen) {
-            split(id, parts, "_")
             integron_id = parts[1]
-            replicon_id = parts[2]
+            replicon_id = replicon[key]
             full_id = integron_id "_" replicon_id
             attr = "ID=" full_id ";type=" type[id]
             print replicon_id, "integron_finder", full_id, min_pos[id], max_pos[id], ".", "+", "0", attr
