@@ -919,25 +919,30 @@ process INTEGRON_FORMAT {
     file_name = integron.getSimpleName()
     """
     awk '
-    BEGIN { 
-        OFS="\t"; 
-        print "##gff-version 3";  # Print GFF version header first
-        }
+    BEGIN {
+    OFS = "\\t";
+    print "##gff-version 3";
+    }
     \$1 ~ /^integron_/ && \$11 ~ /(complete|CALIN)/ {
-        key = \$1 "_" \$2
-        if (!seen[\$key]++) {
-            min_pos[\$key] = \$4
-            max_pos[\$key] = \$5
-            type[\$key] = \$11
-            replicon[\$key] = \$2
-        } else {
-            if (\$4 < min_pos[\$key]) min_pos[\$key] = \$4
-            if (\$5 > max_pos[\$key]) max_pos[\$key] = \$5
+    key = \$1 "_" \$2
+    if (!seen[key]++) {
+        min_pos[key] = \$4
+        max_pos[key] = \$5
+        type[key] = \$11
+        replicon[key] = \$2
+    } else {
+        if (\$4 < min_pos[key]) min_pos[key] = \$4
+        if (\$5 > max_pos[key]) max_pos[key] = \$5
         }
     }
     END {
         for (id in seen) {
-            print replicon[id], "integron_finder", id,  min_pos[id], max_pos[id], ".","+", "0",  type[id]
+            split(id, parts, "_")
+            integron_id = parts[1]
+            replicon_id = parts[2]
+            full_id = integron_id "_" replicon_id
+            attr = "ID=" full_id ";type=" type[id]
+            print replicon_id, "integron_finder", full_id, min_pos[id], max_pos[id], ".", "+", "0", attr
         }
     }' ${integron} > ${file_name}_summary.gff
     """
