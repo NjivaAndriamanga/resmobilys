@@ -920,7 +920,7 @@ process INTEGRON_FORMAT {
     """
     awk '
     BEGIN {
-    OFS = "\\t";
+    FS=OFS="\\t";
     print "##gff-version 3";
     }
     \$1 ~ /^integron_/ && \$11 ~ /(complete|CALIN)/ {
@@ -930,7 +930,6 @@ process INTEGRON_FORMAT {
         max_pos[key] = \$5
         type[key] = \$11
         replicon[key] = \$2
-        ids[key] = \$1
     } else {
         if (\$4 < min_pos[key]) min_pos[key] = \$4
         if (\$5 > max_pos[key]) max_pos[key] = \$5
@@ -940,8 +939,8 @@ process INTEGRON_FORMAT {
         for (id in seen) {
             replicon_id = replicon[key]
             attr = "ID=" full_id ";type=" type[id]
-            print replicon_id, "integron_finder", ids[id], min_pos[id], max_pos[id], ".", "+", "0", attr
-        }
+            print replicon_id, "integron_finder", id, min_pos[id], max_pos[id], ".", "+", "0", attr
+        }cat
     }' ${integron} > ${file_name}_summary.gff
     """
 }
