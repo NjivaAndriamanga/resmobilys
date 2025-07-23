@@ -1,46 +1,51 @@
 BEGIN {
-    OFS="\t";
-    print "##gff-version 3";
-    id=""
-}
-NR==1{
-    split($0,fields," ")
-    seq=fields[2]
-    min=10000000
-    max=0
+    print "##gff-version 3"
 }
 
-/Candidate/ {
-   gsub(/\*/,"",$0)
-   gsub(/ /,"_",$0)
-
-   if (id != $0) {
-       id = $0
-   }
+/^QUERY:/ {
+    if (candidate != "") {
+        # Print last candidate before switching QUERY
+        print seqid "\tTNFINDER\ttransposon\t" start "\t" end "\t.\t.\t.\tID=" candidate
+        candidate = ""
+    }
+    split($2, a, "=")
+    seqid = a[1]
+    c = 0
+    next
 }
 
-$0 ~ /\.\./ {
-   split($0,orf,/\.\./)
-   if(orf[1] < min) {
-        min=orf[1]
-   }
-   if(orf[2] < min) {
-        min=orf[2]
-   }
-   if(orf[1] > max) {
-        max=orf[1]
-   }
-   if(orf[2] > max) {
-       max=orf[2]
-   }
+/^\*Candidate/ {
+    if (candidate != "") {
+        # Print previous candidate before starting a new one
+        print seqid "\tTNFINDER\ttransposon\t" start "\t" end "\t.\t.\t.\tID=" candidate
+    }
+    candidate = "Candidate_" ++c
+    start = end = ""
+    next
 }
 
-NF == 0 {
-    print seq, "TNFINDER", "transposon", min, max, ".", ".", ".", "ID=" id
-    min=100000000
-    max=0
+/^[0-9]+\.\.[0-9]+/ {
+    match($1, /([0-9]+)\.\.([0-9]+)/, coords)
+    s = coords[1] + 0
+    e = coords[2] + 0
+    # Adjust for reverse coordinates
+    if (s > e) {
+        tmp = s; s = e; e = tmp
+    }
+    if (start == "" || s < start) start = s
+    if (end == "" || e > end) end = e
+    next
+}
+
+/^$/ {
+    if (candidate != "") {
+        print seqid "\tTNFINDER\ttransposon\t" start "\t" end "\t.\t.\t.\tID=" candidate
+        candidate = ""
+    }
 }
 
 END {
-   print seq, "TNFINDER", "transposon", min, max, ".", ".", ".", "ID=" id
+    if (candidate != "") {
+        print seqid "\tTNFINDER\ttransposon\t" start "\t" end "\t.\t.\t.\tID=" candidate
+    }
 }
