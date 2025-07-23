@@ -937,7 +937,7 @@ process INTEGRON_FORMAT {
     }
     END {
         for (id in seen) {
-            replicon_id = replicon[key]
+            replicon_id = replicon[id]
             attr = "ID=" full_id ";type=" type[id]
             print replicon_id, "integron_finder", id, min_pos[id], max_pos[id], ".", "+", "0", attr
         }cat
