@@ -4,7 +4,6 @@ BEGIN {
 
 /^QUERY:/ {
     if (candidate != "") {
-        # Print last candidate before switching QUERY
         print seqid "\tTNFINDER\ttransposon\t" start "\t" end "\t.\t.\t.\tID=" candidate
         candidate = ""
     }
@@ -16,7 +15,6 @@ BEGIN {
 
 /^\*Candidate/ {
     if (candidate != "") {
-        # Print previous candidate before starting a new one
         print seqid "\tTNFINDER\ttransposon\t" start "\t" end "\t.\t.\t.\tID=" candidate
     }
     candidate = "Candidate_" ++c
@@ -25,13 +23,10 @@ BEGIN {
 }
 
 /^[0-9]+\.\.[0-9]+/ {
-    match($1, /([0-9]+)\.\.([0-9]+)/, coords)
+    split($1, coords, /\.\./)
     s = coords[1] + 0
     e = coords[2] + 0
-    # Adjust for reverse coordinates
-    if (s > e) {
-        tmp = s; s = e; e = tmp
-    }
+    if (s > e) { tmp = s; s = e; e = tmp }
     if (start == "" || s < start) start = s
     if (end == "" || e > end) end = e
     next
