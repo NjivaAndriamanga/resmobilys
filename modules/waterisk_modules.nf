@@ -312,6 +312,7 @@ process TNFINDER2GFF {
     script:
     id = tn_output.getSimpleName()
     """
+    echo "test"
     awk -f ${projectDir}/bin/GFF_parsing/tnfindershort.sh ${tn_output} > tnshort.txt
     awk -f ${projectDir}/bin/GFF_parsing/tn2gff.sh tnshort.txt > ${id}_tnfinder.gff
     """
