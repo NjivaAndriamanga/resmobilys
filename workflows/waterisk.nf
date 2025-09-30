@@ -192,22 +192,21 @@ workflow RESMOBILYS {
     
     contig_ch = chrm_amr_ch.concat(plasmid_amr_ch)
 
-    ABRICATE(contig_ch)
+    //ABRICATE(contig_ch)
     RGI(DOWNLOAD_RGI_DATABASE.out, contig_ch)
     RGI2GFF(RGI.out)
     // AMRFINDER( contig_ch )
-    
     // Transposan finder
     TNFINDER_CORRECTION()
-    TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )
-    TNCOMP_FINDER( contig_ch , TNFINDER_CORRECTION.out )
+    //TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )
+    //TNCOMP_FINDER( contig_ch , TNFINDER_CORRECTION.out )
 
     //ISEScan
     ISESCAN( contig_ch )
     
     //TN2GFF
-    TNFINDER2GFF (TN3_FINDER.out)
-    TNFINDERCOMP2GFF ( TNCOMP_FINDER.out )
+    //TNFINDER2GFF (TN3_FINDER.out)
+    //TNFINDERCOMP2GFF ( TNCOMP_FINDER.out )
 
     //Integron_finder
     INTEGRON_FINDER( contig_ch )
@@ -235,7 +234,7 @@ workflow RESMOBILYS {
     taxa_to_merge = CREATE_TAXA.out.collectFile()
     MERGE_TAXA(taxa_to_merge)
 
-    //MOB_CLUSTER(MERGE_TAXA.out, plasmid_merge, MERGE_TYPE.out)
+    MOB_CLUSTER(MERGE_TAXA.out, plasmid_merge, MERGE_TYPE.out)
 
     //KRAKEN
     if (params.kraken_db != "null" && params.kraken_taxonomy == true) {
@@ -244,7 +243,7 @@ workflow RESMOBILYS {
     }
     
     //Virulence factor
-    VF_BLAST(contig_ch)
+    //VF_BLAST(contig_ch)
 }
 
 

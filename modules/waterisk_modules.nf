@@ -441,7 +441,7 @@ process ASSEMBLE_GENOME {
     script:
     def args = " "
     if (sr1 == [] || sr2 == []){ //if no short reads
-        args = "long-single -l $fastq -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel ${params.flyeModel}"
+        args = "long-single -l $fastq -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel ${params.flyeModel} --subsample_depth 1000"
     }
     else {
         args = "hybrid-single -l $fastq -1 $sr1 -2 $sr2 -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel ${params.flyeModel}"        
@@ -541,7 +541,7 @@ process RGI {
     """
     if [ -s ${fasta} ]; then
         rgi load --card_json ${card_json} --local
-        rgi main --input_sequence ${fasta} --output_file rgi --local --clean
+        rgi main --input_sequence ${fasta} --include_nudge --output_file rgi --local --clean
         awk -F"\t" '{print "${barID}",\$2, \$3, \$4, \$5, \$9, \$15, \$16, \$17}' OFS="\t" rgi.txt > ${barID}_${type}_rgi.txt
     else
         touch ${barID}_${type}_rgi.txt
