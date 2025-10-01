@@ -97,6 +97,27 @@ process DOWNLOAD_VF_DATABASE {
     """
 }
 
+process DOWNLOAD_ICE_DATABASE {
+    cache true
+
+    output:
+    env output 
+
+    script:
+    log.info "Downloading ICE database..."
+    """
+    cd ${projectDir}
+    if [ ! -d ICE_db ]; then
+        mkdir ICE_db
+        wget https://tool2-mml.sjtu.edu.cn/ICEberg3/data/download/ICE_seq_all.fas
+        makeblastdb -in ICE_seq_all.fas -dbtype nucl
+        output="ICE DB OK"
+    else
+        output="ICE DB already exist"
+    fi
+    """
+}
+
 process PREPROCESSING_DBSCANDB_CHMOD {
     cache true
 
@@ -629,11 +650,14 @@ process PLASME_COMPLETE {
     python ${projectDir}/bin/PLASMe/PLASMe.py ${putative_plasmid} ${barID}_plasme.fasta -d ${params.plasme_db}
     awk ' { print \$1 }' ${barID}_plasme.fasta_report.csv > chrm_contig.txt
     seqkit grep --invert-match -f chrm_contig.txt ${putative_plasmid} -o ${barID}_plasme_chrm.fasta
+    
     cat ${barID}_plasme_chrm.fasta > ${barID}_final_chrm.fasta
     cat ${chromosome} >> ${barID}_final_chrm.fasta
+    sed -i 's/contig/chromosome/g' ${barID}_final_chrm.fasta
+
     cat ${barID}_plasme.fasta > ${barID}_final_plasmid.fasta
     cat ${plasmid} >> ${barID}_final_plasmid.fasta
-    touch test.txt
+    sed -i 's/contig/plasmid/g' ${barID}_final_plasmid.fasta
     """
 }
 
@@ -987,7 +1011,27 @@ process VF_BLAST {
     script:
     sample = fasta.getSimpleName()
     """
-    blastn -db ${params.vf_db} -query ${fasta} -out vf_blast.txt -outfmt '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' -num_threads ${task.cpus}
+    blastn -db ${params.vf_db} -query ${fasta} -out vf_blast.txt -evalue 1e-3 -qcov_hsp_perc 75 -perc_indentity 80 -outfmt '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' -num_threads ${task.cpus}
     awk '!seen[\$2]++ {print \$0}' vf_blast.txt > ${sample}_vf_blast.txt
+    """
+}
+
+/*
+Blast for ICEs
+*/
+process ICE_BLAST {
+    tag "${barID}_${type}"
+    
+    input:
+    tuple val(barID) ,path(fasta), val(type)
+
+    output: 
+    tuple val(barID) ,path("${sample}_ice_blast.txt")
+
+    script:
+    sample = fasta.getSimpleName()
+    """
+    blastn -db ${params.ice_db} -query ${fasta} -out ice_blast.txt -evalue 1e-3 -qcov_hsp_perc 75 -perc_indentity 80 -outfmt '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' -num_threads ${task.cpus}
+    awk '!seen[\$2]++ {print \$0}' ice_blast.txt > ${sample}_ice_blast.txt
     """
 }

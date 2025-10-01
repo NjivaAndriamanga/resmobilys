@@ -161,6 +161,12 @@
           "type": "boolean",
           "default": false,
           "description": "include hits nudged from loose to strict hits"
+        },
+        "ice_db": {
+          "type": "string",
+          "default": "${projectDir}/DB",
+          "description": "ICE database directory",
+          "format": "file-path"
         }
       }
     },

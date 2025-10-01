@@ -121,7 +121,8 @@ workflow RESMOBILYS {
     DOWNLOAD_PLASME_DATABASE().view()
     DOWNLOAD_PLATON_DATABASE().view()
     DOWNLOAD_KRAKEN_DATABASE().view()
-    DOWNLOAD_VF_DATABASE().view()	
+    DOWNLOAD_VF_DATABASE().view()
+    DOWNLOAD_ICE_DATABASE().view()	
     PREPROCESSING_DBSCANDB_CHMOD().view()
     DOWNLOAD_RGI_DATABASE()
 
@@ -234,8 +235,9 @@ workflow RESMOBILYS {
         kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
     }
     
-    //Virulence factor
-    //VF_BLAST(contig_ch)
+    //Virulence factor and ICEs
+    VF_BLAST(contig_ch)
+    ICE_BLAST(contig_ch)
 }
 
 //TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )
