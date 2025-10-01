@@ -156,6 +156,11 @@
           "default": "${projectDir}/DB",
           "description": "VF database directory",
           "format": "file-path"
+        },
+        "rgi_include_nudge": {
+          "type": "boolean",
+          "default": false,
+          "description": "include hits nudged from loose to strict hits"
         }
       }
     },

@@ -538,10 +538,16 @@ process RGI {
     tuple val(barID), path("${barID}_${type}_rgi.txt")
     
     script:
+    if (params.rgi_include_nudge == true) {
+        include_nudge = "--include_nudge"
+    }
+    else {
+        include_nudge = ""
+    }
     """
     if [ -s ${fasta} ]; then
         rgi load --card_json ${card_json} --local
-        rgi main --input_sequence ${fasta} --include_nudge --output_file rgi --local --clean
+        rgi main --input_sequence ${fasta} ${include_nudge} --output_file rgi --local --clean
         awk -F"\t" '{print "${barID}",\$2, \$3, \$4, \$5, \$9, \$15, \$16, \$17}' OFS="\t" rgi.txt > ${barID}_${type}_rgi.txt
     else
         touch ${barID}_${type}_rgi.txt

@@ -195,25 +195,17 @@ workflow RESMOBILYS {
     //ABRICATE(contig_ch)
     RGI(DOWNLOAD_RGI_DATABASE.out, contig_ch)
     RGI2GFF(RGI.out)
-    // AMRFINDER( contig_ch )
-    // Transposan finder
-    TNFINDER_CORRECTION()
-    //TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )
-    //TNCOMP_FINDER( contig_ch , TNFINDER_CORRECTION.out )
+    
 
     //ISEScan
     ISESCAN( contig_ch )
-    
-    //TN2GFF
-    //TNFINDER2GFF (TN3_FINDER.out)
-    //TNFINDERCOMP2GFF ( TNCOMP_FINDER.out )
 
     //Integron_finder
     INTEGRON_FINDER( contig_ch )
     INTEGRON_FORMAT( INTEGRON_FINDER.out)
 
     //BUSCO
-    // BUSCO( chrm_amr_ch.map{barID, contig, type -> [barID, contig]} )
+    BUSCO( chrm_amr_ch.map{barID, contig, type -> [barID, contig]} )
 
     //DBSCAN
     DBSCAN( contig_ch , PREPROCESSING_DBSCANDB_CHMOD.out )
@@ -246,6 +238,14 @@ workflow RESMOBILYS {
     //VF_BLAST(contig_ch)
 }
 
+//TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )
+//TNCOMP_FINDER( contig_ch , TNFINDER_CORRECTION.out )
+//TN2GFF
+//TNFINDER2GFF (TN3_FINDER.out)
+//TNFINDERCOMP2GFF ( TNCOMP_FINDER.out )
+// AMRFINDER( contig_ch )
+//Transposan finder
+//TNFINDER_CORRECTION()
 
 //Incomplete assembly, align reads and filter plasmid reads for incomplete assembly
         // PLASME_INCOMPLETE(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLASME_DATABASE.out)
