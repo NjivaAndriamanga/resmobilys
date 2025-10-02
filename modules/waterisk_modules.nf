@@ -101,7 +101,7 @@ process DOWNLOAD_ICE_DATABASE {
     cache true
 
     output:
-    env output 
+    env output
 
     script:
     log.info "Downloading ICE database..."
@@ -113,7 +113,6 @@ process DOWNLOAD_ICE_DATABASE {
         wget https://tool2-mml.sjtu.edu.cn/ICEberg3/data/download/ICE_seq_all.fas
         makeblastdb -in ICE_seq_all.fas -dbtype nucl
         output="ICE DB OK"
-        echo "ICE DB OK"
     else
         output="ICE DB already exist"
     fi
