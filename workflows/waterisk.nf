@@ -239,7 +239,7 @@ workflow RESMOBILYS {
     
     //Virulence factor and ICEs
     VF_BLAST(DOWNLOAD_KRAKEN_DATABASE.out, contig_ch)
-    ICE_BLAST(DOWNLOAD_ICE_DATABASE, contig_ch)
+    ICE_BLAST(DOWNLOAD_ICE_DATABASE.out, contig_ch)
 }
 
 //TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )
