@@ -113,6 +113,7 @@ process DOWNLOAD_ICE_DATABASE {
         wget https://tool2-mml.sjtu.edu.cn/ICEberg3/data/download/ICE_seq_all.fas
         makeblastdb -in ICE_seq_all.fas -dbtype nucl
         output="ICE DB OK"
+        echo "test"
     else
         output="ICE DB already exist"
     fi
