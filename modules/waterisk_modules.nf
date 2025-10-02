@@ -1023,6 +1023,7 @@ Blast for ICEs
 */
 process ICE_BLAST {
     tag "${barID}_${type}"
+    label 'process_high'
     
     input:
     val x
