@@ -1013,7 +1013,7 @@ process VF_BLAST {
     script:
     sample = fasta.getSimpleName()
     """
-    blastn -db ${params.vf_db} -query ${fasta} -out vf_blast.txt -evalue 1e-3 -qcov_hsp_perc 75 -perc_indentity 80 -outfmt '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' -num_threads ${task.cpus}
+    blastn -db ${params.vf_db} -query ${fasta} -out vf_blast.txt -evalue 1e-3 -qcov_hsp_perc 75 -perc_identity 80 -outfmt '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' -num_threads ${task.cpus}
     awk '!seen[\$2]++ {print \$0}' vf_blast.txt > ${sample}_vf_blast.txt
     """
 }
@@ -1034,7 +1034,7 @@ process ICE_BLAST {
     script:
     sample = fasta.getSimpleName()
     """
-    blastn -db ${params.ice_db} -query ${fasta} -out ice_blast.txt -evalue 1e-3 -qcov_hsp_perc 75 -perc_indentity 80 -outfmt '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' -num_threads ${task.cpus}
+    blastn -db ${params.ice_db} -query ${fasta} -out ice_blast.txt -evalue 1e-3 -qcov_hsp_perc 75 -perc_identity 80 -outfmt '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' -num_threads ${task.cpus}
     awk '!seen[\$2]++ {print \$0}' ice_blast.txt > ${sample}_ice_blast.txt
     """
 }
