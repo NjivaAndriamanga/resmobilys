@@ -73,6 +73,7 @@ include { DOWNLOAD_PLASME_DATABASE }    from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_PLATON_DATABASE}     from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_KRAKEN_DATABASE }    from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_VF_DATABASE }        from '../modules/waterisk_modules.nf'
+include { DOWNLOAD_ICE_DATABASE}        from '../modules/waterisk_modules.nf'
 include { PREPROCESSING_DBSCANDB_CHMOD }             from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_RGI_DATABASE }       from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_SAMPLES}           from '../modules/waterisk_modules.nf'
@@ -236,8 +237,8 @@ workflow RESMOBILYS {
     }
     
     //Virulence factor and ICEs
-    VF_BLAST(contig_ch)
-    ICE_BLAST(contig_ch)
+    VF_BLAST(DOWNLOAD_KRAKEN_DATABASE.out, contig_ch)
+    ICE_BLAST(DOWNLOAD_ICE_DATABASE, contig_ch)
 }
 
 //TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )

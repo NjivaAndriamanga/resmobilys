@@ -109,6 +109,7 @@ process DOWNLOAD_ICE_DATABASE {
     cd ${projectDir}
     if [ ! -d ICE_db ]; then
         mkdir ICE_db
+        cd ICE_db
         wget https://tool2-mml.sjtu.edu.cn/ICEberg3/data/download/ICE_seq_all.fas
         makeblastdb -in ICE_seq_all.fas -dbtype nucl
         output="ICE DB OK"
@@ -1003,6 +1004,7 @@ process VF_BLAST {
     tag "${barID}_${type}"
     
     input:
+    val x
     tuple val(barID) ,path(fasta), val(type)
 
     output:
@@ -1023,6 +1025,7 @@ process ICE_BLAST {
     tag "${barID}_${type}"
     
     input:
+    val x
     tuple val(barID) ,path(fasta), val(type)
 
     output: 
