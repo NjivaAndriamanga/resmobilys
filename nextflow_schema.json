@@ -182,14 +182,14 @@
           "minimum": 0
         },
         "pident_ice": {
-          "type": "number",
+          "type": "integer",
           "default": 80,
           "description": "Percent identity cutoff for ICE detection",
           "maximum": 100,
           "minimum": 0
         },
         "evalue_ice": {
-          "type": "integer",
+          "type": "number",
           "default": 1e-10,
           "description": "E-value cutoff for ICE detection (scientific notation)",
           "minimum": 0
