@@ -169,7 +169,7 @@
           "format": "file-path"
         },
         "evalue_vf": {
-          "type": "integer",
+          "type": "number",
           "default": 1e-10,
           "description": "E-value cutoff for VF detection",
           "minimum": 0
@@ -182,7 +182,7 @@
           "minimum": 0
         },
         "pident_ice": {
-          "type": "integer",
+          "type": "number",
           "default": 80,
           "description": "Percent identity cutoff for ICE detection",
           "maximum": 100,
