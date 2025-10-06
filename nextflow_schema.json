@@ -167,6 +167,32 @@
           "default": "${projectDir}/DB",
           "description": "ICE database directory",
           "format": "file-path"
+        },
+        "evalue_vf": {
+          "type": "integer",
+          "default": 1e-10,
+          "description": "E-value cutoff for VF detection",
+          "minimum": 0
+        },
+        "pident_vf": {
+          "type": "integer",
+          "default": 80,
+          "description": "Percent identity cutoff for VF detection",
+          "maximum": 100,
+          "minimum": 0
+        },
+        "pident_ice": {
+          "type": "integer",
+          "default": 80,
+          "description": "Percent identity cutoff for ICE detection",
+          "maximum": 100,
+          "minimum": 0
+        },
+        "evalue_ice": {
+          "type": "integer",
+          "default": 1e-10,
+          "description": "E-value cutoff for ICE detection (scientific notation)",
+          "minimum": 0
         }
       }
     },
