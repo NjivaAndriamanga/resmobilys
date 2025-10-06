@@ -1010,13 +1010,15 @@ process VF_BLAST {
     tuple val(barID) ,path(fasta), val(type)
 
     output:
-    tuple val(barID) ,path("${sample}_vf_blast.txt")
+    tuple val(barID) ,path("${sample}_vf_blast.txt"), emit: vf_txt
+    tuple val(barID) ,path("${sample}_vf_blast.gff"), emit: vf_gff
 
     script:
     sample = fasta.getSimpleName()
     """
     blastn -db ${params.vf_db} -query ${fasta} -out vf_blast.txt -evalue ${params.evalue_vf} -perc_identity ${params.pident_vf} -outfmt '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' -num_threads ${task.cpus}
     awk '!seen[\$2]++ {print \$0}' vf_blast.txt > ${sample}_vf_blast.txt
+    awk -v pre=${barID} -f ${projectDir}/bin/GFF_parsing/blast2gff.sh ${sample}_vf_blast.txt > ${sample}_vf_blast.gff
     """
 }
 
@@ -1032,12 +1034,14 @@ process ICE_BLAST {
     tuple val(barID) ,path(fasta), val(type)
 
     output: 
-    tuple val(barID) ,path("${sample}_ice_blast.txt")
+    tuple val(barID) ,path("${sample}_ice_blast.txt"), emit: ice_txt
+    tuple val(barID) ,path("${sample}_ice_blast.gff"), emit: ice_gff
 
     script:
     sample = fasta.getSimpleName()
     """
     blastn -db ${params.ice_db} -query ${fasta} -out ice_blast.txt -evalue ${params.evalue_ice} -perc_identity ${params.pident_ice} -outfmt '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' -num_threads ${task.cpus}
     awk '!seen[\$2]++ {print \$0}' ice_blast.txt > ${sample}_ice_blast.txt
+    awk -v pre=${barID} -f ${projectDir}/bin/GFF_parsing/blast2gff.sh ${sample}_ice_blast.txt > ${sample}_ice_blast.gff
     """
 }
