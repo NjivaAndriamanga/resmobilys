@@ -77,7 +77,6 @@ include { DOWNLOAD_ICE_DATABASE}        from '../modules/waterisk_modules.nf'
 include { PREPROCESSING_DBSCANDB_CHMOD }             from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_RGI_DATABASE }       from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_SAMPLES}           from '../modules/waterisk_modules.nf'
-include { MERGE_SEPARATE_FASTQ }        from '../modules/waterisk_modules.nf'
 include { CLEAN_LONG_READS }            from '../modules/waterisk_modules.nf'
 include { ASSEMBLE_GENOME }             from '../modules/waterisk_modules.nf'
 include { FILTER_CIRCULAR_PLASMID }     from '../modules/waterisk_modules.nf'
@@ -104,11 +103,6 @@ include { VF_BLAST }                    from '../modules/waterisk_modules.nf'
 include { ICE_BLAST }                   from '../modules/waterisk_modules.nf'
 include { DBSCAN }                      from '../modules/waterisk_modules.nf'
 include { DBSCAN2GFF }                  from '../modules/waterisk_modules.nf'
-include { TNFINDER_CORRECTION }         from '../modules/waterisk_modules.nf'
-include { TN3_FINDER }                  from '../modules/waterisk_modules.nf'
-include { TNCOMP_FINDER }               from '../modules/waterisk_modules.nf'
-include { TNFINDER2GFF }                from '../modules/waterisk_modules.nf'
-include { TNFINDERCOMP2GFF}             from '../modules/waterisk_modules.nf'
 include { ISESCAN }                     from '../modules/waterisk_modules.nf'
 
 /*
@@ -193,7 +187,6 @@ workflow RESMOBILYS {
     RGI(DOWNLOAD_RGI_DATABASE.out, contig_ch)
     RGI2GFF(RGI.out)
     
-
     //ISEScan
     ISESCAN( contig_ch )
 
