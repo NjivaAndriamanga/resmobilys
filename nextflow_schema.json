@@ -58,17 +58,12 @@
           "default": 20,
           "description": "Parameter can be used to trim low-quality ends from reads."
         },
-        "remove_barcode": {
-          "type": "boolean",
-          "default": false,
-          "description": "If true, remove barcodes with Porechop"
-        },
         "lineage_db": {
           "type": "string",
           "default": "bacteria_odb10",
           "description": "Lineage database for busco. See https://busco.ezlab.org/list_of_lineages.html for a list of available lineage databases."
         }
-        }
+      }
     },
     "Hybracter_parameters": {
       "title": "Hybracter parameters",

@@ -45,7 +45,7 @@ process DOWNLOAD_PLATON_DATABASE {
 }
 
 /*
-This process will download the kraken database : k2 standard capped at 8gb
+This process will download the kraken database : by default it will download the k2 standard capped at 8gb
 */
 process DOWNLOAD_KRAKEN_DATABASE {
     cache true
@@ -76,6 +76,9 @@ process DOWNLOAD_KRAKEN_DATABASE {
     }
 }
 
+/*
+This process will download the VF database from VFDB
+*/
 process DOWNLOAD_VF_DATABASE {
     cache true
 
@@ -91,6 +94,7 @@ process DOWNLOAD_VF_DATABASE {
         wget https://www.mgc.ac.cn/VFs/Down/VFDB_setB_nt.fas.gz
         gzip -d VFDB_setB_nt.fas.gz
         mv VFDB_setB_nt.fas VF_db/
+        rm VFDB_setB_nt.fas.gz
         cd VF_db
         makeblastdb -in VFDB_setB_nt.fas -dbtype nucl
         output="VF DB OK"
@@ -100,6 +104,9 @@ process DOWNLOAD_VF_DATABASE {
     """
 }
 
+/*
+This process will download the ICE database
+*/
 process DOWNLOAD_ICE_DATABASE {
     cache true
 
@@ -123,6 +130,9 @@ process DOWNLOAD_ICE_DATABASE {
     """
 }
 
+/*
+This process will prepare the DBSCAN tools and database
+*/
 process PREPROCESSING_DBSCANDB_CHMOD {
     cache true
 
@@ -132,7 +142,6 @@ process PREPROCESSING_DBSCANDB_CHMOD {
     script:
     log.info "Preparing DBSCAN tools and database..."
     """
-    
     cd ${projectDir}
    
     chmod u+x -R bin/DBSCAN-SWA/bin
@@ -155,10 +164,12 @@ process PREPROCESSING_DBSCANDB_CHMOD {
     else
         output+="db for DBSCAN already exist. "
     fi
-    
     """
 }
 
+/*
+This process will download the RGI database
+*/
 process DOWNLOAD_RGI_DATABASE {
     cache true
 
@@ -172,6 +183,123 @@ process DOWNLOAD_RGI_DATABASE {
     tar -xvf data ./card.json
     """
 }
+
+/*
+Identified samples from index_files and check the presence of short reads
+*/
+process IDENTIFIED_SAMPLES {
+    cache true
+
+    input:
+    tuple path(fastq), val(genome_size), path(sr1), path(sr2)
+
+    output:
+    tuple val(barID), path(fastq), emit: long_reads
+    tuple val(barID), val(genome_size), emit: genome_size
+    tuple val(barID), path(sr1), path(sr2), emit: short_reads
+    
+    script:
+    barID = fastq.getSimpleName()
+
+    """
+    
+    """
+}
+
+/*
+Long reads trimming : trim low quality ends or number of bases to remove. Absent in filtlong
+*/
+process CLEAN_LONG_READS {
+    tag "${barID}"
+    cache true
+    label "process_high"
+    
+    input:
+    tuple val(barID), path(query)
+
+    output:
+    tuple val(barID), path("${barID}Trimmed.fastq.gz"), emit: trimmed_fastq
+
+    script:
+    """
+    cutadapt --cut ${params.trim_end_size} --cut -${params.trim_end_size} -q ${params.quality_trim},${params.quality_trim} -o ${barID}Trimmed.fastq.gz $query
+    """
+}
+
+/*
+Assembling genome and plasmid with hybracter
+Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_summary.tsv)
+For incomplete assembly, contigs are written in sample_final.fasta
+*/
+process ASSEMBLE_GENOME {
+    tag "${barID}"
+    cache true
+    label 'process_high'
+    cpus { task.attempt < 2 ? task.cpus : 1 } //If blastx in dnaapler doesn't found hit fot certain seq length, there is a segmentation fault (temporary fix: reduce cpus to 1)
+    errorStrategy { task.attempt < 3 ? 'retry' : 'ignore'}
+
+    input:
+    tuple val(barID), path(fastq), val(genome_size), path(sr1), path(sr2)
+    
+    output:
+    tuple val(barID), path(fastq),path("${barID}_sample_per_contig_stats.tsv"), path("${barID}_plassembler_summary.tsv"), path("${barID}_sample_chromosome.fasta"), path("${barID}_hybracter_plasmid.fasta"), optional: true, emit: complete_assembly
+    tuple val(barID), path(fastq),path("${barID}_sample_final.fasta"), optional: true, emit: incomplete_assembly
+
+    script:
+    def args = " "
+    if (sr1 == [] || sr2 == []){ //if no short reads
+        args = "long-single -l $fastq -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel ${params.flyeModel} --subsample_depth 1000"
+    }
+    else {
+        args = "hybrid-single -l $fastq -1 $sr1 -2 $sr2 -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel ${params.flyeModel}"        
+    }
+
+    if (params.medaka == false) {
+        args = args + " --no_medaka"
+    }
+    if(genome_size == 0){
+        args = args + " --auto"
+    }
+    if(genome_size > 0){
+        args = args + " -c ${genome_size}"
+    }
+
+    """
+    hybracter ${args}
+    
+    [ ! -f hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ] || mv hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ${barID}_plassembler_summary.tsv
+    [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
+    [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
+    [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_hybracter_plasmid.fasta
+
+    [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample_final.fasta
+    [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
+    """
+}
+
+/*
+Busco assembly evaluation
+*/
+process BUSCO {
+    tag "${barID}"
+    label 'busco'
+
+    input:
+    tuple val(barID), path(fasta)
+
+    output:
+    path("${barID}_busco.txt")
+
+    script:
+    """
+    busco -i ${fasta} -m genome -l ${params.lineage_db} -o ${barID}_busco
+    cp ${barID}_busco/short*.txt ${barID}_busco.txt
+    """
+}
+
+
+
+
 
 /*
 DBSCAN output an exit status 1 when no prophage is found for some fasta. This message is ignored for now and an empty file is created
@@ -358,161 +486,6 @@ process TNFINDERCOMP2GFF {
     """
     awk -f ${projectDir}/bin/GFF_parsing/tncomp_short.sh ${tcomp_output} > tcompshort.txt
     awk -f ${projectDir}/bin/GFF_parsing/tcomp2gff.sh tcompshort.txt > ${id}_tnfindercomp.gff
-    """
-}
-/*
-List all barcodes contain in the input directory from miniON output
-*/
-process IDENTIFIED_RAW_SAMPLES {
-    input:
-    path fastq_dir
-    val fastq_path
-
-    output:
-    path '*.txt'
-
-    script:
-    """
-    ls ${fastq_dir}/ > path_list.txt
-    while read -r line; do basename=\$(echo \$line | awk '{n=split(\$0,A,"/"); print A[n]}'); output_file="\${basename}.txt"; echo "${fastq_path}\$line" > \$output_file; done < path_list.txt
-    rm path_list.txt
-    """
-}
-
-/*
-    Identified samples from index_files and check the presence of short reads
-*/
-process IDENTIFIED_SAMPLES {
-    cache true
-
-    input:
-    tuple path(fastq), val(genome_size), path(sr1), path(sr2)
-
-    output:
-    tuple val(barID), path(fastq), emit: long_reads
-    tuple val(barID), val(genome_size), emit: genome_size
-    tuple val(barID), path(sr1), path(sr2), emit: short_reads
-    
-    script:
-    barID = fastq.getSimpleName()
-
-    """
-    
-    """
-}
-
-/*
-Merge all seprates fastq.gz for each barcodes file into one file
-*/
-process MERGE_SEPARATE_FASTQ {
-    input:
-    path barcode_dir
-
-    output:
-    tuple val(barID), path("${barID}.fastq.gz")
-
-    script:
-    barID = barcode_dir.getSimpleName()
-    """
-        while read -r line; do cat \${line}/*.fastq.gz > ${barID}.fastq.gz; done < $barcode_dir
-    """
-}
-
-/*
-Long reads trimming by length and quality score and filtering with cutadapt. Asses reads quality before and reads filtering with fastqc. The two reports are merged with multiqc
-*/
-process CLEAN_LONG_READS {
-    tag "${barID}"
-    cache true
-    label "process_high"
-    
-    input:
-    tuple val(barID), path(query)
-
-    output:
-    tuple val(barID), path("${barID}Trimmed.fastq.gz"), emit: trimmed_fastq
-
-    script:
-    """
-    cutadapt --cut ${params.trim_end_size} --cut -${params.trim_end_size} -q ${params.quality_trim},${params.quality_trim} -o ${barID}Trimmed.fastq.gz $query -m ${params.read_min_length}
-    """
-    /* """
-    fastqc --memory 2000 $query -t ${task.cpus}
-    cutadapt --cut ${params.trim_end_size} --cut -${params.trim_end_size} -q ${params.quality_trim},${params.quality_trim} -o ${barID}Trimmed.fastq.gz $query -m ${params.read_min_length}
-    fastqc --memory 2000 ${barID}Trimmed.fastq.gz -t ${task.cpus}
-    multiqc .
-    mv multiqc_report.html ${barID}_report.html
-    """ */
-}
-
-/*
-Assembling genome and plasmid with hybracter
-Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_summary.tsv)
-For incomplete assembly, contigs are written in sample_final.fasta
-*/
-process ASSEMBLE_GENOME {
-    tag "${barID}"
-    cache true
-    label 'process_high'
-    cpus { task.attempt < 2 ? task.cpus : 1 } //If blastx in dnaapler doesn't found hit fot certain seq length, there is a segmentation fault (temporary fix: reduce cpus to 1)
-    errorStrategy { task.attempt < 3 ? 'retry' : 'ignore'}
-
-    input:
-    tuple val(barID), path(fastq), val(genome_size), path(sr1), path(sr2)
-    
-    output:
-    tuple val(barID), path(fastq),path("${barID}_sample_per_contig_stats.tsv"), path("${barID}_plassembler_summary.tsv"), path("${barID}_sample_chromosome.fasta"), path("${barID}_hybracter_plasmid.fasta"), optional: true, emit: complete_assembly
-    tuple val(barID), path(fastq),path("${barID}_sample_final.fasta"), optional: true, emit: incomplete_assembly
-
-    script:
-    def args = " "
-    if (sr1 == [] || sr2 == []){ //if no short reads
-        args = "long-single -l $fastq -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel ${params.flyeModel} --subsample_depth 1000"
-    }
-    else {
-        args = "hybrid-single -l $fastq -1 $sr1 -2 $sr2 -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel ${params.flyeModel}"        
-    }
-
-    if (params.medaka == false) {
-        args = args + " --no_medaka"
-    }
-    if(genome_size == 0){
-        args = args + " --auto"
-    }
-    if(genome_size > 0){
-        args = args + " -c ${genome_size}"
-    }
-
-    """
-    hybracter ${args}
-    
-    [ ! -f hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ] || mv hybracter_out/processing/plassembler/sample/plassembler_summary.tsv ${barID}_plassembler_summary.tsv
-    [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
-    [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_chromosome.fasta ${barID}_sample_chromosome.fasta 
-    [ ! -f hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ] || mv hybracter_out/FINAL_OUTPUT/complete/sample_plasmid.fasta ${barID}_hybracter_plasmid.fasta
-
-    [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_final.fasta ${barID}_sample_final.fasta
-    [ ! -f hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ] || mv hybracter_out/FINAL_OUTPUT/incomplete/sample_per_contig_stats.tsv ${barID}_sample_per_contig_stats.tsv
-    """
-}
-
-/*
-Busco assembly evaluation
-*/
-process BUSCO {
-    tag "${barID}"
-    label 'busco'
-
-    input:
-    tuple val(barID), path(fasta)
-
-    output:
-    path("${barID}_busco.txt")
-
-    script:
-    """
-    busco -i ${fasta} -m genome -l ${params.lineage_db} -o ${barID}_busco
-    cp ${barID}_busco/short*.txt ${barID}_busco.txt
     """
 }
 
@@ -1045,5 +1018,43 @@ process ICE_BLAST {
     blastn -db ${params.ice_db} -query ${fasta} -out ice_blast.txt -evalue ${params.evalue_ice} -perc_identity ${params.pident_ice} -outfmt '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' -num_threads ${task.cpus}
     awk '!seen[\$2]++ {print \$0}' ice_blast.txt > ${sample}_ice_blast.txt
     awk -v pre=${barID} -f ${projectDir}/bin/GFF_parsing/blast2gff.sh ${sample}_ice_blast.txt > ${sample}_ice_blast.gff
+    """
+}
+
+
+/*
+List all barcodes contain in the input directory from miniON output
+*/
+process IDENTIFIED_RAW_SAMPLES {
+    input:
+    path fastq_dir
+    val fastq_path
+
+    output:
+    path '*.txt'
+
+    script:
+    """
+    ls ${fastq_dir}/ > path_list.txt
+    while read -r line; do basename=\$(echo \$line | awk '{n=split(\$0,A,"/"); print A[n]}'); output_file="\${basename}.txt"; echo "${fastq_path}\$line" > \$output_file; done < path_list.txt
+    rm path_list.txt
+    """
+}
+
+
+/*
+Merge all seprates fastq.gz for each barcodes file into one file
+*/
+process MERGE_SEPARATE_FASTQ {
+    input:
+    path barcode_dir
+
+    output:
+    tuple val(barID), path("${barID}.fastq.gz")
+
+    script:
+    barID = barcode_dir.getSimpleName()
+    """
+        while read -r line; do cat \${line}/*.fastq.gz > ${barID}.fastq.gz; done < $barcode_dir
     """
 }

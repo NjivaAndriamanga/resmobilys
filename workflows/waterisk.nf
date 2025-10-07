@@ -133,14 +133,8 @@ workflow RESMOBILYS {
     genome_size_ch = IDENTIFIED_SAMPLES.out.genome_size
     fastq_short_reads_ch = IDENTIFIED_SAMPLES.out.short_reads
 
-    //Remove barcode then trim reads
-    if (params.remove_barcode == true){
-        (fastq_nobar) = REMOVE_BARCODES(fastq_long_reads_ch)
-        CLEAN_LONG_READS(fastq_nobar)
-    }
-    else {
-        CLEAN_LONG_READS(fastq_long_reads_ch)
-    }
+    //Long reads triming
+    CLEAN_LONG_READS(fastq_long_reads_ch)
 
     //De novo assembly using Hybracter
     assembly_input_ch = CLEAN_LONG_READS.out.trimmed_fastq.join(genome_size_ch)
