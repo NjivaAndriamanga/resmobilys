@@ -25,6 +25,9 @@ process CHECK_PLASME_DATABASE {
     """
 }
 
+/*
+This process will download the platon database
+*/
 process DOWNLOAD_PLATON_DATABASE {
     cache true
     
@@ -41,6 +44,9 @@ process DOWNLOAD_PLATON_DATABASE {
     """
 }
 
+/*
+This process will download the kraken database : k2 standard capped at 8gb
+*/
 process DOWNLOAD_KRAKEN_DATABASE {
     cache true
 
@@ -48,21 +54,22 @@ process DOWNLOAD_KRAKEN_DATABASE {
     env output
 
     script:
-    if (params.kraken_db.equals("${projectDir}/k2_standard_08gb_20240904") && params.kraken_taxonomy == true) {
+    if (params.kraken_db.equals("${projectDir}/kraken_DB") && params.kraken_taxonomy == true) {
         log.info "Downloading kraken database..."
         """
         cd ${projectDir}
-        if [ ! -d k2_standard_08gb_20240904 ]; then
-            mkdir k2_standard_08gb_20240904
-            wget https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20240904.tar.gz
-            tar -xvf k2_standard_08gb_20240904.tar.gz -C k2_standard_08gb_20240904/
+        if [ ! -d kraken_DB ]; then
+            mkdir kraken_DB
+            wget ${params.kraken_index}
+            tar -xvf k2_standard*.tar.gz -C kraken_DB/
+            rm k2_standard*.tar.gz
             output="Kraken DB OK"
         else
             output=" Kraken DB already exist "
         fi
         """
     }
-    else if (params.kraken_taxonomy == true && params.kraken_db != "${projectDir}/k2_standard_08gb_20240904" && params.kraken_db != null) {
+    else if (params.kraken_taxonomy == true && params.kraken_db != "${projectDir}/kraken_DB" && params.kraken_db != null) {
         """
         output="Kraken DB are already provided"
         """
