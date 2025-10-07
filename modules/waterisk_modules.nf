@@ -345,6 +345,7 @@ process PLASME_COMPLETE {
     """
 }
 
+//Infer plasmid from a fasta file with Platon
 process PLATON {
     tag "${barID}"
     label "platon","process_high"
@@ -366,6 +367,7 @@ process PLATON {
     """
 }
 
+//Infer plasmid from a fasta file
 process PLATON_COMPLETE {
     tag "${barID}"
     label 'platon','process_high'

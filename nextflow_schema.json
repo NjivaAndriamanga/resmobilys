@@ -42,10 +42,10 @@
       },
       "required": ["assembly","index_file"]
     },
-    "quality_control": {
+    "long_reads_qc": {
       "title": "Quality control assessment",
       "type": "object",
-      "description": "",
+      "description": "Long reads trimming parameters",
       "default": "",
       "properties": {
         "trim_end_size": {
@@ -68,7 +68,7 @@
     "Hybracter_parameters": {
       "title": "Hybracter parameters",
       "type": "object",
-      "description": "",
+      "description": "Parameters for Hybracter",
       "default": "",
       "properties": {
         "read_min_length": {
@@ -106,18 +106,6 @@
           "description": "AMR database for AMR detection with ABRICATE",
           "enum": ["argannot","card","ecoh","ecoli_vf","megares","ncbi","plasmidfinder","resfinder","vfdb"]
         },
-        "plasme_env": {
-          "type": "string",
-          "default": "${projectDir}/conf/plasme.yaml",
-          "description": "Plasme environment file",
-          "format": "file-path",
-          "exists": true
-        },
-        "plasme_download_db": {
-          "type": "boolean",
-          "default": true,
-          "description": "Download plasme database. if false, plasme will not be downloaded and should be downloaded manually from https://zenodo.org/record/8046934/files/DB.zip?download=1"
-        },
         "plasme_db": {
           "type": "string",
           "default": "${projectDir}/DB",
@@ -146,11 +134,6 @@
           "type": "boolean",
           "default": true,
           "description": "Enable kraken taxonomy"
-        },
-        "mlst": {
-          "type": "boolean",
-          "default": false,
-          "description": "Enable MLST"
         },
         "vf_db": {
           "type": "string",
@@ -299,7 +282,7 @@
       "$ref": "#/$defs/max_job_request_options"
     },
     {
-      "$ref": "#/$defs/quality_control"
+      "$ref": "#/$defs/long_reads_qc"
     },
     {
       "$ref": "#/$defs/Hybracter_parameters"
