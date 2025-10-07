@@ -1,14 +1,8 @@
 
 /*
-This process will download the plasme database from github and unzip it in the same directory as the main script (main.nf)
-Run PLasme.py script to unzip and install the dabatase (avoid conflict when accessing the database during plasme process)
-Alternative: download the database from plasme and unzip it waterisk directory with the name DB
-
-Database for kraken and for virulence factor detection
-But if the directory DB already exist, it will not be re-downloaded
-
+This process will check if the plasme database is already downloaded
 */
-process DOWNLOAD_PLASME_DATABASE {
+process CHECK_PLASME_DATABASE {
     cache true
     label 'plasme'
 
@@ -16,18 +10,19 @@ process DOWNLOAD_PLASME_DATABASE {
     env output
 
     script:
-
     
     log.info "Downloading plasme database..."
     """
     cd ${projectDir}
     if [ ! -d DB ]; then 
-        echo "Download plasme db in tar format"
+        echo " ERROR: 'DB' directory not found in ${projectDir}!"
+        echo "Please download the plasme database before running this workflow."
+        exit 1
     else
-        output=" Plamse DB already exist"
+        echo "✅ DB directory already exists."
+        output=" DB directory already exist"
     fi
     """
-
 }
 
 process DOWNLOAD_PLATON_DATABASE {
