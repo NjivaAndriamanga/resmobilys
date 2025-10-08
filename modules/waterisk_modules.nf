@@ -153,8 +153,6 @@ process PREPROCESSING_DBSCANDB_CHMOD {
 
     chmod u+x -R bin/PLASMe
     chmod u+x -R bin/GFF_parsing
-    chmod u+x bin/tncomp_finder/TnComp_finder.py
-    chmod u+x bin/tn3-ta_finder/Tn3+TA_finder.py
 
     cd ${projectDir}/bin/DBSCAN-SWA
     if [ ! -d db ]; then
