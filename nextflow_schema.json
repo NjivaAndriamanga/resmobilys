@@ -122,7 +122,6 @@
           "type": "string",
           "default": "https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20240904.tar.gz",
           "description": "kraken index directory, by default it will download the smaller index capped at 8 gb",
-          "format": "directory-path"
         },
         "kraken_db": {
           "type": "string",
