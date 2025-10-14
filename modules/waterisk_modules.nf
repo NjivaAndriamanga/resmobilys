@@ -94,7 +94,6 @@ process DOWNLOAD_VF_DATABASE {
         wget https://www.mgc.ac.cn/VFs/Down/VFDB_setB_nt.fas.gz
         gzip -d VFDB_setB_nt.fas.gz
         mv VFDB_setB_nt.fas VF_db/
-        rm VFDB_setB_nt.fas.gz
         cd VF_db
         makeblastdb -in VFDB_setB_nt.fas -dbtype nucl
         output="VF DB OK"
