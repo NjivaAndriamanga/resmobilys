@@ -116,7 +116,6 @@ workflow RESMOBILYS {
     CHECK_PLASME_DATABASE().view()
     DOWNLOAD_PLATON_DATABASE().view()
     DOWNLOAD_KRAKEN_DATABASE().view()
-    DOWNLOAD_VF_DATABASE().view()
     DOWNLOAD_ICE_DATABASE().view()	
     PREPROCESSING_DBSCANDB_CHMOD().view()
     DOWNLOAD_RGI_DATABASE()
@@ -224,7 +223,6 @@ workflow RESMOBILYS {
     }
     
     //Virulence factor and ICEs
-    VF_BLAST(DOWNLOAD_KRAKEN_DATABASE.out, contig_ch)
     ICE_BLAST(DOWNLOAD_ICE_DATABASE.out, contig_ch)
 }
 
