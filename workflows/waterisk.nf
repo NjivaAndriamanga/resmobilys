@@ -116,10 +116,12 @@ workflow RESMOBILYS {
     CHECK_PLASME_DATABASE().view()
     DOWNLOAD_PLATON_DATABASE().view()
     DOWNLOAD_KRAKEN_DATABASE().view()
-    DOWNLOAD_ICE_DATABASE().view()	
+    DOWNLOAD_ICE_DATABASE().view()
+    DOWNLOAD_VF_DATABASE().view()
     PREPROCESSING_DBSCANDB_CHMOD().view()
     DOWNLOAD_RGI_DATABASE()
 
+    //Identified samples
     IDENTIFIED_SAMPLES(ch_input)
     fastq_long_reads_ch = IDENTIFIED_SAMPLES.out.long_reads
     genome_size_ch = IDENTIFIED_SAMPLES.out.genome_size
@@ -224,6 +226,7 @@ workflow RESMOBILYS {
     
     //Virulence factor and ICEs
     ICE_BLAST(DOWNLOAD_ICE_DATABASE.out, contig_ch)
+    VF_BLAST(DOWNLOAD_VF_DATABASE.out, contig_ch)
 }
 
 //TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )
