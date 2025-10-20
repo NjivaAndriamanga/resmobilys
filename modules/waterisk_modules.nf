@@ -518,7 +518,7 @@ process ISESCAN {
 }
 
 /*
-Identify AMR gene on plasmid. Abricate with megares to identify heavy and efflux pump. AMR finder plus for ARG.
+Identify AMR gene on plasmid. Abricate with megares to identify heavy and efflux pump.
 Resistance to drugs identified with abricate are remove with grep
 */
 process ABRICATE {
@@ -533,7 +533,7 @@ process ABRICATE {
 
     script:
     """
-    abricate -db ${params.amr_db} ${fasta} > ${barID}_${type}_heavy.txt
+    abricate -db ${params.amr_db} ${fasta} | grep -i -E "biocide|metal" > ${barID}_${type}_heavy.txt
     """
 }
 
