@@ -533,7 +533,7 @@ process ABRICATE {
 
     script:
     """
-    abricate -db ${params.amr_db} ${fasta} | grep -i -E "biocide|metal" > ${barID}_${type}_heavy.txt
+    abricate -db ${params.amr_db} ${fasta} | grep -i -E "biocide|metal" > ${barID}_${type}_heavy.txt
     """
 }
 
