@@ -1,9 +1,7 @@
-
 /*
 This process will check if the plasme database is already downloaded
 */
 process CHECK_PLASME_DATABASE {
-    cache true
     label 'plasme'
 
     output:
@@ -29,7 +27,6 @@ process CHECK_PLASME_DATABASE {
 This process will download the platon database
 */
 process DOWNLOAD_PLATON_DATABASE {
-    cache true
     
     output:
     env output
@@ -48,7 +45,6 @@ process DOWNLOAD_PLATON_DATABASE {
 This process will download the kraken database : by default it will download the k2 standard capped at 8gb
 */
 process DOWNLOAD_KRAKEN_DATABASE {
-    cache true
 
     output:
     env output
@@ -80,7 +76,6 @@ process DOWNLOAD_KRAKEN_DATABASE {
 This process will download the VF database from VFDB
 */
 process DOWNLOAD_VF_DATABASE {
-    cache true
 
     output:
     env output
@@ -107,7 +102,6 @@ process DOWNLOAD_VF_DATABASE {
 This process will download the ICE database
 */
 process DOWNLOAD_ICE_DATABASE {
-    cache true
 
     output:
     env output
@@ -133,7 +127,6 @@ process DOWNLOAD_ICE_DATABASE {
 This process will prepare the DBSCAN tools and database
 */
 process PREPROCESSING_DBSCANDB_CHMOD {
-    cache true
 
     output:
     env output
@@ -168,7 +161,6 @@ process PREPROCESSING_DBSCANDB_CHMOD {
 This process will download the RGI database
 */
 process DOWNLOAD_RGI_DATABASE {
-    cache true
 
     output:
     path "card.json"
@@ -185,7 +177,6 @@ process DOWNLOAD_RGI_DATABASE {
 Identified samples from index_files and check the presence of short reads
 */
 process IDENTIFIED_SAMPLES {
-    cache true
 
     input:
     tuple path(fastq), val(genome_size), path(sr1), path(sr2)
@@ -208,7 +199,6 @@ Long reads trimming : trim low quality ends or number of bases to remove. Absent
 */
 process CLEAN_LONG_READS {
     tag "${barID}"
-    cache true
     label "process_high"
     
     input:
@@ -230,7 +220,6 @@ For incomplete assembly, contigs are written in sample_final.fasta
 */
 process ASSEMBLE_GENOME {
     tag "${barID}"
-    cache true
     label 'process_high'
     cpus { task.attempt < 2 ? task.cpus : 1 } //If blastx in dnaapler doesn't found hit fot certain seq length, there is a segmentation fault (temporary fix: reduce cpus to 1)
     errorStrategy { task.attempt < 3 ? 'retry' : 'ignore'}
