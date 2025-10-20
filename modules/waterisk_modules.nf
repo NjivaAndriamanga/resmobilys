@@ -534,7 +534,7 @@ process ABRICATE {
     script:
     """
     set -o pipefail
-    abricate -db ${params.amr_db} ${fasta} | grep -i -E "biocide|metal" > ${barID}_${type}_heavy.txt || [[ $? == 1]]
+    abricate -db ${params.amr_db} ${fasta} | grep -i -E "biocide|metal" > ${barID}_${type}_heavy.txt || [[ $? == 1 ]]
     """
 }
 
