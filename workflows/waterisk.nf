@@ -183,7 +183,7 @@ workflow RESMOBILYS {
     
     contig_ch = chrm_amr_ch.concat(plasmid_amr_ch)
 
-    //ABRICATE(contig_ch)
+    ABRICATE(contig_ch)
     RGI(DOWNLOAD_RGI_DATABASE.out, contig_ch)
     RGI2GFF(RGI.out)
     
@@ -224,7 +224,7 @@ workflow RESMOBILYS {
         kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
     }
     
-    //Virulence factor and ICEs
+    //Virulence factor, ICEs and heavy metals detection
     ICE_BLAST(DOWNLOAD_ICE_DATABASE.out, contig_ch)
     VF_BLAST(DOWNLOAD_VF_DATABASE.out, contig_ch)
 }

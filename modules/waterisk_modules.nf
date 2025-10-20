@@ -529,11 +529,11 @@ process ABRICATE {
     tuple val(barID), path(fasta), val(type)
 
     output:
-    tuple val(barID), path(fasta), path("${barID}_${type}_amr.txt"), val(type), emit: amr
+    tuple val(barID), path(fasta), path("${barID}_${type}_heavy.txt"), val(type), emit: amr
 
     script:
     """
-    abricate -db ${params.amr_db} ${fasta} | grep -v "Drugs" > ${barID}_${type}_amr.txt
+    abricate -db ${params.amr_db} ${fasta} > ${barID}_${type}_heavy.txt
     """
 }
 
