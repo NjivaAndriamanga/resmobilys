@@ -520,6 +520,8 @@ process ISESCAN {
 /*
 Identify AMR gene on plasmid. Abricate with megares to identify heavy and efflux pump.
 Resistance to drugs identified with abricate are remove with grep
+!!! grep return an exit status 1 when no resistance is found ==> process error
+!!! ABRICATE error is ignored for now with || true
 */
 process ABRICATE {
     tag "${barID}_${type}"
@@ -533,8 +535,7 @@ process ABRICATE {
 
     script:
     """
-    set -o pipefail
-    abricate -db ${params.amr_db} ${fasta} | grep -i -E "biocide|metal" > ${barID}_${type}_heavy.txt || [[ $? == 1 ]]
+    abricate -db ${params.amr_db} ${fasta} | grep -i -E "biocide|metal" > ${barID}_${type}_heavy.txt || true
     """
 }
 
