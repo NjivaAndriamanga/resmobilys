@@ -34,10 +34,15 @@ process DOWNLOAD_PLATON_DATABASE {
     script:
     """
     cd ${projectDir}
-    wget https://zenodo.org/record/4066768/files/db.tar.gz
-    tar -xzf db.tar.gz
-    mv db platon_db
-    rm db.tar.gz
+    if [ ! -d platon_db ]; then
+        mkdir platon_db
+        wget https://zenodo.org/record/4066768/files/db.tar.gz
+        tar -xzf db.tar.gz
+        mv db platon_db
+        rm db.tar.gz
+    else
+        output="Platon DB already exist"
+    fi
     """
 }
 
