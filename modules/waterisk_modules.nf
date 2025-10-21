@@ -40,6 +40,7 @@ process DOWNLOAD_PLATON_DATABASE {
         tar -xzf db.tar.gz
         mv db platon_db
         rm db.tar.gz
+        output="Platon DB OK"
     else
         output="Platon DB already exist"
     fi
