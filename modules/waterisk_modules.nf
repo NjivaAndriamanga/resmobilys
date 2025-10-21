@@ -35,7 +35,6 @@ process DOWNLOAD_PLATON_DATABASE {
     """
     cd ${projectDir}
     if [ ! -d platon_db ]; then
-        mkdir platon_db
         wget https://zenodo.org/record/4066768/files/db.tar.gz
         tar -xzf db.tar.gz
         mv db platon_db
