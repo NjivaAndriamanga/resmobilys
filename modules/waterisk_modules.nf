@@ -182,7 +182,8 @@ process DOWNLOAD_RGI_DATABASE {
 Identified samples from index_files and check the presence of short reads
 */
 process IDENTIFIED_SAMPLES {
-
+    scratch false
+    tag "${barID}"
     input:
     tuple path(fastq), val(genome_size), path(sr1), path(sr2)
 
@@ -203,6 +204,7 @@ process IDENTIFIED_SAMPLES {
 Long reads trimming : trim low quality ends or number of bases to remove. Absent in filtlong
 */
 process CLEAN_LONG_READS {
+    scratch false
     tag "${barID}"
     label "process_high"
     
@@ -224,6 +226,7 @@ Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_su
 For incomplete assembly, contigs are written in sample_final.fasta
 */
 process ASSEMBLE_GENOME {
+    scratch false
     tag "${barID}"
     label 'process_high'
     cpus { task.attempt < 2 ? task.cpus : 1 } //If blastx in dnaapler doesn't found hit fot certain seq length, there is a segmentation fault (temporary fix: reduce cpus to 1)
