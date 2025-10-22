@@ -182,7 +182,6 @@ process DOWNLOAD_RGI_DATABASE {
 Identified samples from index_files and check the presence of short reads
 */
 process IDENTIFIED_SAMPLES {
-    scratch false
     tag "${barID}"
     input:
     tuple path(fastq), val(genome_size), path(sr1), path(sr2)
@@ -204,7 +203,7 @@ process IDENTIFIED_SAMPLES {
 Long reads trimming : trim low quality ends or number of bases to remove. Absent in filtlong
 */
 process CLEAN_LONG_READS {
-    scratch false
+    
     tag "${barID}"
     label "process_high"
     
@@ -226,7 +225,6 @@ Hybracter also compare putative plasmid with PLSDB using MASH (see plassember_su
 For incomplete assembly, contigs are written in sample_final.fasta
 */
 process ASSEMBLE_GENOME {
-    scratch false
     tag "${barID}"
     label 'process_high'
     cpus { task.attempt < 2 ? task.cpus : 1 } //If blastx in dnaapler doesn't found hit fot certain seq length, there is a segmentation fault (temporary fix: reduce cpus to 1)
@@ -273,6 +271,7 @@ process ASSEMBLE_GENOME {
 
 //Filter circular plasmid in a fasta file from a tab file
 process FILTER_CIRCULAR_PLASMID {
+    scratch false
     tag "${barID}"
 
     input:
@@ -341,6 +340,7 @@ process PLASME_COMPLETE {
 
 //Infer plasmid from a fasta file with Platon
 process PLATON {
+    scratch false
     tag "${barID}"
     label "platon","process_high"
 
@@ -363,6 +363,7 @@ process PLATON {
 
 //Infer plasmid from a fasta file
 process PLATON_COMPLETE {
+
     tag "${barID}"
     label 'platon','process_high'
     errorStrategy "ignore"
@@ -396,6 +397,7 @@ process PLATON_COMPLETE {
 }
 
 process PLASME_INCOMPLETE {
+    scratch false
     tag "${barID}"
     label 'plasme'
 
@@ -528,7 +530,7 @@ process ABRICATE {
     tuple val(barID), path(fasta), val(type)
 
     output:
-    tuple val(barID), path(fasta), path("${barID}_${type}_heavy.txt"), val(type), emit: amr
+    tuple val(barID), path("${barID}_${type}_heavy.txt"), val(type), emit: amr
 
     script:
     """
