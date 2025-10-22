@@ -182,7 +182,7 @@ process DOWNLOAD_RGI_DATABASE {
 Identified samples from index_files and check the presence of short reads
 */
 process IDENTIFIED_SAMPLES {
-    
+
     tag "${barID}"
     input:
     tuple path(fastq), val(genome_size), path(sr1), path(sr2)
@@ -235,7 +235,7 @@ process ASSEMBLE_GENOME {
     tuple val(barID), path(fastq), val(genome_size), path(sr1), path(sr2)
     
     output:
-    tuple val(barID), path(fastq),path("${barID}_sample_per_contig_stats.tsv"), path("${barID}_plassembler_summary.tsv"), path("${barID}_sample_chromosome.fasta"), path("${barID}_hybracter_plasmid.fasta"), optional: true, emit: complete_assembly
+    tuple val(barID), path("${barID}_sample_per_contig_stats.tsv"), path("${barID}_plassembler_summary.tsv"), path("${barID}_sample_chromosome.fasta"), path("${barID}_hybracter_plasmid.fasta"), optional: true, emit: complete_assembly
     tuple val(barID), path(fastq),path("${barID}_sample_final.fasta"), optional: true, emit: incomplete_assembly
 
     script:
@@ -296,7 +296,7 @@ process PLASME {
     label 'plasme'
 
     input:
-    tuple val(barID), path(fastq), path(sample_fasta)
+    tuple val(barID), path(sample_fasta)
     val x
 
     output:

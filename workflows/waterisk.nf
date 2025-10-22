@@ -139,14 +139,14 @@ workflow RESMOBILYS {
     complete_assembly_ch = ASSEMBLE_GENOME.out.complete_assembly
 
     complete_circular_ch = ASSEMBLE_GENOME.out.complete_assembly //1 Will be directly analyzed if all contigs are circular
-        .filter{ barID, fastq, contig_stats, plassembler, chromosome, plasmids -> 
+        .filter{ barID, contig_stats, plassembler, chromosome, plasmids -> 
             check_plasmidAllCircular(contig_stats)}
-    complete_circular_chrm_ch = complete_circular_ch.map{ barID, fastq, contig, plassembler, chromosome, plasmid -> [barID, chromosome, "chrm"]}
-    complete_circular_plasmid_ch = complete_circular_ch.map{ barID, fastq, contig, plassembler, chromosome, plasmid -> [barID, plasmid, "plasmid"]}
+    complete_circular_chrm_ch = complete_circular_ch.map{ barID, contig, plassembler, chromosome, plasmid -> [barID, chromosome, "chrm"]}
+    complete_circular_plasmid_ch = complete_circular_ch.map{ barID, contig, plassembler, chromosome, plasmid -> [barID, plasmid, "plasmid"]}
     
 
     complete_non_circular_ch = complete_assembly_ch //2
-        .filter{ barID, fastq, contig_stats, plassembler, chromosome, plasmids -> 
+        .filter{ barID, contig_stats, plassembler, chromosome, plasmids -> 
             check_nonCircularPlasmid(contig_stats)}
     
     incomplete_assembly_ch = ASSEMBLE_GENOME.out.incomplete_assembly //3
@@ -162,7 +162,7 @@ workflow RESMOBILYS {
         plasme_complete_plasmid_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, plasmid, "plasmid"]}
         
         //For incomplete assembly, use plasme to infer chrm and plasmid contig
-        PLASME(ASSEMBLE_GENOME.out.incomplete_assembly, CHECK_PLASME_DATABASE.out)
+        PLASME(incomplete_assembly_ch, CHECK_PLASME_DATABASE.out)
 
         //AMR detection
         chrm_amr_ch = complete_circular_chrm_ch.concat(plasme_complete_chrm_ch).concat(PLASME.out.inferred_chrm)
@@ -174,7 +174,7 @@ workflow RESMOBILYS {
         platon_complete_plasmid_ch = PLATON_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, plasmid, "plasmid"]}
         
         //For incomplete assembly, use plasme to infer chrm and plasmid contig
-        PLATON(ASSEMBLE_GENOME.out.incomplete_assembly, DOWNLOAD_PLATON_DATABASE.out)
+        PLATON(incomplete_assembly_ch, DOWNLOAD_PLATON_DATABASE.out)
         
         //AMR detection
         chrm_amr_ch = complete_circular_chrm_ch.concat(platon_complete_chrm_ch).concat(PLATON.out.inferred_chrm)
