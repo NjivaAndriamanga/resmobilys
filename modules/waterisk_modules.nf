@@ -182,6 +182,7 @@ process DOWNLOAD_RGI_DATABASE {
 Identified samples from index_files and check the presence of short reads
 */
 process IDENTIFIED_SAMPLES {
+    
     tag "${barID}"
     input:
     tuple path(fastq), val(genome_size), path(sr1), path(sr2)
