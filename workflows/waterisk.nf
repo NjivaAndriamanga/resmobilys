@@ -152,7 +152,7 @@ workflow RESMOBILYS {
     incomplete_assembly_ch = ASSEMBLE_GENOME.out.incomplete_assembly //3
     
     //Complete assembly with non circular plasmid
-    putitative_plasmid_ch = complete_non_circular_ch.map{ barID, fastq, contig_stats, plassembler, chromosome, plasmids -> 
+    putitative_plasmid_ch = complete_non_circular_ch.map{ barID, contig_stats, plassembler, chromosome, plasmids -> 
                                                                                                                 [ barID, contig_stats, chromosome,plasmids]}
     FILTER_CIRCULAR_PLASMID(putitative_plasmid_ch)
 

@@ -236,7 +236,7 @@ process ASSEMBLE_GENOME {
     
     output:
     tuple val(barID), path("${barID}_sample_per_contig_stats.tsv"), path("${barID}_plassembler_summary.tsv"), path("${barID}_sample_chromosome.fasta"), path("${barID}_hybracter_plasmid.fasta"), optional: true, emit: complete_assembly
-    tuple val(barID), path(fastq),path("${barID}_sample_final.fasta"), optional: true, emit: incomplete_assembly
+    tuple val(barID),path("${barID}_sample_final.fasta"), optional: true, emit: incomplete_assembly
 
     script:
     def args = " "
