@@ -103,6 +103,7 @@ include { ICE_BLAST }                   from '../modules/waterisk_modules.nf'
 include { DBSCAN }                      from '../modules/waterisk_modules.nf'
 include { DBSCAN2GFF }                  from '../modules/waterisk_modules.nf'
 include { ISESCAN }                     from '../modules/waterisk_modules.nf'
+include { PLASMID_CLUSTER_ARG }                 from '../modules/waterisk_modules.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -227,6 +228,11 @@ workflow RESMOBILYS {
     //Virulence factor, ICEs and heavy metals detection
     ICE_BLAST(DOWNLOAD_ICE_DATABASE.out, contig_ch)
     VF_BLAST(DOWNLOAD_VF_DATABASE.out, contig_ch)
+
+    //formating output
+    plasmid_args_ch = RGI.out.filter { id, file -> file.name.contains('plasmid')}.map { id, file -> file }
+    merge_plasmid_rgi = plasmid_args_ch.collectFile(name:'merged_plasmid_rgi.txt')
+    PLASMID_CLUSTER_ARG(merge_plasmid_rgi, MOB_CLUSTER.out)
 }
 
 //TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )

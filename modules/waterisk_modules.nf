@@ -825,3 +825,24 @@ process ICE_BLAST {
     awk -v pre=${barID} -f ${projectDir}/bin/GFF_parsing/blast2gff.sh ${sample}_ice_blast.txt > ${sample}_ice_blast.gff
     """
 }
+
+/*
+Output construction
+*/
+process PLASMID_CLUSTER_ARG {
+    
+    input: 
+    path(merge_rgi_file)
+    path(plasmid_cluster)
+
+    output:
+    path("plasmid_amr.csv")
+
+    script:
+    """
+    grep -v "Orientation" $merge_rgi_file > clean_plasmid_amr.txt
+    sed -i 's/\t/;/g' clean_plasmid_amr.txt
+    awk 'BEGIN {OFS=FS=";"} { gsub(/^[ \t]+|[ \t]+\$/, "", \$2);sub(/_[0-9]+\$/, "", \$2); \$1=\$1"_"\$2; \$2=""; sub(/;\$/, ""); print \$1,\$6 }' clean_plasmid_amr.txt > amr_plasmid2.txt
+    awk -F';' 'BEGIN{OFS="\t"} {a[\$1]=(a[\$1]?a[\$1]"; "\$2:\$2)} END{for(i in a) print i, a[i]}' amr_plasmid2.txt > plasmid_amr.csv
+    """
+}
