@@ -836,7 +836,7 @@ process PLASMID_CLUSTER_ARG {
     path(plasmid_cluster)
 
     output:
-    path("plasmid_amr.csv")
+    path("merged_plasmid_table.tsv")
 
     script:
     """
@@ -844,5 +844,16 @@ process PLASMID_CLUSTER_ARG {
     sed -i 's/\t/;/g' clean_plasmid_amr.txt
     awk 'BEGIN {OFS=FS=";"} { gsub(/^[ \t]+|[ \t]+\$/, "", \$2);sub(/_[0-9]+\$/, "", \$2); \$1=\$1"_"\$2; \$2=""; sub(/;\$/, ""); print \$1,\$6 }' clean_plasmid_amr.txt > amr_plasmid2.txt
     awk -F';' 'BEGIN{OFS="\t"} {a[\$1]=(a[\$1]?a[\$1]"; "\$2:\$2)} END{for(i in a) print i, a[i]}' amr_plasmid2.txt > plasmid_amr.csv
+    awk 'BEGIN {FS=OFS="\t"} { split(\$1, a, "_len"); print a[1], \$2, \$7, \$8, \$9, \$10, \$11, \$12, \$13, \$14, \$15, \$16, \$17, \$18, \$19 }' $plasmid_cluster > plasmid_cluster2.txt
+    
+    awk 'BEGIN { FS=OFS="\t" } 
+    NR==FNR { amr[\$1]=\$2; next } 
+    FNR==1 { print \$0, "args"; next }
+    {
+        val = (\$1 in amr ? amr[\$1] : "NA");
+        print \$0, val;
+    }
+    ' plasmid_amr.csv plasmid_cluster2.txt > merged_plasmid_table.tsv
+
     """
 }
