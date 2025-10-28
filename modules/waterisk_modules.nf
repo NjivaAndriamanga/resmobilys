@@ -857,3 +857,19 @@ process PLASMID_CLUSTER_ARG {
 
     """
 }
+
+process VISUALIZATION_TABLE {
+    input:
+    path(plasmid_cluster)
+    path(rgi_output)
+
+    output:
+    path("presence_absence_with_clusters.tsv")
+
+    script:
+    """
+    grep -v "gff-version" $rgi_output > rgi.tsv
+    awk 'BEGIN {FS=OFS="\t"} { split(\$1,p,"_"); id=p[1]"_"p[2]"_"p[3]; print(id,p[4],\$2,\$3,\$4,\$5,\$6,\$7,\$8,\$9,\$10,\$11)}' rgi.tsv > amr.gff
+    python3 ${projectDir}/bin/table_presence_absence.py --amr amr.gff --plasmids $plasmid_cluster
+    """
+}

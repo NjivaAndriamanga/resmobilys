@@ -50,7 +50,7 @@ with open(rgi_file, "r") as f:
     for line in f:
         if not line.strip():
             continue
-        cols = line.strip().split(";")
+        cols = line.strip().split("\t")
         if len(cols) < 4:
             continue
 

@@ -103,7 +103,8 @@ include { ICE_BLAST }                   from '../modules/waterisk_modules.nf'
 include { DBSCAN }                      from '../modules/waterisk_modules.nf'
 include { DBSCAN2GFF }                  from '../modules/waterisk_modules.nf'
 include { ISESCAN }                     from '../modules/waterisk_modules.nf'
-include { PLASMID_CLUSTER_ARG }                 from '../modules/waterisk_modules.nf'
+include { PLASMID_CLUSTER_ARG }         from '../modules/waterisk_modules.nf'
+include { VISUALIZATION_TABLE }         from '../modules/waterisk_modules.nf'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -233,6 +234,9 @@ workflow RESMOBILYS {
     plasmid_args_ch = RGI.out.filter { id, file -> file.name.contains('plasmid')}.map { id, file -> file }
     merge_plasmid_rgi = plasmid_args_ch.collectFile(name:'merged_plasmid_rgi.txt')
     PLASMID_CLUSTER_ARG(merge_plasmid_rgi, MOB_CLUSTER.out)
+
+    rgi_amr = RGI2GFF.out.map{barID, rgi -> rgi}.collectFile(name:"merge_rgi.tsv")
+    VISUALIZATION_TABLE(MOB_CLUSTER.out, rgi_amr)
 }
 
 //TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )
