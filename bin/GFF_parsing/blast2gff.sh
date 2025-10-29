@@ -1,4 +1,4 @@
-BEGIN {OFS="\t"}
+BEGIN {FS=OFS="\t"}
 {
   strand = ($9 < $10) ? "+" : "-";
   start = ($9 < $10) ? $9 : $10;
