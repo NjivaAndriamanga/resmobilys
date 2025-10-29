@@ -481,12 +481,12 @@ process DBSCAN2GFF {
     tuple val(barID), path(dbscan)
     
     output:
-    tuple val(barID), path("${id}.gff3")
+    tuple val(barID), path("${id}.gff")
     
     script:
     id = dbscan.getSimpleName()
     """
-    awk -f ${projectDir}/bin/GFF_parsing/dbscan2gff.sh ${dbscan} > ${id}.gff3
+    awk -v pre=${barID} -f ${projectDir}/bin/GFF_parsing/dbscan2gff.sh ${dbscan} > ${id}.gff
     """
 }
 
@@ -743,6 +743,7 @@ process INTEGRON_FORMAT {
         max_pos[key] = \$5
         type[key] = \$11
         replicon[key] = \$2
+        integron_id[key] = \$1
     } else {
         if (\$4 < min_pos[key]) min_pos[key] = \$4
         if (\$5 > max_pos[key]) max_pos[key] = \$5
@@ -751,8 +752,8 @@ process INTEGRON_FORMAT {
     END {
         for (id in seen) {
             replicon_id = replicon[id]
-            attr = "ID=" full_id ";type=" type[id]
-            print replicon_id, "integron_finder", id, min_pos[id], max_pos[id], ".", "+", "0", attr
+            attr = "ID="integron_id[id]";type=" type[id]
+            print "${barID}_"replicon_id, "integron_finder", "integron", min_pos[id], max_pos[id], ".", "+", "0", attr
         }cat
     }' ${integron} > ${file_name}_summary.gff
     """
@@ -823,6 +824,7 @@ process ICE_BLAST {
     blastn -db ${params.ice_db} -query ${fasta} -out ice_blast.txt -evalue ${params.evalue_ice} -perc_identity ${params.pident_ice} -outfmt '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' -num_threads ${task.cpus}
     awk '!seen[\$2]++ {print \$0}' ice_blast.txt > ${sample}_ice_blast.txt
     awk -v pre=${barID} -f ${projectDir}/bin/GFF_parsing/blast2gff.sh ${sample}_ice_blast.txt > ${sample}_ice_blast.gff
+    echo "test2"
     """
 }
 
@@ -871,5 +873,22 @@ process VISUALIZATION_TABLE {
     grep -v "gff-version" $rgi_output > rgi.tsv
     awk 'BEGIN {FS=OFS="\t"} { split(\$1,p,"_"); id=p[1]"_"p[2]"_"p[3]; print(id,p[4],\$2,\$3,\$4,\$5,\$6,\$7,\$8,\$9,\$10,\$11)}' rgi.tsv > amr.gff
     python3 ${projectDir}/bin/table_presence_absence.py --amr amr.gff --plasmids $plasmid_cluster
+    """
+}
+
+process ARGS_MGES {
+    input:
+    path(rgi)
+    path(integrons)
+    path(ices)
+    path(prophage)
+
+    output:
+    path("rgi_mge.txt")
+
+    script:
+    """
+    
+
     """
 }

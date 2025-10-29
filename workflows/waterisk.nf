@@ -237,6 +237,8 @@ workflow RESMOBILYS {
 
     rgi_amr = RGI2GFF.out.map{barID, rgi -> rgi}.collectFile(name:"merge_rgi.tsv")
     VISUALIZATION_TABLE(MOB_CLUSTER.out, rgi_amr)
+
+    //ARGS_MGES(RGI2GFF.out, INTEGRON_FORMAT.out, ICE_BLAST.out, DBSCAN2GFF.out)
 }
 
 //TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )
