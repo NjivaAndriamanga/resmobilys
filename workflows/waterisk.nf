@@ -105,7 +105,7 @@ include { DBSCAN2GFF }                  from '../modules/waterisk_modules.nf'
 include { ISESCAN }                     from '../modules/waterisk_modules.nf'
 include { PLASMID_CLUSTER_ARG }         from '../modules/waterisk_modules.nf'
 include { VISUALIZATION_TABLE }         from '../modules/waterisk_modules.nf'
-
+include { ARGS_MGES }                   from '../modules/waterisk_modules.nf'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -238,7 +238,10 @@ workflow RESMOBILYS {
     rgi_amr = RGI2GFF.out.map{barID, rgi -> rgi}.collectFile(name:"merge_rgi.tsv")
     VISUALIZATION_TABLE(MOB_CLUSTER.out, rgi_amr)
 
-    //ARGS_MGES(RGI2GFF.out, INTEGRON_FORMAT.out, ICE_BLAST.out, DBSCAN2GFF.out)
+    prohages_file = DBSCAN2GFF.out.map{ id, file -> file}.collectFile(name:"prophages.gff")
+    ices_file = ICE_BLAST.out.ice_gff.map{ id,file -> file }.collectFile(name:"ices.gff")
+    integrons_file = INTEGRON_FORMAT.out.map{ id, file -> file }.collectFile(name:"integrons.gff")
+    ARGS_MGES(rgi_amr, integrons_file, ices_file, prohages_file)
 }
 
 //TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )

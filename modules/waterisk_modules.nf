@@ -726,7 +726,7 @@ process INTEGRON_FORMAT {
     tuple val(barID) ,path(integron), val(type)
 
     output:
-    tuple val(barID) ,path("${file_name}_summary.gff"), val(type)
+    tuple val(barID) ,path("${file_name}_summary.gff")
 
     script:
     file_name = integron.getSimpleName()
@@ -824,7 +824,7 @@ process ICE_BLAST {
     blastn -db ${params.ice_db} -query ${fasta} -out ice_blast.txt -evalue ${params.evalue_ice} -perc_identity ${params.pident_ice} -outfmt '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' -num_threads ${task.cpus}
     awk '!seen[\$2]++ {print \$0}' ice_blast.txt > ${sample}_ice_blast.txt
     awk -v pre=${barID} -f ${projectDir}/bin/GFF_parsing/blast2gff.sh ${sample}_ice_blast.txt > ${sample}_ice_blast.gff
-    echo "test2"
+    touch test.txt
     """
 }
 
@@ -881,14 +881,13 @@ process ARGS_MGES {
     path(rgi)
     path(integrons)
     path(ices)
-    path(prophage)
+    path(prophages)
 
     output:
-    path("rgi_mge.txt")
+    path("args_mges.tsv")
 
     script:
     """
-    
-
+    python3 ${projectDir}/bin/args_mges.py --args $rgi --integrons $integrons --ices $ices --prophages $prophages
     """
 }
