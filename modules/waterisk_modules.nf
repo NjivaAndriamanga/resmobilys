@@ -474,7 +474,7 @@ process DBSCAN {
 Format DBSCAN output to GFF format
 */
 process DBSCAN2GFF {
-    tag "${barID}_${type}"
+    tag "${barID}"
     label "process_single"
     
     input:
@@ -551,7 +551,7 @@ process RGI {
     tuple val(barID) , path(fasta), val(type)
     
     output:
-    tuple val(barID), path("${barID}_${type}_rgi.txt")
+    tuple val(barID), path("${barID}_${type}_rgi.txt"), val(type)
     
     script:
     if (params.rgi_include_nudge == true) {
@@ -561,6 +561,7 @@ process RGI {
         include_nudge = ""
     }
     """
+    echo "test2"
     if [ -s ${fasta} ]; then
         rgi load --card_json ${card_json} --local
         rgi main --input_sequence ${fasta} ${include_nudge} --output_file rgi --local --clean
@@ -573,18 +574,17 @@ process RGI {
 
 //RGI output to GFF
 process RGI2GFF {
-    tag "${barID}_${type}"
+    tag "${barID}"
     
     input:
-    tuple val(barID), path(rgitxt)
+    tuple val(barID), path(rgitxt), val(type)
 
     output:
-    tuple val(barID), path("${id}.gff")
+    tuple val(barID), path("${id}.gff"), val(type)
 
     script:
     id = rgitxt.getSimpleName()
     """
-    touch test.txt
     awk -v pre=${barID} -f ${projectDir}/bin/GFF_parsing/rgi2gff.sh $rgitxt > ${id}.gff
     """
 }
@@ -824,7 +824,6 @@ process ICE_BLAST {
     blastn -db ${params.ice_db} -query ${fasta} -out ice_blast.txt -evalue ${params.evalue_ice} -perc_identity ${params.pident_ice} -outfmt '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore' -num_threads ${task.cpus}
     awk '!seen[\$2]++ {print \$0}' ice_blast.txt > ${sample}_ice_blast.txt
     awk -v pre=${barID} -f ${projectDir}/bin/GFF_parsing/blast2gff.sh ${sample}_ice_blast.txt > ${sample}_ice_blast.gff
-    touch test.txt
     """
 }
 

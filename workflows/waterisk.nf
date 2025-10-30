@@ -187,7 +187,8 @@ workflow RESMOBILYS {
 
     ABRICATE(contig_ch)
     RGI(DOWNLOAD_RGI_DATABASE.out, contig_ch)
-    RGI2GFF(RGI.out)
+    rgi_out = RGI.out
+    RGI2GFF(rgi_out)
     
     //ISEScan
     ISESCAN( contig_ch )
