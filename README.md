@@ -18,12 +18,38 @@ ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resist
   - De novo assembly with Hybacter
   - Taxonomy assignment with Kraken2
   - Assembly assessment with busco
-  - Identification of antimicrobial resistance genes (ARGs), biocide and heavy metal resistance genes, and virulence factors
+  - Identification of antimicrobial resistance genes (ARGs) with RGI/CARD, biocide and heavy metal resistance genes, and virulence factors
   - Identification of MGEs (plasmids, transposable elements, integrons, prophages)
-- **Output:**
-  - Table associating species with MGEs and resistance genes
-  - Table listing resistance genes and their MGE associations
-  - Detailed list of plasmids, integrons, and transposable elements with notes on their potential interactions
+## 🧬 Output
+
+- **Table associating species with MGEs and resistance genes**  
+  Presence–absence matrix showing antimicrobial resistance genes (ARGs) across samples.  
+  Each gene is marked according to its genomic location (chromosome or plasmid) and includes plasmid cluster information when available (e.g. `P1(AA076)`).
+
+- **Table listing resistance genes and their MGE associations**  
+  Detailed list of all identified ARGs with genomic positions and associations with mobile genetic elements (MGEs) such as integrons, prophages, and ICEs.
+
+- **Detailed list of plasmids, integrons, and transposable elements with notes on their potential interactions**  
+  Summary table of plasmids with their cluster IDs and associated ARGs, providing an overview of plasmid diversity and possible roles in resistance gene dissemination.
+
+---
+
+### 🧾 Example Entries
+
+#### Presence–Absence Table
+
+| Sample  | Gene  | Location   | MGE Association |
+|----------|--------|------------|----------------|
+| sample1  | soxR   | C1(AA015)  | integron_01    |
+| sample1  | TEM-1  | P1(AA076)  | ICE_02         |
+
+#### Plasmid–ARG Summary
+
+| Sample  | Plasmid      | Cluster | ARGs         |
+|----------|--------------|---------|--------------|
+| sample1  | plasmid00001 | AA015   | soxR, FosA2  |
+| sample1  | plasmid00002 | AA019   | TEM-1        |
+
 
 ## 🚀 Installation
 
