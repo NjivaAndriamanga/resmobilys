@@ -21,9 +21,9 @@ log.info paramsSummaryLog(workflow)
 /*
 CHECKING PROFILE
 */
-if ( (workflow.profile.contains('local') || workflow.profile.contains('slurm') || workflow.profile.contains('perso')) && (workflow.profile.contains('singularity') || workflow.profile.contains('apptainer')) ) 
+if ( (workflow.profile.contains('local') || workflow.profile.contains('slurm') || workflow.profile.contains('test')) && (workflow.profile.contains('singularity') || workflow.profile.contains('apptainer')) ) 
     { "executer selected" }
-else { exit 1, "No executer selected: executer must be suplied with -profile local/slurm,singularity/conda" }
+else { exit 1, "No executer selected: executer must be suplied with -profile local/slurm/test,singularity/apptainer/docker" }
 
 /*
 VALIDATE SAMPLE SHEET INDEX_FILE

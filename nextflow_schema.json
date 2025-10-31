@@ -25,13 +25,6 @@
           "errorMessage": "Check your personnal config file or use the --index_file option",
           "mimetype": "text/csv"
         },
-        "assembly": {
-          "type": "string",
-          "default": null,
-          "description": "Long reads assembly or hybrid ",
-          "errorMessage": "No assembly method provided",
-          "enum": ["long_reads","hybrid"]
-        },
         "email": {
           "type": "string",
           "description": "Email address for completion summary.",
