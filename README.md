@@ -29,7 +29,7 @@ ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resist
 - **Table listing resistance genes and their MGE associations**  
   Detailed list of all identified ARGs with genomic positions and associations with mobile genetic elements (MGEs) such as integrons, prophages, and ICEs.
 
-- **Detailed list of plasmids and clusters
+- **Detailed list of plasmids and clusters**
   Summary table of plasmids with their cluster IDs and associated ARGs, providing an overview of plasmid diversity and possible roles in resistance gene dissemination.
 
 ---
@@ -49,7 +49,8 @@ ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resist
 |----------|--------------|---------|--------------|
 | sample1  | plasmid00001 | AA015   | soxR, FosA2  |
 | sample1  | plasmid00002 | AA019   | TEM-1        |
-| sample2  | plasmid0001  | AA015   |              |  
+| sample2  | plasmid00001 | AA003   |              |
+| sample2  | plasmid00002 | AA019   | TEM-1        |
 
 
 ## 🚀 Installation
@@ -74,7 +75,7 @@ cd resmobilys
 git submodule update --init --recursive
 ```
 
-## 📦 Database
+## 📦 Database and test data
 
 Most databases are already provided, but the **PLASMe** database must be downloaded manually.
 
@@ -87,17 +88,29 @@ xport UNZIP_DISABLE_ZIPBOMB_DETECTION=TRUE
 unzip DB.zip
 ```
 
-3. Move and unzip the database inside the `ResMobiLys` directory
+2. Move and unzip the database inside the `ResMobiLys` directory
 
-## **Usage**
-Prepare an `index_file.csv` containing metadata for your samples. Then, run the pipeline as follows:
+3. Test data
+Test datasets can be downloaded from [here]
+
+## 🚀 **Usage**
+
+Prepare an `index_file.csv` containing metadata for your samples.  
+For your **first run**, it is recommended to use the provided **test dataset**.  
+During this initial execution, all required databases and environments (tools and dependencies) will be downloaded automatically.  
+This step may take several minutes depending on your internet connection.
+
+Once the setup is complete, you can run the pipeline on your own dataset using the `-resume` option to avoid re-downloading components.
 
 ```bash
-nextflow run waterisk -profile slurm/local,singularity/apptainer -resume -c waterisk/personal.config
-```
+# First run with test dataset
+nextflow run waterisk -profile test,singularity/apptainer -resume
+
+# Run on your dataset
+nextflow run waterisk -profile slurm/local,singularity/apptainer -resume -c waterisk/personal.config -resume
 
 ### **Configuration Options**
-Modify `personal.config` to customize execution parameters, including computing resources and software dependencies.
+Modify `personal.config` to customize execution parameters, including computing resources and software parameters.
 
 ## **Outputs**
 Upon successful execution, ResMobiLys generates:
