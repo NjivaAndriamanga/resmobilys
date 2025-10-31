@@ -114,12 +114,17 @@ nextflow run waterisk -profile slurm/local,singularity/apptainer -resume -c wate
 ### **Configuration Options**
 Modify `personal.config` to customize execution parameters, including computing resources and software parameters.
 
-## **Outputs**
-Upon successful execution, ResMobiLys generates:
-- Annotated genomic assemblies
-- Summary tables linking species, MGEs, and ARGs
-- Reports on plasmids, integrons, and transposable elements
-- Taxonomic classification of input sequences
+## Outputs
+
+Upon successful execution, **ResMobiLys** generates the following in the `resmobylis_output` directory:
+
+### 1. Final output files
+- `args_mges.tsv`  
+- `merged_plasmid_table.tsv`  
+- `presence_absence_with_clusters.tsv`  
+
+### 2. Intermediate/tool-specific outputs
+These files can be used for further analyses, allowing exploration of results from each individual tool.
 
 ## **Citation**
 If you use ResMobiLys in your research, please cite it as follows:
@@ -136,7 +141,6 @@ Publication in process...
 - PLASMe (Tang et al. 2023)
 - IntegronFinder (Néron et al. 2022)
 - DBSCAN-SWA (Gan et al. 2022)
-- TnFinder (Ross et al. 2021)
 - Mob-suite (Robertson et Nash 2018)
 ## **Contact**
 If you have any questions or support, please open an issue.
