@@ -109,6 +109,8 @@ nextflow run waterisk -profile test,singularity/apptainer -resume
 # Run on your dataset
 nextflow run waterisk -profile slurm/local,singularity/apptainer -resume -c waterisk/personal.config -resume
 
+'''
+```
 ### **Configuration Options**
 Modify `personal.config` to customize execution parameters, including computing resources and software parameters.
 
@@ -122,9 +124,8 @@ Upon successful execution, ResMobiLys generates:
 ## **Citation**
 If you use ResMobiLys in your research, please cite it as follows:
 
-```
 Publication in process...
-```
+
  ResMobilYs integrates the output of the following tools :
 - Hybracter (Bouras et al. 2024)
 - Kraken2 (Wood, Lu, et Langmead 2019)
