@@ -232,7 +232,7 @@ workflow RESMOBILYS {
     VF_BLAST(DOWNLOAD_VF_DATABASE.out, contig_ch)
 
     //formating output
-    plasmid_args_ch = RGI.out.filter { id, file -> file.name.contains('plasmid')}.map { id, file -> file }
+    plasmid_args_ch = RGI.out.map { id, file, type -> file }.filter { file ->  file.name.contains('plasmid')}
     merge_plasmid_rgi = plasmid_args_ch.collectFile(name:'merged_plasmid_rgi.txt')
     PLASMID_CLUSTER_ARG(merge_plasmid_rgi, MOB_CLUSTER.out)
 
