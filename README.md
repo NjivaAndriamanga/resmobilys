@@ -44,11 +44,19 @@ ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resist
 
 | Sample  | Plasmid      | Cluster | ARGs         |
 |----------|--------------|---------|--------------|
-| sample1  | plasmid00001 | AA015   | soxR, FosA2  |
+| sample1  | plasmid00001 | AA015   |              |
 | sample1  | plasmid00002 | AA019   | TEM-1        |
 | sample2  | plasmid00001 | AA003   |              |
 | sample2  | plasmid00002 | AA019   | TEM-1        |
 
+#### ARGs lists with MGEs associations
+
+| Sample   | Localisation | Other informations | MGEs |
+|----------|--------------|---------|--------------|
+| sample1 | Chromosome    | ....    | FosA2 | Integron1 |
+| sample1 | Plasmid1      | ....    | TEM-1 | Integron2 |
+| sample2 | Chromosome    | ....    | soxR | prophage |
+| sample1 | Plasmid2      | ....    | TEM-1 | Integron1 |
 
 ## 🚀 Installation
 
