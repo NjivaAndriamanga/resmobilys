@@ -31,7 +31,7 @@ ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resist
 
 ---
 
-### 🧾 Example Entries
+### 🧾 Example output Entries
 
 #### Presence–Absence Table
 
@@ -40,7 +40,7 @@ ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resist
 | sample1  | 0 | C | P1(AA019) |
 | sample2  | C | 0 | P2(AA019) |
 
-#### Plasmid–ARG Summary
+#### Plasmid–ARG cluster Summary
 
 | Sample  | Plasmid      | Cluster | ARGs         |
 |----------|--------------|---------|--------------|
@@ -150,7 +150,7 @@ Publication in process...
 
 ## 🤝 Contributing and Support
 
-We welcome community involvement to improve and extend the **Waterisk pipeline**.  
+We welcome community involvement to improve and extend the **ResMobiLys pipeline**.  
 Please follow the guidelines below if you wish to contribute, report issues, or request support.
 
 ---
