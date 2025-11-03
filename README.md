@@ -128,7 +128,7 @@ If you use ResMobiLys in your research, please cite it as follows:
 
 Publication in process...
 
- ResMobilYs integrates the output of the following tools :
+ ResMobilYs integrates the following tools and databases :
 - Hybracter (Bouras et al. 2024)
 - Kraken2 (Wood, Lu, et Langmead 2019)
 - Busco (Manni et al. 2021)
@@ -139,5 +139,39 @@ Publication in process...
 - IntegronFinder (Néron et al. 2022)
 - DBSCAN-SWA (Gan et al. 2022)
 - Mob-suite (Robertson et Nash 2018)
-## **Contact**
-If you have any questions or support, please open an issue.
+
+## 🤝 Contributing and Support
+
+We welcome community involvement to improve and extend the **Waterisk pipeline**.  
+Please follow the guidelines below if you wish to contribute, report issues, or request support.
+
+---
+
+### 🧩 Contributing
+
+Contributions are encouraged and greatly appreciated!  
+To contribute:
+
+1. **Fork** the repository on GitHub.  
+2. **Create a new branch** for your feature or bugfix:  
+   ```bash
+   git checkout -b feature/new-feature-name
+   ```
+3. Commit your changes with clear messages
+4. Push to your fork and submit a Pull request describing your contribution
+
+### 🐛 Reporting issues
+If you encounter a bug or unexpected behavior:
+1. Check the Issues section to see if it has already been reported.
+2. If not, open a **new issue** and include:
+   - A clear description of the problem
+   - The command or configuration you used
+   - Relevant log or error messages (if available)
+This helps us reproduce and fix the issue efficiently.
+
+### 💬 Seeking support
+For questions about usage, workflow customization, or interpretation of results:
+  - Open an issue
+  - Or contact the maintainers directly
+We will do our best to provide assistance and improve the documentation based on user feedback
+  
