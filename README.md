@@ -52,7 +52,7 @@ ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resist
 #### ARGs lists with MGEs associations
 
 | Sample   | Localisation | Other informations | ARG | MGEs |
-|----------|--------------|---------|--------------|
+|----------|--------------|---------|--------------|--------|
 | sample1 | Chromosome    | ....    | FosA2 | Integron1 |
 | sample1 | Plasmid1      | ....    | TEM-1 | Integron2 |
 | sample2 | Chromosome    | ....    | soxR | prophage |
