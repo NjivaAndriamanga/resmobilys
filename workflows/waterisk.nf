@@ -117,7 +117,6 @@ workflow RESMOBILYS {
     //download tools and databases
     CHECK_PLASME_DATABASE().view()
     DOWNLOAD_PLATON_DATABASE().view()
-    DOWNLOAD_KRAKEN_DATABASE().view()
     DOWNLOAD_ICE_DATABASE().view()
     DOWNLOAD_VF_DATABASE().view()
     PREPROCESSING_DBSCANDB_CHMOD().view()
@@ -223,6 +222,7 @@ workflow RESMOBILYS {
 
     //KRAKEN
     if (params.kraken_db != "null" && params.kraken_taxonomy == true) {
+        DOWNLOAD_KRAKEN_DATABASE().view()
         KRAKEN(chrm_amr_ch.map{barID, contig, type -> [barID, contig]},DOWNLOAD_KRAKEN_DATABASE.out)
         kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
     }

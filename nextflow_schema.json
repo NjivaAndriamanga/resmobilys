@@ -33,7 +33,7 @@
           "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
         }
       },
-      "required": ["assembly","index_file"]
+      "required": ["index_file"]
     },
     "long_reads_qc": {
       "title": "Quality control assessment",
@@ -140,7 +140,7 @@
         },
         "ice_db": {
           "type": "string",
-          "default": "${projectDir}/DB",
+          "default": "${projectDir}/ICE_db",
           "description": "ICE database directory",
           "format": "file-path"
         },
