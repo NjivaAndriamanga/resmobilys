@@ -89,7 +89,6 @@ Most databases are already provided, but the **PLASMe** database must be downloa
 ```bash
 #Download and unzip plasme database
 wget https://zenodo.org/record/8046934/files/DB.zip
-xport UNZIP_DISABLE_ZIPBOMB_DETECTION=TRUE
 unzip DB.zip
 ```
 
