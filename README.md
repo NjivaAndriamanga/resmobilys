@@ -107,10 +107,10 @@ Once the setup is complete, you can run the pipeline on your own dataset using t
 
 ```bash
 # First run with test dataset
-nextflow run waterisk -profile test,singularity/apptainer -resume
+nextflow run resmobilys -profile test,singularity/apptainer -resume
 
 # Run on your dataset
-nextflow run waterisk -profile slurm/local,singularity/apptainer -resume -c waterisk/personal.config -resume
+nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c waterisk/personal.config
 
 '''
 ```
