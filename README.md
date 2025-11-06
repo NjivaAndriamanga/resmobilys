@@ -95,8 +95,6 @@ unzip DB.zip
 
 2. Move and unzip the database inside the `ResMobiLys` directory
 
-3. Test data
-Test datasets can be downloaded from [here]
 
 ## 🚀 **Usage**
 
