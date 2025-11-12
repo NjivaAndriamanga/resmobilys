@@ -7,25 +7,25 @@
     "items": {
       "type": "object",
       "properties": {
-        "fastq": {
+        "LR_fastq": {
           "type": "string",
           "format": "file-path",
           "pattern": "^.+\\.f(ast)?q\\.gz$",
           "errorMessage": "FastQ file for long reads must be provided, cannot contain spaces and must have extension '.fq.gz','.fastq.gz', '.fastq' or '.fq'.",
           "exists": true
         },
-        "genome_size": {
+        "chrm_size": {
           "type": "integer",
           "errorMessage": "Approximate genome size must be an integer in bp. If unknown, set to 0."
         },
-        "sr1": {
+        "SR1_fastq": {
           "type": "string",
           "format": "file-path",
           "pattern": "^.+\\.f(ast)?q\\.gz$",
           "errorMessage": "FastQ file for short reads 1, cannot contain spaces and must have extension '.fq.gz','.fastq.gz', '.fastq' or '.fq'.",
           "exists": true
         },
-        "sr2": {
+        "SR2_fastq": {
           "type": "string",
           "format": "file-path",
           "pattern": "^.+\\.f(ast)?q\\.gz$",
@@ -33,6 +33,6 @@
           "exists": true
         }
       },
-      "required": ["fastq", "genome_size"]
+      "required": ["LR_fastq", "chrm_size"]
     }
   }
