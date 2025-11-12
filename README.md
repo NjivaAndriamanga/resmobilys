@@ -23,24 +23,25 @@ ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resist
   Presence–absence matrix showing antimicrobial resistance genes (ARGs) across samples.  
   Each gene is marked according to its genomic location (chromosome or plasmid) and includes plasmid cluster information when available.
 
-- **Table listing resistance genes and their MGE associations**  
-  Detailed list of all identified ARGs with genomic positions and associations with mobile genetic elements (MGEs) such as integrons, prophages, and ICEs.
-
-- **Detailed list of plasmids and clusters**
-  Summary table of plasmids with their cluster IDs and associated ARGs, providing an overview of plasmid diversity and possible roles in resistance gene dissemination.
-
----
-
-### 🧾 Example output Entries
-
-#### Presence–Absence Table
-
 | Sample  | soxR | FosA2 | TEM-1 |
 |----------|------|-------|-------|
 | sample1  | 0 | C | P1(AA019) |
 | sample2  | C | 0 | P2(AA019) |
 
-#### Plasmid–ARG cluster Summary
+
+- **Table listing resistance genes and their MGE associations**  
+  Detailed list of all identified ARGs with genomic positions and associations with mobile genetic elements (MGEs) such as integrons, prophages, and ICEs.
+
+| Sample   | Localisation | Other informations | ARG | MGEs |
+|----------|--------------|---------|--------------|--------|
+| sample1 | Chromosome    | ....    | FosA2 | Integron1 |
+| sample1 | Plasmid1      | ....    | TEM-1 | Integron2 |
+| sample2 | Chromosome    | ....    | soxR | prophage |
+| sample1 | Plasmid2      | ....    | TEM-1 | Integron1 |
+
+
+- **Detailed list of plasmids and clusters**
+  Summary table of plasmids with their cluster IDs and associated ARGs, providing an overview of plasmid diversity and possible roles in resistance gene dissemination.
 
 | Sample  | Plasmid      | Cluster | ARGs         |
 |----------|--------------|---------|--------------|
@@ -49,14 +50,6 @@ ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resist
 | sample2  | plasmid00001 | AA003   |              |
 | sample2  | plasmid00002 | AA019   | TEM-1        |
 
-#### ARGs lists with MGEs associations
-
-| Sample   | Localisation | Other informations | ARG | MGEs |
-|----------|--------------|---------|--------------|--------|
-| sample1 | Chromosome    | ....    | FosA2 | Integron1 |
-| sample1 | Plasmid1      | ....    | TEM-1 | Integron2 |
-| sample2 | Chromosome    | ....    | soxR | prophage |
-| sample1 | Plasmid2      | ....    | TEM-1 | Integron1 |
 
 ## 🚀 Installation
 
