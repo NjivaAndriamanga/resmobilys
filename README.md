@@ -102,13 +102,19 @@ unzip DB.zip
 ## 🚀 **Usage**
 
 Prepare an `index_file.csv` containing metadata for your samples.
-An example is available in test/ directory.
+An example is available in **test/** directory.
 The index_file.csv defines the input data and metadata for each sample analyzed by ResMobiLys.
 Each line represents one sample and must include the following columns:
 - LR_fastq: Path to the long-read FASTQ file
 - genome_size: Estimated chromosome size in base pairs. If unknown, use 0.
 - SR1 (optional): Path to the first short-read pair (R1). Leave empty if no short reads are available.
 - SR2 (optional): Path to the second short-read pair (R2). Leave empty if no short reads are available.
+
+Example:
+LR_fastq,genome_size,SR1,SR2
+resmobilys/test/17_01_bar09.fastq.gz,0,,
+resmobilys/test/31_03_bar52.fastq.gz,0,,
+resmobilys/test/NB10_LR.fastq.gz,1000000,resmobilys/test/NB10_1.fastq.gz,resmobilys/test/NB10_2.fastq.gz
 
 
 For your **first run**, it is recommended to use the provided **test dataset**.  
