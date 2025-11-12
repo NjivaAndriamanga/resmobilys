@@ -112,8 +112,11 @@ Each line represents one sample and must include the following columns:
 
 Example:
 LR_fastq,genome_size,SR1,SR2
+
 resmobilys/test/17_01_bar09.fastq.gz,0,,
+
 resmobilys/test/31_03_bar52.fastq.gz,0,,
+
 resmobilys/test/NB10_LR.fastq.gz,1000000,resmobilys/test/NB10_1.fastq.gz,resmobilys/test/NB10_2.fastq.gz
 
 
