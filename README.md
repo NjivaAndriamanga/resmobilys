@@ -125,7 +125,7 @@ Once the setup is complete, you can run the pipeline on your own dataset using t
 
 ```bash
 # First run with test dataset
-nextflow run resmobilys -profile test,singularity/apptainer -resume
+nextflow run resmobilys -profile test,singularity/apptainer/docker -resume
 
 # Run on your dataset
 nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c waterisk/personal.config
