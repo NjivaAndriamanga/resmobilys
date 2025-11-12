@@ -73,7 +73,7 @@ Install Nextflow by following the instructions [here](https://www.nextflow.io/do
 ### ✅ Clone the ResMobiLys Repository and submodule
 
 To install **git** : [here](https://git-scm.com/install)
-
+Then, clone ResMobiLys repository:
 ```bash
 # Clone the project repository
 git clone https://github.com/NjivaAndriamanga/resmobilys.git
@@ -90,16 +90,27 @@ Most databases are already provided, but the **PLASMe** database must be downloa
 ```bash
 #Download and unzip plasme database
 wget https://zenodo.org/record/8046934/files/DB.zip
+```
+
+2. Move and unzip the database inside the `ResMobiLys` directory
+```bash
 export UNZIP_DISABLE_ZIPBOMB_DETECTION=TRUE
 unzip DB.zip
 ```
 
-2. Move and unzip the database inside the `ResMobiLys` directory
-
 
 ## 🚀 **Usage**
 
-Prepare an `index_file.csv` containing metadata for your samples.  
+Prepare an `index_file.csv` containing metadata for your samples.
+An example is available in test/ directory.
+The index_file.csv defines the input data and metadata for each sample analyzed by ResMobiLys.
+Each line represents one sample and must include the following columns:
+- LR_fastq: Path to the long-read FASTQ file
+- genome_size: Estimated chromosome size in base pairs. If unknown, use 0.
+- SR1 (optional): Path to the first short-read pair (R1). Leave empty if no short reads are available.
+- SR2 (optional): Path to the second short-read pair (R2). Leave empty if no short reads are available.
+
+
 For your **first run**, it is recommended to use the provided **test dataset**.  
 During this initial execution, all required databases and environments (tools and dependencies) will be downloaded automatically.  
 This step may take several minutes depending on your internet connection.
