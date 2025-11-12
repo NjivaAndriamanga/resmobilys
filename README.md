@@ -17,6 +17,8 @@ ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resist
   - Assembly assessment with busco
   - Identification of antimicrobial resistance genes (ARGs) with RGI/CARD, biocide and heavy metal resistance genes, and virulence factors
   - Identification of MGEs (plasmids, transposable elements, integrons, prophages)
+  - Detection of similar plasmids
+    
 ## 🧬 Output
 
 - **Table associating species with MGEs and resistance genes**  
@@ -41,7 +43,7 @@ ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resist
 
 
 - **Detailed list of plasmids and clusters**
-  Summary table of plasmids with their cluster IDs and associated ARGs, providing an overview of plasmid diversity and possible roles in resistance gene dissemination.
+Summary table of plasmids with their cluster IDs and associated ARGs, providing an overview of plasmid diversity and possible roles in resistance gene dissemination.
 
 | Sample  | Plasmid      | Cluster | ARGs         |
 |----------|--------------|---------|--------------|
@@ -53,7 +55,11 @@ ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resist
 
 ## 🚀 Installation
 
-Ensure the following dependencies are installed before running **ResMobiLys**:
+To run ResMobiLys, ensure the following are available on your system:
+- Nextflow
+- Apptainer/Singularity or Docker
+- Git
+- PLASMe database
 
 ### ✅ Nextflow
 
@@ -64,7 +70,9 @@ Install Nextflow by following the instructions [here](https://www.nextflow.io/do
 - To install **Apptainer/Singularity**, follow the guide [here](https://apptainer.org/docs/admin/main/installation.html)
 - To install **Docker**, follow the guide [here](https://www.docker.com/get-started/)
 
-### ✅ Clone the ResMobiLys Repository
+### ✅ Clone the ResMobiLys Repository and submodule
+
+To install **git** : [here](https://git-scm.com/install)
 
 ```bash
 # Clone the project repository
@@ -73,7 +81,7 @@ cd resmobilys
 git submodule update --init --recursive
 ```
 
-## 📦 Database and test data
+## 📦 Database
 
 Most databases are already provided, but the **PLASMe** database must be downloaded manually.
 
