@@ -14,6 +14,7 @@
         "output_dir": {
           "type": "string",
           "description": "Output directory for the pipeline",
+          "default":"resmobilys_output",
           "format": "directory-path"
         },
         "index_file": {
@@ -71,6 +72,7 @@
         "flyeModel": {
           "type": "string",
           "description": "Flye assembly model",
+          "default": "--nano-hq",
           "enum": ["--nano-hq","--nano-corr","--nano-raw","--pacbio-raw","--pacbio-corr","--pacbio-hifi"]
         }
       }
@@ -91,12 +93,14 @@
           "type": "string",
           "default": "${projectDir}/plasme_db",
           "description": "Plasme database directory",
+          "hidden": true,
           "format": "directory-path"
         },
         "platon_db": {
           "type": "string",
           "default": "${projectDir}/platon_db",
           "description": "platon database directory",
+          "hidden": true,
           "format": "directory-path"
         },
         "kraken_index": {
@@ -108,6 +112,7 @@
           "type": "string",
           "default": null,
           "description": "kraken database directory",
+          "hidden": true,
           "format": "directory-path"
         },
         "kraken_taxonomy": {
@@ -119,11 +124,18 @@
           "type": "string",
           "default": "${projectDir}/vf_db",
           "description": "VF database directory",
+          "hidden": true,
           "format": "file-path"
+        },
+        "ice_db": {
+            "type": "string",
+            "default": "${projectDir}/ICE_db",
+            "description": "ICE database directory",
+            "format": "file-path"
         },
         "rgi_include_nudge": {
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "include hits nudged from loose to strict hits"
         }
       }
@@ -134,12 +146,6 @@
       "description": "Blastn parameters",
       "default": "",
       "properties": {
-        "ice_db": {
-            "type": "string",
-            "default": "${projectDir}/ICE_db",
-            "description": "ICE database directory",
-            "format": "file-path"
-        },
         "evalue_vf": {
           "type": "number",
           "default": 1e-10,
