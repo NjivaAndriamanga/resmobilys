@@ -128,12 +128,12 @@ Once the setup is complete, you can run the pipeline on your own dataset.
 nextflow run resmobilys -profile test,singularity/apptainer/docker -resume
 
 # Run on your dataset
-nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c waterisk/personal.config
+nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c personal.config
 
 ```
 
 ### **Configuration Options**
-To run ResMobiLys, you need one mandatory parameter: the path to your index_file.csv (as described above) with `--index_file` or in `personal_config` file.   
+To run ResMobiLys, you need one mandatory parameter: the path to your index_file.csv (as described above) with `--index_file` or in `personal.config` file.   
 All other parameters — such as computing resources, input/output paths, and software options — can be customized in the personal.config file.  
 
 Decritption of all parameters: 
