@@ -5,7 +5,7 @@
   "description": "Resistome and mobilome analysis of Eubacteria isolates",
   "type": "object",
   "$defs": {
-    "required_inputs": {
+    "inputs": {
       "title": "Required inputs",
       "type": "object",
       "description": "",
@@ -24,13 +24,6 @@
           "exists": true,
           "errorMessage": "Check your personnal config file or use the --index_file option",
           "mimetype": "text/csv"
-        },
-        "email": {
-          "type": "string",
-          "description": "Email address for completion summary.",
-          "fa_icon": "fas fa-envelope",
-          "help_text": "Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.",
-          "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
         }
       },
       "required": ["index_file"]
@@ -54,6 +47,7 @@
         "lineage_db": {
           "type": "string",
           "default": "bacteria_odb10",
+          "hidden": "true",
           "description": "Lineage database for busco. See https://busco.ezlab.org/list_of_lineages.html for a list of available lineage databases."
         }
       }
@@ -81,8 +75,8 @@
         }
       }
     },
-    "Further_parameters": {
-      "title": "Further parameters",
+    "Tools_parameters": {
+      "title": "Tools parameters",
       "type": "object",
       "description": "",
       "default": "",
@@ -93,28 +87,22 @@
           "description": "Plasmid prediction tool",
           "enum": ["plasme","platon"]
         },
-        "amr_db": {
-          "type": "string",
-          "default": "megares",
-          "description": "AMR database for AMR detection with ABRICATE",
-          "enum": ["argannot","card","ecoh","ecoli_vf","megares","ncbi","plasmidfinder","resfinder","vfdb"]
-        },
         "plasme_db": {
           "type": "string",
-          "default": "${projectDir}/DB",
-          "description": "plasme database directory",
+          "default": "${projectDir}/plasme_db",
+          "description": "Plasme database directory",
           "format": "directory-path"
         },
         "platon_db": {
           "type": "string",
-          "default": "${projectDir}/db",
+          "default": "${projectDir}/platon_db",
           "description": "platon database directory",
           "format": "directory-path"
         },
         "kraken_index": {
           "type": "string",
           "default": "https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20240904.tar.gz",
-          "description": "kraken index directory, by default it will download the smaller index capped at 8 gb",
+          "description": "kraken index directory, by default it will download the smaller index capped at 8 gb"
         },
         "kraken_db": {
           "type": "string",
@@ -129,7 +117,7 @@
         },
         "vf_db": {
           "type": "string",
-          "default": "${projectDir}/DB",
+          "default": "${projectDir}/vf_db",
           "description": "VF database directory",
           "format": "file-path"
         },
@@ -137,12 +125,20 @@
           "type": "boolean",
           "default": false,
           "description": "include hits nudged from loose to strict hits"
-        },
+        }
+      }
+    },
+    "blast_parameters": {
+      "title": "blastn parameters",
+      "type": "object",
+      "description": "Blastn parameters",
+      "default": "",
+      "properties": {
         "ice_db": {
-          "type": "string",
-          "default": "${projectDir}/ICE_db",
-          "description": "ICE database directory",
-          "format": "file-path"
+            "type": "string",
+            "default": "${projectDir}/ICE_db",
+            "description": "ICE database directory",
+            "format": "file-path"
         },
         "evalue_vf": {
           "type": "number",
@@ -228,6 +224,13 @@
                     "fa_icon": "fas fa-copy",
                     "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"],
                     "hidden": true
+                },
+                "email": {
+                  "type": "string",
+                  "description": "Email address for completion summary.",
+                  "fa_icon": "fas fa-envelope",
+                  "help_text": "Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.",
+                  "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
                 },
                 "email_on_fail": {
                     "type": "string",
