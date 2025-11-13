@@ -129,10 +129,49 @@ nextflow run resmobilys -profile test,singularity/apptainer/docker -resume
 # Run on your dataset
 nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c waterisk/personal.config
 
-'''
 ```
+
 ### **Configuration Options**
-Modify `personal.config` to customize execution parameters, including computing resources and software parameters.
+For running the pipeline you need one mandatory parameter: the index file as descibed previously.  
+All other parameters can be customized in **`personal.config`** including computing resources and software parameters.  
+Decritption of all parameters: 
+
+```
+#Required inputs
+  --output_dir        [string] Output directory for the pipeline
+  --index_file        [string] The absolute path of the index file that contains estimated chomosome length for each isolate. If set to null, it will be estimated automatically and long
+read assembly will be performed.
+
+#Quality control assessment
+  --trim_end_size     [integer] Number of bases to remove at each end of the read [default: 0]
+  --quality_trim      [integer] Parameter can be used to trim low-quality ends from reads. [default: 20]
+
+#Hybracter parameters
+  --read_min_length   [integer] Minimum read length [default: 1000]
+  --medaka            [boolean] Run medaka [default: true]
+  --flyeModel         [string]  Flye assembly model  (accepted: --nano-hq, --nano-corr, --nano-raw, --pacbio-raw, --pacbio-corr, --pacbio-hifi)
+
+#Tools parameters
+  --plasmid           [string]  Plasmid prediction tool  (accepted: plasme, platon) [default: plasme]
+  --plasme_db         [string]  Plasme database directory [default: ${projectDir}/plasme_db]
+  --platon_db         [string]  platon database directory [default: ${projectDir}/platon_db]
+  --kraken_index      [string]  kraken index directory, by default it will download the smaller index capped at 8 gb [default:
+https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20240904.tar.gz]
+  --kraken_db         [string]  kraken database directory
+  --kraken_taxonomy   [boolean] Enable kraken taxonomy [default: true]
+  --vf_db             [string]  VF database directory [default: ${projectDir}/vf_db]
+  --rgi_include_nudge [boolean] include hits nudged from loose to strict hits [default: false]
+
+#blastn parameters
+  --ice_db            [string]  ICE database directory [default: ${projectDir}/ICE_db]
+  --evalue_vf         [number]  E-value cutoff for VF detection [default: 1E-10]
+  --pident_vf         [integer] Percent identity cutoff for VF detection [default: 80]
+  --pident_ice        [integer] Percent identity cutoff for ICE detection [default: 80]
+  --evalue_ice        [number]  E-value cutoff for ICE detection (scientific notation) [default: 1E-10]
+
+```
+
+
 
 
 ## Outputs
