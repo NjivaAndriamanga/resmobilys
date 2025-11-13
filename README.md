@@ -105,10 +105,10 @@ Prepare an `index_file.csv` containing metadata for your samples.
 An example is available in **test/** directory.
 The index_file.csv defines the input data and metadata for each sample analyzed by ResMobiLys.
 Each line represents one sample and must include the following columns:
-- LR_fastq: Path to the long-read FASTQ file
-- genome_size: Estimated chromosome size in base pairs. If unknown, use 0.
-- SR1 (optional): Path to the first short-read pair (R1). Leave empty if no short reads are available.
-- SR2 (optional): Path to the second short-read pair (R2). Leave empty if no short reads are available.
+- **LR_fastq**: Path to the long-read FASTQ file
+- **genome_size**: Estimated chromosome size in base pairs. If unknown, use 0.
+- **SR1** (optional): Path to the first short-read pair (R1). Leave empty if no short reads are available.
+- **SR2** (optional): Path to the second short-read pair (R2). Leave empty if no short reads are available.
 
 Example:  
 LR_fastq,chrm_size,SR1_fastq,SR2_fastq    
@@ -121,8 +121,7 @@ For your **first run**, it is recommended to use the provided **test dataset**.
 During this initial execution, all required databases and environments (tools and dependencies) will be downloaded automatically.  
 This step may take several minutes depending on your internet connection.
 
-Once the setup is complete, you can run the pipeline on your own dataset using the `-resume` option to avoid re-downloading components.
-
+Once the setup is complete, you can run the pipeline on your own dataset.  
 ```bash
 # First run with test dataset
 nextflow run resmobilys -profile test,singularity/apptainer/docker -resume
@@ -134,6 +133,7 @@ nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c wa
 ```
 ### **Configuration Options**
 Modify `personal.config` to customize execution parameters, including computing resources and software parameters.
+
 
 ## Outputs
 
