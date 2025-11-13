@@ -277,7 +277,7 @@
   },
   "allOf": [
     {
-      "$ref": "#/$defs/required_inputs"
+      "$ref": "#/$defs/inputs"
     },
     {
       "$ref": "#/$defs/max_job_request_options"
@@ -289,7 +289,7 @@
       "$ref": "#/$defs/Hybracter_parameters"
     },
     {
-      "$ref": "#/$defs/Further_parameters"
+      "$ref": "#/$defs/Tools_parameters"
     }
   ]
 }
