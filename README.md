@@ -111,11 +111,12 @@ Each line represents one sample and must include the following columns:
 - **SR2** (optional): Path to the second short-read pair (R2). Leave empty if no short reads are available.
 
 Example:  
+```
 LR_fastq,chrm_size,SR1_fastq,SR2_fastq    
 resmobilys/test/17_01_bar09.fastq.gz,0,,  
 resmobilys/test/31_03_bar52.fastq.gz,0,,  
 resmobilys/test/NB10_LR.fastq.gz,1000000,resmobilys/test/NB10_1.fastq.gz,resmobilys/test/NB10_2.fastq.gz
-
+```
 
 For your **first run**, it is recommended to use the provided **test dataset**.  
 During this initial execution, all required databases and environments (tools and dependencies) will be downloaded automatically.  
