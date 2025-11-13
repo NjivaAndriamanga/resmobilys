@@ -132,8 +132,9 @@ nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c wa
 ```
 
 ### **Configuration Options**
-To run ResMobiLys, you need one mandatory parameter: the path to your index_file.csv (as described above) with `--index_file==` or in `personal_config` file.   
-All other parameters — such as computing resources, input/output paths, and software options — can be customized in the personal.config file.
+To run ResMobiLys, you need one mandatory parameter: the path to your index_file.csv (as described above) with `--index_file` or in `personal_config` file.   
+All other parameters — such as computing resources, input/output paths, and software options — can be customized in the personal.config file.  
+
 Decritption of all parameters: 
 ```
 #Required inputs
