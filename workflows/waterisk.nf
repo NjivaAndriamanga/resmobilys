@@ -106,6 +106,7 @@ include { ISESCAN }                     from '../modules/waterisk_modules.nf'
 include { PLASMID_CLUSTER_ARG }         from '../modules/waterisk_modules.nf'
 include { VISUALIZATION_TABLE }         from '../modules/waterisk_modules.nf'
 include { ARGS_MGES }                   from '../modules/waterisk_modules.nf'
+include { ISESCAN2GFF }                 from '../modules/waterisk_modules.nf'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -191,6 +192,7 @@ workflow RESMOBILYS {
     
     //ISEScan
     ISESCAN( contig_ch )
+    ISESCAN2GFF( ISESCAN.out )
 
     //Integron_finder
     INTEGRON_FINDER( contig_ch )
@@ -242,7 +244,8 @@ workflow RESMOBILYS {
     prohages_file = DBSCAN2GFF.out.map{ id, file -> file}.collectFile(name:"prophages.gff")
     ices_file = ICE_BLAST.out.ice_gff.map{ id,file -> file }.collectFile(name:"ices.gff")
     integrons_file = INTEGRON_FORMAT.out.map{ id, file -> file }.collectFile(name:"integrons.gff")
-    ARGS_MGES(rgi_amr, integrons_file, ices_file, prohages_file)
+    is_file = ISESCAN2GFF.out.map{ id, file -> file }.collectFile(name:"is.gff")
+    ARGS_MGES(rgi_amr, integrons_file, ices_file, prohages_file, is_file)
 }
 
 //TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )

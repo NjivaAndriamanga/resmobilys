@@ -518,6 +518,26 @@ process ISESCAN {
 }
 
 /*
+ISESCAn output to GFF format
+*/
+process ISESCAN2GFF {
+    tag "${barID}"
+    cache true
+
+    input:
+    tuple val(barID), path(isescan)
+    
+    output:
+    tuple val(barID), path("${id}.gff")
+    
+    script:
+    id = isescan.getSimpleName()
+    """
+    awk -v pre=${barID} -f ${projectDir}/bin/GFF_parsing/isescan2gff.sh ${isescan} > ${id}.gff
+    """
+}
+
+/*
 Abricate with megares to identify heavy and efflux pump.
 Resistance to drugs identified with abricate are remove with grep
 !!! grep return an exit status 1 when no resistance is found ==> process error
@@ -881,12 +901,14 @@ process ARGS_MGES {
     path(integrons)
     path(ices)
     path(prophages)
+    path(ises)
 
     output:
     path("args_mges.tsv")
 
     script:
     """
-    python3 ${projectDir}/bin/args_mges.py --args $rgi --integrons $integrons --ices $ices --prophages $prophages
+    python3 ${projectDir}/bin/args_mges.py --args $rgi --integrons $integrons --ices $ices --prophages $prophages --ises $ises
+    echo "test"
     """
 }
