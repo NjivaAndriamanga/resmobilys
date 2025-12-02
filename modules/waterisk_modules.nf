@@ -824,30 +824,6 @@ process VF_BLAST {
 }
 
 /*
-Blast for ICEs
-*/
-process ICE_BLAST {
-    tag "${barID}_${type}"
-    label 'process_high'
-    
-    input:
-    val x
-    tuple val(barID) ,path(fasta), val(type)
-
-    output: 
-    tuple val(barID) ,path("${sample}_ice_blast.txt"), emit: ice_txt
-    tuple val(barID) ,path("${sample}_ice_blast.gff"), emit: ice_gff
-
-    script:
-    sample = fasta.getSimpleName()
-    """
-    blastn -db ${params.ice_db} -query ${fasta} -out ice_blast.txt -evalue ${params.evalue_ice} -perc_identity ${params.pident_ice} -outfmt '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send slen evalue bitscore' -num_threads ${task.cpus}
-    mv ice_blast.txt ${sample}_ice_blast.txt
-    awk -v pre=${barID} -f ${projectDir}/bin/GFF_parsing/blast2gff.sh ${sample}_ice_blast.txt > ${sample}_ice_blast.gff
-    """
-}
-
-/*
 Output construction
 */
 process PLASMID_CLUSTER_ARG {

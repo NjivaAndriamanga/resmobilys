@@ -99,7 +99,6 @@ include { INTEGRON_FINDER }             from '../modules/waterisk_modules.nf'
 include { INTEGRON_FORMAT }             from '../modules/waterisk_modules.nf'
 include { KRAKEN }                      from '../modules/waterisk_modules.nf'
 include { VF_BLAST }                    from '../modules/waterisk_modules.nf'
-include { ICE_BLAST }                   from '../modules/waterisk_modules.nf'
 include { DBSCAN }                      from '../modules/waterisk_modules.nf'
 include { DBSCAN2GFF }                  from '../modules/waterisk_modules.nf'
 include { ISESCAN }                     from '../modules/waterisk_modules.nf'
@@ -229,8 +228,7 @@ workflow RESMOBILYS {
         kraken_ch = KRAKEN.out.map{ barID, kraken -> kraken}.collectFile(name:"kraken_summary.txt", storeDir:"${params.output_dir}kraken/")
     }
     
-    //Virulence factor, ICEs and heavy metals detection
-    ICE_BLAST(DOWNLOAD_ICE_DATABASE.out, contig_ch)
+    //Virulence factor and heavy metals detection
     VF_BLAST(DOWNLOAD_VF_DATABASE.out, contig_ch)
 
     //formating output
