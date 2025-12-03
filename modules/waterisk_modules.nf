@@ -458,19 +458,25 @@ Use macsyfinder to identify ICE conjugative systems with CONJSCAN model
 */
 process ICE_CONJSCAN {
     tag "${barID}_${type}"
-    label 'macsyfinder'
     
     input:
-    
-    
+    tuple val(barID), path(gff), path(fastp), val(type)
 
     output: 
-    
+    tuple val(barID), path("${barID}_${type}_ICE.tsv"), path(gff), val(type)
+
     script:
-    sample = fasta.getSimpleName()
+    sample = fastp.getSimpleName()
+    def contig = ""
+    if (type == "plasmid") {
+        contig = "Plasmids"
+    }
+    else {
+        contig = "Chromosome"
+    }
     """
-
-
+    macsyfinder --sequence-db ${fastp} -o ${barID}_${type}_macsyfinder --models-dir ${projectDir}/models --models CONJScan/${contig} all --db-type ordered_replicon
+    mv ${barID}_${type}_macsyfinder/best_solution.tsv ${barID}_${type}_ICE.tsv
     """
 }
 

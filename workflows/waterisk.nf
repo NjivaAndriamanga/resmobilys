@@ -107,6 +107,7 @@ include { VISUALIZATION_TABLE }             from '../modules/waterisk_modules.nf
 include { ARGS_MGES }                       from '../modules/waterisk_modules.nf'
 include { ISESCAN2GFF }                     from '../modules/waterisk_modules.nf'
 include { PROKKA }                          from '../modules/waterisk_modules.nf'
+include { ICE_CONJSCAN }                    from '../modules/waterisk_modules.nf'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -209,6 +210,7 @@ workflow RESMOBILYS {
 
     //ICE
     PROKKA( contig_ch)
+    ICE_CONJSCAN( PROKKA.out )
 
     // Plasmid typing and clustering
     CHANGE_PLASMID_NAME( plasmid_amr_ch.map{barID, contig, type -> [barID, contig]} )
