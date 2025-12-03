@@ -106,6 +106,7 @@ include { PLASMID_CLUSTER_ARG }             from '../modules/waterisk_modules.nf
 include { VISUALIZATION_TABLE }             from '../modules/waterisk_modules.nf'
 include { ARGS_MGES }                       from '../modules/waterisk_modules.nf'
 include { ISESCAN2GFF }                     from '../modules/waterisk_modules.nf'
+include { PROKKA }                          from '../modules/waterisk_modules.nf'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -142,7 +143,7 @@ workflow RESMOBILYS {
     complete_circular_ch = ASSEMBLE_GENOME.out.complete_assembly //1 Will be directly analyzed if all contigs are circular
         .filter{ barID, contig_stats, plassembler, chromosome, plasmids -> 
             check_plasmidAllCircular(contig_stats)}
-    complete_circular_chrm_ch = complete_circular_ch.map{ barID, contig, plassembler, chromosome, plasmid -> [barID, chromosome, "chrm"]}
+    complete_circular_chrm_ch = complete_circular_ch.map{ barID, contig, plassembler, chromosome, plasmid -> [barID, chromosome, "chromosome"]}
     complete_circular_plasmid_ch = complete_circular_ch.map{ barID, contig, plassembler, chromosome, plasmid -> [barID, plasmid, "plasmid"]}
     
 
@@ -159,7 +160,7 @@ workflow RESMOBILYS {
 
     if(params.plasmid == "plasme") {
         PLASME_COMPLETE(FILTER_CIRCULAR_PLASMID.out, CHECK_PLASME_DATABASE.out)
-        plasme_complete_chrm_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, chromosome, "chrm"]}
+        plasme_complete_chrm_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, chromosome, "chromosome"]}
         plasme_complete_plasmid_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, plasmid, "plasmid"]}
         
         //For incomplete assembly, use plasme to infer chrm and plasmid contig
@@ -171,7 +172,7 @@ workflow RESMOBILYS {
     }
     if(params.plasmid == "platon") {
         PLATON_COMPLETE(FILTER_CIRCULAR_PLASMID.out, CHECK_PLATON_DATABASE.out)
-        platon_complete_chrm_ch = PLATON_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, chromosome, "chrm"]}
+        platon_complete_chrm_ch = PLATON_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, chromosome, "chromosome"]}
         platon_complete_plasmid_ch = PLATON_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, plasmid, "plasmid"]}
         
         //For incomplete assembly, use plasme to infer chrm and plasmid contig
@@ -205,6 +206,9 @@ workflow RESMOBILYS {
 
     //DBSCAN2GFF
     DBSCAN2GFF( DBSCAN.out )
+
+    //ICE
+    PROKKA( contig_ch)
 
     // Plasmid typing and clustering
     CHANGE_PLASMID_NAME( plasmid_amr_ch.map{barID, contig, type -> [barID, contig]} )

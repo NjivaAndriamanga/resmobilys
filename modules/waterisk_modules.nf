@@ -434,6 +434,48 @@ process BUSCO {
 }
 
 /*
+Prokka annotation
+*/
+process PROKKA {
+    tag "${barID}_${type}"
+
+    input:
+    tuple val(barID), path(fasta), val(type)
+
+    output:
+    tuple val(barID), path("${barID}_${type}_prokka.gff"), path("${barID}_${type}_prokka.faa"), val(type)
+
+    script:
+    """
+    prokka --cpus ${task.cpus} --prefix ${barID}_${type} --outdir ${barID}_${type} ${fasta}
+    mv ${barID}_${type}/${barID}_${type}.faa ${barID}_${type}_prokka.faa
+    mv ${barID}_${type}/${barID}_${type}.gff ${barID}_${type}_prokka.gff
+    """
+}
+
+/*
+Use macsyfinder to identify ICE conjugative systems with CONJSCAN model
+*/
+process ICE_CONJSCAN {
+    tag "${barID}_${type}"
+    label 'macsyfinder'
+    
+    input:
+    
+    
+
+    output: 
+    
+    script:
+    sample = fasta.getSimpleName()
+    """
+
+
+    """
+}
+
+
+/*
 DBSCAN output an exit status 1 when no prophage is found for some fasta. This message is ignored for now and an empty file is created
 When fasta id doesn't start with chromosome, a "bac" column is added. This is removed by the awk script.
 */
@@ -815,26 +857,6 @@ process VF_BLAST {
     blastn -db ${params.vf_db} -query ${fasta} -out vf_blast.txt -evalue ${params.evalue_vf} -perc_identity ${params.pident_vf} -outfmt '6 stitle qseqid sseqid pident length mismatch gapopen qstart qend sstart send slen evalue bitscore' -num_threads ${task.cpus}
     mv vf_blast.txt ${sample}_vf_blast.txt
     awk -v pre=${barID} -f ${projectDir}/bin/GFF_parsing/blast2gff.sh ${sample}_vf_blast.txt > ${sample}_vf_blast.gff
-    """
-}
-
-/*
-Use macsyfinder to identify ICE conjugative systems with CONJSCAN model
-*/
-process ICE_CONJSCAN {
-    tag "${barID}_${type}"
-    label 'macsyfinder'
-    
-    input:
-    
-
-    output: 
-    
-    script:
-    sample = fasta.getSimpleName()
-    """
-
-
     """
 }
 
