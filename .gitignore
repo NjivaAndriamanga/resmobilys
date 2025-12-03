@@ -14,3 +14,4 @@ containers/
 VF_db/
 k2_standard_08gb_20240904/
 bin/__pycache__/*
+models/

@@ -69,43 +69,43 @@ def write_value = { value -> "test.txt" >> value + "\n" }
     IMPORT LOCAL MODULES / SUBWORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { CHECK_PLASME_DATABASE }    from '../modules/waterisk_modules.nf'
-include { DOWNLOAD_PLATON_DATABASE}     from '../modules/waterisk_modules.nf'
-include { DOWNLOAD_KRAKEN_DATABASE }    from '../modules/waterisk_modules.nf'
-include { DOWNLOAD_VF_DATABASE }        from '../modules/waterisk_modules.nf'
-include { DOWNLOAD_ICE_DATABASE}        from '../modules/waterisk_modules.nf'
-include { PREPROCESSING_DBSCANDB_CHMOD }             from '../modules/waterisk_modules.nf'
-include { DOWNLOAD_RGI_DATABASE }       from '../modules/waterisk_modules.nf'
-include { IDENTIFIED_SAMPLES}           from '../modules/waterisk_modules.nf'
-include { CLEAN_LONG_READS }            from '../modules/waterisk_modules.nf'
-include { ASSEMBLE_GENOME }             from '../modules/waterisk_modules.nf'
-include { FILTER_CIRCULAR_PLASMID }     from '../modules/waterisk_modules.nf'
-include { ABRICATE }                    from '../modules/waterisk_modules.nf'
-include { RGI}                          from '../modules/waterisk_modules.nf'
-include { RGI2GFF}                      from '../modules/waterisk_modules.nf'
-include { PLASME_COMPLETE }             from '../modules/waterisk_modules.nf'
-include { PLATON}                       from '../modules/waterisk_modules.nf'
-include { PLASME }                      from '../modules/waterisk_modules.nf'
-include { PLASME_INCOMPLETE }           from '../modules/waterisk_modules.nf'
-include { PLATON_COMPLETE }             from '../modules/waterisk_modules.nf'
-include { BUSCO }                       from '../modules/waterisk_modules.nf'
-include { CHANGE_PLASMID_NAME }         from '../modules/waterisk_modules.nf'
-include { MOB_TYPER }                   from '../modules/waterisk_modules.nf'
-include { MERGE_TYPE }                  from '../modules/waterisk_modules.nf'
-include { CREATE_TAXA }                 from '../modules/waterisk_modules.nf'
-include { MERGE_TAXA }                  from '../modules/waterisk_modules.nf'
-include { MOB_CLUSTER }                 from '../modules/waterisk_modules.nf'
-include { INTEGRON_FINDER }             from '../modules/waterisk_modules.nf'
-include { INTEGRON_FORMAT }             from '../modules/waterisk_modules.nf'
-include { KRAKEN }                      from '../modules/waterisk_modules.nf'
-include { VF_BLAST }                    from '../modules/waterisk_modules.nf'
-include { DBSCAN }                      from '../modules/waterisk_modules.nf'
-include { DBSCAN2GFF }                  from '../modules/waterisk_modules.nf'
-include { ISESCAN }                     from '../modules/waterisk_modules.nf'
-include { PLASMID_CLUSTER_ARG }         from '../modules/waterisk_modules.nf'
-include { VISUALIZATION_TABLE }         from '../modules/waterisk_modules.nf'
-include { ARGS_MGES }                   from '../modules/waterisk_modules.nf'
-include { ISESCAN2GFF }                 from '../modules/waterisk_modules.nf'
+include { CHECK_PLASME_DATABASE }           from '../modules/waterisk_modules.nf'
+include { DOWNLOAD_PLATON_DATABASE}         from '../modules/waterisk_modules.nf'
+include { DOWNLOAD_KRAKEN_DATABASE }        from '../modules/waterisk_modules.nf'
+include { DOWNLOAD_VF_DATABASE }            from '../modules/waterisk_modules.nf'
+include { DOWNLOAD_CONJSCAN }               from '../modules/waterisk_modules.nf'
+include { PREPROCESSING_DBSCANDB_CHMOD }    from '../modules/waterisk_modules.nf'
+include { DOWNLOAD_RGI_DATABASE }           from '../modules/waterisk_modules.nf'
+include { IDENTIFIED_SAMPLES}               from '../modules/waterisk_modules.nf'
+include { CLEAN_LONG_READS }                from '../modules/waterisk_modules.nf'
+include { ASSEMBLE_GENOME }                 from '../modules/waterisk_modules.nf'
+include { FILTER_CIRCULAR_PLASMID }         from '../modules/waterisk_modules.nf'
+include { ABRICATE }                        from '../modules/waterisk_modules.nf'
+include { RGI}                              from '../modules/waterisk_modules.nf'
+include { RGI2GFF}                          from '../modules/waterisk_modules.nf'
+include { PLASME_COMPLETE }                 from '../modules/waterisk_modules.nf'
+include { PLATON}                           from '../modules/waterisk_modules.nf'
+include { PLASME }                          from '../modules/waterisk_modules.nf'
+include { PLASME_INCOMPLETE }               from '../modules/waterisk_modules.nf'
+include { PLATON_COMPLETE }                 from '../modules/waterisk_modules.nf'
+include { BUSCO }                           from '../modules/waterisk_modules.nf'
+include { CHANGE_PLASMID_NAME }             from '../modules/waterisk_modules.nf'
+include { MOB_TYPER }                       from '../modules/waterisk_modules.nf'
+include { MERGE_TYPE }                      from '../modules/waterisk_modules.nf'
+include { CREATE_TAXA }                     from '../modules/waterisk_modules.nf'
+include { MERGE_TAXA }                      from '../modules/waterisk_modules.nf'
+include { MOB_CLUSTER }                     from '../modules/waterisk_modules.nf'
+include { INTEGRON_FINDER }                 from '../modules/waterisk_modules.nf'
+include { INTEGRON_FORMAT }                 from '../modules/waterisk_modules.nf'
+include { KRAKEN }                          from '../modules/waterisk_modules.nf'
+include { VF_BLAST }                        from '../modules/waterisk_modules.nf'
+include { DBSCAN }                          from '../modules/waterisk_modules.nf'
+include { DBSCAN2GFF }                      from '../modules/waterisk_modules.nf'
+include { ISESCAN }                         from '../modules/waterisk_modules.nf'
+include { PLASMID_CLUSTER_ARG }             from '../modules/waterisk_modules.nf'
+include { VISUALIZATION_TABLE }             from '../modules/waterisk_modules.nf'
+include { ARGS_MGES }                       from '../modules/waterisk_modules.nf'
+include { ISESCAN2GFF }                     from '../modules/waterisk_modules.nf'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -117,10 +117,10 @@ workflow RESMOBILYS {
     //download tools and databases
     CHECK_PLASME_DATABASE().view()
     DOWNLOAD_PLATON_DATABASE().view()
-    DOWNLOAD_ICE_DATABASE().view()
     DOWNLOAD_VF_DATABASE().view()
     PREPROCESSING_DBSCANDB_CHMOD().view()
     DOWNLOAD_RGI_DATABASE()
+    DOWNLOAD_CONJSCAN().view()
 
     //Identified samples
     IDENTIFIED_SAMPLES(ch_input)
@@ -240,10 +240,9 @@ workflow RESMOBILYS {
     VISUALIZATION_TABLE(MOB_CLUSTER.out, rgi_amr)
 
     prohages_file = DBSCAN2GFF.out.map{ id, file -> file}.collectFile(name:"prophages.gff")
-    ices_file = ICE_BLAST.out.ice_gff.map{ id,file -> file }.collectFile(name:"ices.gff")
     integrons_file = INTEGRON_FORMAT.out.map{ id, file -> file }.collectFile(name:"integrons.gff")
     is_file = ISESCAN2GFF.out.map{ id, file -> file }.collectFile(name:"is.gff")
-    ARGS_MGES(rgi_amr, integrons_file, ices_file, prohages_file, is_file)
+    ARGS_MGES(rgi_amr, integrons_file, prohages_file, is_file)
 }
 
 //TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )

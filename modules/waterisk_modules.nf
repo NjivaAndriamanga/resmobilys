@@ -55,8 +55,8 @@ process DOWNLOAD_KRAKEN_DATABASE {
     env output
 
     script:
+    log.info "Downloading kraken database..."
     if (params.kraken_db.equals("${projectDir}/kraken_DB") && params.kraken_taxonomy == true) {
-        log.info "Downloading kraken database..."
         """
         cd ${projectDir}
         if [ ! -d kraken_DB ]; then
@@ -104,26 +104,21 @@ process DOWNLOAD_VF_DATABASE {
 }
 
 /*
-This process will download the ICE database
+Download CONJSCAN models
 */
-process DOWNLOAD_ICE_DATABASE {
-
+process DOWNLOAD_CONJSCAN {
     output:
     env output
 
     script:
-    log.info "Downloading ICE database..."
+    log.info "Downloading CONJSCAN models..."
     """
     cd ${projectDir}
-    if [ ! -d ICE_db ]; then
-        mkdir ICE_db
-        cd ICE_db
-        wget https://tool2-mml.sjtu.edu.cn/ICEberg3/data/download/ICE_seq_all.fas
-        makeblastdb -in ICE_seq_all.fas -dbtype nucl
-        output="ICE DB OK"
-        echo "test"
+    if [ ! -d models ]; then
+        msf_data install --target models/ CONJScan
+        output="CONJSCAN OK"
     else
-        output="ICE DB already exist"
+        output="CONJSCAN already downloaded"
     fi
     """
 }
@@ -824,6 +819,26 @@ process VF_BLAST {
 }
 
 /*
+Use macsyfinder to identify ICE conjugative systems with CONJSCAN model
+*/
+process ICE_CONJSCAN {
+    tag "${barID}_${type}"
+    label 'macsyfinder'
+    
+    input:
+    
+
+    output: 
+    
+    script:
+    sample = fasta.getSimpleName()
+    """
+
+
+    """
+}
+
+/*
 Output construction
 */
 process PLASMID_CLUSTER_ARG {
@@ -875,7 +890,6 @@ process ARGS_MGES {
     input:
     path(rgi)
     path(integrons)
-    path(ices)
     path(prophages)
     path(ises)
 
@@ -884,7 +898,7 @@ process ARGS_MGES {
 
     script:
     """
-    python3 ${projectDir}/bin/args_mges.py --args $rgi --integrons $integrons --ices $ices --prophages $prophages --ises $ises
+    python3 ${projectDir}/bin/args_mges.py --args $rgi --integrons $integrons --prophages $prophages --ises $ises
     echo "test"
     """
 }

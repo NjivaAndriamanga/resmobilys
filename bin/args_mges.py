@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument("--args", required=True, help="Path to ARGs input file (GFF-like TSV)")
 parser.add_argument("--integrons", required=True, help="Path to integrons input file (GFF-like TSV)")
 parser.add_argument("--prophages", required=True, help="Path to prophages input file (GFF-like TSV)")
-parser.add_argument("--ices", required=True, help="Path to ICEs input file (GFF-like TSV)")
+#parser.add_argument("--ices", required=True, help="Path to ICEs input file (GFF-like TSV)")
 parser.add_argument("--ises", required=True, help="Path to IS input file (GFF-like TSV)")
 args = parser.parse_args()
 
@@ -56,7 +56,7 @@ def load_mges(file_path):
 # ----------------------------
 integrons = load_mges(args.integrons)
 prophages = load_mges(args.prophages)
-ices = load_mges(args.ices)
+#ices = load_mges(args.ices)
 ises = load_mges(args.ises)
 
 # ----------------------------
@@ -95,7 +95,6 @@ with open(args.args) as f:
         for mge_type, mge_dict in [
             ("Integron", integrons),
             ("Prophage", prophages),
-            ("ICE", ices),
             ("IS", ises),
         ]:
             for region in mge_dict.get((sample, loc_type), []):
