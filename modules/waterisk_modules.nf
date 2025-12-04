@@ -463,7 +463,7 @@ process ICE_CONJSCAN {
     tuple val(barID), path(gff), path(fastp), val(type)
 
     output: 
-    tuple val(barID), path("${barID}_${type}_ICE.tsv"), path(gff), val(type)
+    tuple val(barID), path(gff),path("${barID}_${type}_system.tsv"), val(type)
 
     script:
     sample = fastp.getSimpleName()
@@ -476,10 +476,26 @@ process ICE_CONJSCAN {
     }
     """
     macsyfinder --sequence-db ${fastp} -o ${barID}_${type}_macsyfinder --models-dir ${projectDir}/models --models CONJScan/${contig} all --db-type ordered_replicon
-    mv ${barID}_${type}_macsyfinder/best_solution.tsv ${barID}_${type}_ICE.tsv
+    mv ${barID}_${type}_macsyfinder/best_solution.tsv ${barID}_${type}_system.tsv
     """
 }
 
+process DELIMIT_ICE {
+    tag "${barID}_${type}"
+    cache true
+
+    input:
+    tuple val(barID), path(gff), path(tsv), val(type)
+
+    output:
+    tuple val(barID), path("${barID}_${type}_ICE.csv")
+
+    script:
+    """
+    python3 ${projectDir}/bin/delimit_ice.py --gff ${gff} --system ${tsv} --avg_size ${params.ice_avg_size} --type ${type} > DELIMIT_ICE.csv
+    awk -v prefix="${barID}_${type}" 'BEGIN {FS=OFS="\t"} {print prefix, \$0}' DELIMIT_ICE.csv > ${barID}_${type}_ICE.csv
+    """
+}
 
 /*
 DBSCAN output an exit status 1 when no prophage is found for some fasta. This message is ignored for now and an empty file is created
