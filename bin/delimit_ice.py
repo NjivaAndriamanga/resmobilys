@@ -109,4 +109,6 @@ def parse_systems(path, gene_positions):
 systems = parse_systems(args.system, gene_positions)
 
 for i, sys in enumerate(systems, 1):
+    if sys['end'] - sys['start'] > 150000 : #limit the size of the ice at 150kb
+        continue
     print(f"CONJSCan\tICE\t{sys['start']}\t{sys['end']}\t.\t+\t0\tID=System_{i}")

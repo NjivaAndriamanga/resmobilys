@@ -925,7 +925,7 @@ process VISUALIZATION_TABLE {
     script:
     """
     grep -v "gff-version" $rgi_output > rgi.tsv
-    awk 'BEGIN {FS=OFS="\t"} { split(\$1,p,"_"); id=p[1]"_"p[2]"_"p[3]; print(id,p[4],\$2,\$3,\$4,\$5,\$6,\$7,\$8,\$9,\$10,\$11)}' rgi.tsv > amr.gff
+    awk 'BEGIN {FS=OFS="\t"} { n=split(\$1,p,"_"); left=p[1]; for (i=2; i<n; i++) { left=left"_"p[i];}; right=p[n]; print(left,right,\$2,\$3,\$4,\$5,\$6,\$7,\$8,\$9,\$10,\$11)}' rgi.tsv > amr.gff
     python3 ${projectDir}/bin/table_presence_absence.py --amr amr.gff --plasmids $plasmid_cluster
     """
 }

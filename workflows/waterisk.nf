@@ -210,7 +210,7 @@ workflow RESMOBILYS {
     DBSCAN2GFF( DBSCAN.out )
 
     //ICE
-    PROKKA( contig_ch)
+    PROKKA( chrm_amr_ch)
     ICE_CONJSCAN( PROKKA.out )
     DELIMIT_ICE (ICE_CONJSCAN.out)
 
