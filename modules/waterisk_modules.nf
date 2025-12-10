@@ -493,7 +493,8 @@ process DELIMIT_ICE {
     script:
     """
     python3 ${projectDir}/bin/delimit_ice.py --gff ${gff} --system ${tsv} --avg_size ${params.ice_avg_size} --type ${type} > DELIMIT_ICE.csv
-    awk -v prefix="${barID}_${type}" 'BEGIN {FS=OFS="\t"} {print prefix, \$0}' DELIMIT_ICE.csv > ${barID}_${type}_ICE.csv
+    awk -v prefix="${barID}" 'BEGIN {FS=OFS="\t"} {\$1=prefix"_"\$1}1' DELIMIT_ICE.csv > ${barID}_${type}_ICE.csv
+    echo ""
     """
 }
 
@@ -936,13 +937,14 @@ process ARGS_MGES {
     path(integrons)
     path(prophages)
     path(ises)
+    path(ices)
 
     output:
     path("args_mges.tsv")
 
     script:
     """
-    python3 ${projectDir}/bin/args_mges.py --args $rgi --integrons $integrons --prophages $prophages --ises $ises
+    python3 ${projectDir}/bin/args_mges.py --args $rgi --integrons $integrons --prophages $prophages --ises $ises --ices $ices
     echo "test"
     """
 }

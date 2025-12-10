@@ -250,7 +250,8 @@ workflow RESMOBILYS {
     prohages_file = DBSCAN2GFF.out.map{ id, file -> file}.collectFile(name:"prophages.gff")
     integrons_file = INTEGRON_FORMAT.out.map{ id, file -> file }.collectFile(name:"integrons.gff")
     is_file = ISESCAN2GFF.out.map{ id, file -> file }.collectFile(name:"is.gff")
-    ARGS_MGES(rgi_amr, integrons_file, prohages_file, is_file)
+    ices_file = DELIMIT_ICE.out.map{ id, file -> file }.collectFile(name:"ice.gff")
+    ARGS_MGES(rgi_amr, integrons_file, prohages_file, is_file, ices_file)
 }
 
 //TN3_FINDER( contig_ch, TNFINDER_CORRECTION.out )

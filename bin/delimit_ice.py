@@ -29,7 +29,7 @@ with open(args.gff) as f:
         
         start = int(parts[3])
         end   = int(parts[4])
-        
+        localisation = parts[0]
         attributes = parts[8]
         
         # extract ID=...
@@ -40,7 +40,7 @@ with open(args.gff) as f:
                 break
         
         if gene_id:
-            gene_positions[gene_id] = (start, end)
+            gene_positions[gene_id] = (start, end, localisation)
 
 def parse_systems(path, gene_positions):
     systems = []
@@ -86,7 +86,7 @@ def parse_systems(path, gene_positions):
             if gid not in gene_positions:
                 #print(f"WARNING: {gid} not found in gene_positions")
                 continue
-            s, e = gene_positions[gid]
+            s, e, l = gene_positions[gid]
             starts.append(s)
             ends.append(e)
 
@@ -101,6 +101,7 @@ def parse_systems(path, gene_positions):
             results.append({
                 "start": ice_start,
                 "end": ice_end,
+                "localisation": l,
                 "n_genes": len(sys_genes)
             })
 
@@ -111,4 +112,4 @@ systems = parse_systems(args.system, gene_positions)
 for i, sys in enumerate(systems, 1):
     if sys['end'] - sys['start'] > 150000 : #limit the size of the ice at 150kb
         continue
-    print(f"CONJSCan\tICE\t{sys['start']}\t{sys['end']}\t.\t+\t0\tID=System_{i}")
+    print(f"{sys['localisation']}\tCONJSCan\tICE\t{sys['start']}\t{sys['end']}\t.\t+\t0\tID=System_{i}")
