@@ -944,7 +944,7 @@ process ARGS_MGES {
 
     script:
     """
-    python3 ${projectDir}/bin/args_mges.py --args $rgi --integrons $integrons --prophages $prophages --ises $ises --ices $ices
+    python3 ${projectDir}/bin/args_mges.py --args $rgi --integrons $integrons --prophages $prophages --ises $ises --ices $ices --compositeIS_size ${params.compositeIS_size}
     echo "test"
     """
 }

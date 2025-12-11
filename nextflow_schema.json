@@ -127,21 +127,20 @@
           "hidden": true,
           "format": "file-path"
         },
-        "ice_db": {
-            "type": "string",
-            "default": "${projectDir}/ICE_db",
-            "description": "ICE database directory",
-            "format": "file-path"
-        },
         "rgi_include_nudge": {
           "type": "boolean",
           "default": true,
-          "description": "include hits nudged from loose to strict hits"
+          "description": "include hits nudged from loose to strict hits in the rgi output"
         },
         "ice_avg_size": {
           "type": "integer",
           "default": 0,
           "description": "ICE average size"
+        },
+        "compositeIS_size": {
+          "type": "integer",
+          "default": 0,
+          "description": "CompositeIS average size"
         }
       }
     },
