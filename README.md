@@ -138,37 +138,39 @@ All other parameters — such as computing resources, input/output paths, and so
 
 Decritption of all parameters: 
 ```
-#Required inputs
-  --output_dir        [string] Output directory for the pipeline
-  --index_file        [string] The absolute path of the index file that contains estimated chomosome length for each isolate. If set to null, it will be estimated automatically and long
-read assembly will be performed.
+--help                           [boolean, string] Show the help message for all top level parameters. When a parameter is given to `--help`, the full help message of that parameter will be printed. 
+--helpFull                       [boolean]         Show the help message for all non-hidden parameters. 
+--showHidden                     [boolean]         Show all hidden parameters in the help message. This needs to be used in combination with `--help` or `--helpFull`. 
 
-#Quality control assessment
-  --trim_end_size     [integer] Number of bases to remove at each end of the read [default: 0]
-  --quality_trim      [integer] Parameter can be used to trim low-quality ends from reads. [default: 20]
+##Required inputs
+  --output_dir                   [string] Output directory for the pipeline [default: resmobilys_output] 
+  --index_file                   [string] The absolute path of the index file that contains estimated chomosome length for each isolate. If set to null, it will be estimated automatically and long read assembly will be performed. 
 
-#Hybracter parameters
-  --read_min_length   [integer] Minimum read length [default: 1000]
-  --medaka            [boolean] Run medaka [default: true]
-  --flyeModel         [string]  Flye assembly model  (accepted: --nano-hq, --nano-corr, --nano-raw, --pacbio-raw, --pacbio-corr, --pacbio-hifi)
+##Quality control assessment
+  --trim_end_size                [integer] Number of bases to remove at each end of the read [default: 0] 
+  --quality_trim                 [integer] Parameter can be used to trim low-quality ends from reads. [default: 20] 
+  --lineage_db                   [string]  Lineage database for busco. See https://busco.ezlab.org/list_of_lineages.html for a list of available lineage databases. [default: bacteria_odb10] 
 
-#Tools parameters
-  --plasmid           [string]  Plasmid prediction tool  (accepted: plasme, platon) [default: plasme]
-  --plasme_db         [string]  Plasme database directory [default: ${projectDir}/plasme_db]
-  --platon_db         [string]  platon database directory [default: ${projectDir}/platon_db]
-  --kraken_index      [string]  kraken index directory, by default it will download the smaller index capped at 8 gb [default:
-https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20240904.tar.gz]
-  --kraken_db         [string]  kraken database directory
-  --kraken_taxonomy   [boolean] Enable kraken taxonomy [default: true]
-  --vf_db             [string]  VF database directory [default: ${projectDir}/vf_db]
-  --rgi_include_nudge [boolean] include hits nudged from loose to strict hits [default: false]
+##Hybracter parameters
+  --read_min_length              [integer] Minimum read length [default: 1000] 
+  --medaka                       [boolean] Run medaka [default: true] 
+  --flyeModel                    [string]  Flye assembly model  (accepted: --nano-hq, --nano-corr, --nano-raw, --pacbio-raw, --pacbio-corr, --pacbio-hifi) [default: --nano-hq] 
 
-#blastn parameters
-  --ice_db            [string]  ICE database directory [default: ${projectDir}/ICE_db]
-  --evalue_vf         [number]  E-value cutoff for VF detection [default: 1E-10]
-  --pident_vf         [integer] Percent identity cutoff for VF detection [default: 80]
-  --pident_ice        [integer] Percent identity cutoff for ICE detection [default: 80]
-  --evalue_ice        [number]  E-value cutoff for ICE detection (scientific notation) [default: 1E-10]
+##Tools parameters
+  --plasmid                      [string]  Plasmid prediction tool  (accepted: plasme, platon) [default: plasme] 
+  --plasme_db                    [string]  Plasme database directory [default: ${projectDir}/plasme_db] 
+  --platon_db                    [string]  platon database directory [default: ${projectDir}/platon_db] 
+  --kraken_index                 [string]  kraken index directory, by default it will download the smaller index capped at 8 gb [default: https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08gb_20240904.tar.gz] 
+  --kraken_db                    [string]  kraken database directory 
+  --kraken_taxonomy              [boolean] Enable kraken taxonomy [default: true] 
+  --vf_db                        [string]  VF database directory [default: ${projectDir}/vf_db] 
+  --rgi_include_nudge            [boolean] include hits nudged from loose to strict hits in the rgi output [default: true] 
+  --ice_avg_size                 [integer] ICE average size [default: 0] 
+  --compositeIS_size             [integer] CompositeIS average size [default: 0] 
+
+##blastn parameters
+  --evalue_vf                    [number]  E-value cutoff for VF detection [default: 1E-10] 
+  --pident_vf                    [integer] Percent identity cutoff for VF detection [default: 80] 
 
 ```
 
