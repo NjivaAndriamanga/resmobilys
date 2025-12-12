@@ -205,6 +205,7 @@ Publication in process...
 - IntegronFinder (Néron et al. 2022)
 - DBSCAN-SWA (Gan et al. 2022)
 - Mob-suite (Robertson et Nash 2018)
+- CONJScan (Cury et al. 2017)
 
 ## 🤝 Contributing and Support
 
