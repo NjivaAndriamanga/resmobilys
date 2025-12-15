@@ -1,4 +1,4 @@
 LR_fastq,chrm_size,SR1_fastq,SR2_fastq
-waterisk/test/17_01_bar09.fastq.gz,0
-waterisk/test/31_03_bar52.fastq.gz,0
-waterisk/test/NB10_LR.fastq.gz,1000000,waterisk/test/NB10_1.fastq.gz,waterisk/test/NB10_2.fastq.gz
+resmobilys/test/17_01_bar09.fastq.gz,0
+resmobilys/test/31_03_bar52.fastq.gz,0
+resmobilys/test/NB10_LR.fastq.gz,1000000,resmobilys/test/NB10_1.fastq.gz,resmobilys/test/NB10_2.fastq.gz
