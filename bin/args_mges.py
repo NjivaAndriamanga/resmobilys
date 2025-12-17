@@ -14,7 +14,7 @@ parser.add_argument("--integrons", required=True, help="Path to integrons input 
 parser.add_argument("--prophages", required=True, help="Path to prophages input file (GFF-like TSV)")
 parser.add_argument("--ices", required=True, help="Path to ICEs input file (GFF-like TSV)")
 parser.add_argument("--ises", required=True, help="Path to IS input file (GFF-like TSV)")
-parser.add_argument("composite_transposons", required=True, help="Maximum size of a composite transposon")
+parser.add_argument("--compositeIS_size", required=True, type=int, help="Maximum size of a composite transposon")
 args = parser.parse_args()
 
 # ----------------------------
@@ -128,7 +128,7 @@ with open(args.args) as f:
                     right = regions_sorted[i + 1]
 
                     distance = abs(right["start"] - left["end"])
-                    if distance > args.composite_transposons:
+                    if distance > args.compositeIS_size:
                         continue
 
                     # Check if ARG lies strictly inside the IS pair
