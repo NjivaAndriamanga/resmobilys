@@ -118,6 +118,8 @@ resmobilys/test/31_03_bar52.fastq.gz,0,,
 resmobilys/test/NB10_LR.fastq.gz,1000000,resmobilys/test/NB10_1.fastq.gz,resmobilys/test/NB10_2.fastq.gz
 ```
 
+Once the index_file.csv is ready, **modify the personal.config file** by adding the path to your index file in the index_file field.  
+  
 For your **first run**, it is recommended to use the provided **test dataset**.  
 During this initial execution, all required databases and environments (tools and dependencies) will be downloaded automatically.  
 This step may take several minutes depending on your internet connection.
