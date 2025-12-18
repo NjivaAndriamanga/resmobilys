@@ -175,7 +175,7 @@
         "max_cpus": {
           "type": "integer",
           "description": "Maximum number of CPUs that can be requested for any single job.",
-          "default": 2,
+          "default": 4,
           "fa_icon": "fas fa-microchip",
           "hidden": true,
           "help_text": "Use to set an upper-limit for the CPU requirement for each process. Should be an integer e.g. `--max_cpus 1`"
@@ -191,10 +191,10 @@
         "default_cpus": {
           "type": "integer",
           "description": "Defaul CPUs for any single job.",
-          "default": 8,
+          "default": 4,
           "fa_icon": "fas fa-microchip",
           "hidden": true,
-          "help_text": "Use to set a default CPUs requirement for each process. Should be a string e.g. `--default_cpus '1GB'`"
+          "help_text": "Use to set a default CPUs requirement for each process. Should be a string e.g. `--default_cpus '1'`"
         },
         "default_memory": {
           "type": "string",
@@ -202,7 +202,23 @@
           "default": "8GB",
           "fa_icon": "fas fa-microchip",
           "hidden": true,
-          "help_text": "Use to set a default CPUs requirement for each process. Should be a string e.g. `--default_cpus '1GB'`"
+          "help_text": "Use to set a default CPUs requirement for each process. Should be a string e.g. `--default_memory '1GB'`"
+        },
+        "process_high_cpus": {
+          "type": "integer",
+          "description": "Number of CPUs requested for any process high.",
+          "default": 4,
+          "fa_icon": "fas fa-microchip",
+          "hidden": true,
+          "help_text": "Use to set a CPUs requirement for process high. Should be a string e.g. `--default_cpus '1GB'`"
+        },
+        "process_high_memory": {
+          "type": "string",
+          "description": "Memory requested for any process high.",
+          "default": "8GB",
+          "fa_icon": "fas fa-microchip",
+          "hidden": true,
+          "help_text": "Use to set a memory requirement for process high. Should be a string e.g. `--default_cpus '1GB'`"
         }
       }
     },
