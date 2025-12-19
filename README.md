@@ -115,8 +115,8 @@ nextflow run resmobilys -profile test,singularity/apptainer/docker -resume
 
 ### 2️⃣ Run ResMobilYs on your own dataset  
 
-2.1 Prepare the **index_file.csv**  
-To analyze your own data, you must prepare an index_file.csv containing the input data and metadata for each sample.  
+**2.1 Prepare the index_file.csv** 
+To analyze your own data, you must prepare an <u>index_file.csv </u> containing the input data and metadata for each sample.  
 Each row corresponds to one sample.  
 
 An example file is available in the test/ directory.  
@@ -134,7 +134,7 @@ resmobilys/test/17_01_bar09.fastq.gz,0,,
 resmobilys/test/31_03_bar52.fastq.gz,0,,  
 resmobilys/test/NB10_LR.fastq.gz,1000000,resmobilys/test/NB10_1.fastq.gz,resmobilys/test/NB10_2.fastq.gz
 ```
-2.2 Configure the pipeline
+**2.2 Configure the pipeline**
 Once the index_file.csv is ready, **modify the personal.config file** by adding the path to your index file in the **index_file** field.
   
 ```bash
