@@ -185,13 +185,18 @@ Decritption of all parameters:
   --kraken_taxonomy              [boolean] Enable kraken taxonomy [default: true] 
   --vf_db                        [string]  VF database directory [default: ${projectDir}/vf_db] 
   --rgi_include_nudge            [boolean] include hits nudged from loose to strict hits in the rgi output [default: true] 
-  --ice_avg_size                 [integer] ICE average size [default: 0] 
-  --compositeIS_size             [integer] CompositeIS average size [default: 0] 
+  --ice_avg_size                 [integer] ICE average size in bp [default: 80000] 
+  --compositeIS_size             [integer] Distance between two identical IS to be considered as composite transposon in bp [default: 20000] 
 
 ##blastn parameters
   --evalue_vf                    [number]  E-value cutoff for VF detection [default: 1E-10] 
   --pident_vf                    [integer] Percent identity cutoff for VF detection [default: 80] 
 
+##Max job request options
+  --default_cpus                 [integer] Defaul CPUs for any single job. [default: 4] 
+  --default_memory               [string]  Defaul memory for any single job. [default: 8GB] 
+  --process_high_cpus            [integer] Number of CPUs requested for any process high. [default: 4] 
+  --process_high_memory          [string]  Memory requested for any process high. [default: 8GB] 
 ```
 
 ## Outputs
