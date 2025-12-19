@@ -134,13 +134,13 @@
         },
         "ice_avg_size": {
           "type": "integer",
-          "default": 0,
-          "description": "ICE average size"
+          "default": 80000,
+          "description": "ICE average size in bp"
         },
         "compositeIS_size": {
           "type": "integer",
-          "default": 0,
-          "description": "CompositeIS average size"
+          "default": 20000,
+          "description": "Distance between two identical IS to be considered as composite transposon in bp"
         }
       }
     },
