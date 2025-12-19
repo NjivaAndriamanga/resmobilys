@@ -150,7 +150,7 @@ You must select **one execution environment** and **one container engine**:
 ```bash
 
 # Run on your dataset
-nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c personal.config
+nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c resmobolys/personal.config
 
 ```
 
