@@ -101,10 +101,27 @@ unzip DB.zip
 
 ## 🚀 **Usage**
 
-Prepare an `index_file.csv` containing metadata for your samples.
-An example is available in **test/** directory.
-The index_file.csv defines the input data and metadata for each sample analyzed by ResMobiLys.
-Each line represents one sample and must include the following columns:
+### 1️⃣ Run ResMobilYs on the test dataset (recommended first)  
+
+For your **first execution**, we strongly recommend running ResMobilYs on the provided **test dataset**.  
+This allows you to verify that the pipeline is correctly installed and ensures that all required databases, tools, and environments are downloaded automatically.  
+  
+⚠️ The initial setup may take several minutes depending on your internet connection.  
+
+```bash
+# First run with test dataset
+nextflow run resmobilys -profile test,singularity/apptainer/docker -resume
+```
+
+### 2️⃣ Run ResMobilYs on your own dataset  
+
+2.1 Prepare the **index_file.csv**  
+To analyze your own data, you must prepare an index_file.csv containing the input data and metadata for each sample.  
+Each row corresponds to one sample.  
+
+An example file is available in the test/ directory.  
+
+The file must include the following columns:  
 - **LR_fastq**: Path to the long-read FASTQ file
 - **genome_size**: Estimated chromosome size in base pairs. If unknown, use 0.
 - **SR1** (optional): Path to the first short-read pair (R1). Leave empty if no short reads are available.
@@ -117,17 +134,10 @@ resmobilys/test/17_01_bar09.fastq.gz,0,,
 resmobilys/test/31_03_bar52.fastq.gz,0,,  
 resmobilys/test/NB10_LR.fastq.gz,1000000,resmobilys/test/NB10_1.fastq.gz,resmobilys/test/NB10_2.fastq.gz
 ```
-
-Once the index_file.csv is ready, **modify the personal.config file** by adding the path to your index file in the index_file field.  
+2.2 Configure the pipeline
+Once the index_file.csv is ready, **modify the personal.config file** by adding the path to your index file in the **index_file** field.
   
-For your **first run**, it is recommended to use the provided **test dataset**.  
-During this initial execution, all required databases and environments (tools and dependencies) will be downloaded automatically.  
-This step may take several minutes depending on your internet connection.
-
-Once the setup is complete, you can run the pipeline on your own dataset.  
 ```bash
-# First run with test dataset
-nextflow run resmobilys -profile test,singularity/apptainer/docker -resume
 
 # Run on your dataset
 nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c personal.config
@@ -175,9 +185,6 @@ Decritption of all parameters:
   --pident_vf                    [integer] Percent identity cutoff for VF detection [default: 80] 
 
 ```
-
-
-
 
 ## Outputs
 
