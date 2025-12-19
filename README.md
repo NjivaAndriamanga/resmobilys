@@ -83,7 +83,7 @@ git submodule update --init --recursive
 
 ## 📦 Database
 
-Most databases are already provided, but the **PLASMe** database must be downloaded manually.
+Most databases are downloaded automatically; however, the **PLASMe** database must be downloaded manually.
 
 1. Download the database from Zenodo:  
    👉 [Download PLASMe database](https://zenodo.org/record/8046934/files/DB.zip?download=1)
@@ -101,12 +101,12 @@ unzip DB.zip
 
 ## 🚀 **Usage**
 
-### 1️⃣ Run ResMobilYs on the test dataset (recommended first)  
+### 1️⃣ Run ResMobilYs on the test dataset  
 
 For your **first execution**, we strongly recommend running ResMobilYs on the provided **test dataset**.  
 This allows you to verify that the pipeline is correctly installed and ensures that all required databases, tools, and environments are downloaded automatically.  
   
-⚠️ The initial setup may take several minutes depending on your internet connection.  
+⚠️ The test run takes approximately 1 hour on a machine with 20 CPUs and 32 GB of RAM, with the most demanding processes using up to 8 CPUs and 16 GB of memory.  
 
 ```bash
 # First run with test dataset
@@ -134,9 +134,19 @@ resmobilys/test/17_01_bar09.fastq.gz,0,,
 resmobilys/test/31_03_bar52.fastq.gz,0,,  
 resmobilys/test/NB10_LR.fastq.gz,1000000,resmobilys/test/NB10_1.fastq.gz,resmobilys/test/NB10_2.fastq.gz
 ```
-**2.2 Configure the pipeline**  
-Once the index_file.csv is ready, **modify the personal.config file** by adding the path to your index file in the **index_file** field.
-  
+**2.2 Configure and run the pipeline**  
+Once the index_file.csv is ready, **edit the personal.config file** by adding the path to your index file in the **index_file** field.  
+To run ResMobilYs, only one parameter is mandatory: the path to the index_file.csv, provided either via the --index_file option or defined directly in the personal.config file. For other parameters, a default value will be assigned.  
+All other parameters—such as computing resources, input/output paths, and software options—can be customized in personal.config (see Configuration Options for details).  
+
+#### Execution profiles  
+You must select **one execution environment** and **one container engine**:
+- **Execution environment (choose one):**
+    . **local**: run the pipeline on a local workstation or server
+    . **slurm/PBS**: run the pipeline on an HPC cluster managed by SLURM/PBS
+- **Container engine**
+    . **docker/singularity/apptainer**: singularity and apptainer are recommended for HPC environments.
+
 ```bash
 
 # Run on your dataset
@@ -145,8 +155,6 @@ nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c pe
 ```
 
 ### **Configuration Options**
-To run ResMobiLys, you need one mandatory parameter: the path to your index_file.csv (as described above) with `--index_file` or in `personal.config` file.   
-All other parameters — such as computing resources, input/output paths, and software options — can be customized in the personal.config file.  
 
 Decritption of all parameters: 
 ```
