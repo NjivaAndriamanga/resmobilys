@@ -141,11 +141,11 @@ All other parameters—such as computing resources, input/output paths, and soft
 
 #### Execution profiles  
 You must select **one execution environment** and **one container engine**:
-- **Execution environment (choose one):**
-    . **local**: run the pipeline on a local workstation or server
-    . **slurm/PBS**: run the pipeline on an HPC cluster managed by SLURM/PBS
-- **Container engine**
-    . **docker/singularity/apptainer**: singularity and apptainer are recommended for HPC environments.
+- **Execution environment (choose one):**  
+    . **local**: run the pipeline on a local workstation or server  
+    . **slurm/PBS**: run the pipeline on an HPC cluster managed by SLURM/PBS  
+- **Container engine**  
+    . **docker/singularity/apptainer**: singularity and apptainer are recommended for HPC environments.  
 
 ```bash
 
