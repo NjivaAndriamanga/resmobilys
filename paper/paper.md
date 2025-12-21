@@ -1,5 +1,5 @@
 ---
-title: ‘ResMobiLys: a nextflow pipeline for Resistome and associated Mobilome anaLysis of field and clinical Eubacteria isolates’
+title: 'ResMobiLys: a nextflow pipeline for Resistome and associated Mobilome anaLysis of field and clinical Eubacteria isolates'
 
 tags:
     - Nextflow
@@ -55,7 +55,9 @@ The pipeline is implemented with Nextflow [@di_tommaso_nextflow_2017], which aut
 ### Input Data
 ResMobiLys accepts either long read data alone or a combination of long and short reads. Long-read sequencing enables more complete and less fragmented assemblies, substantially improving plasmid resolution.  
 ### Genome assembly
-Genome assembly is conducted with Hybracter [@bouras_hybracter_2024], which provides highly accurate bacterial genome assemblies and enables efficient plasmids recovery from de novo assemblies. Taxonomic classification is performed using Kraken2 [@wood_improved_2019]. Assembly quality is assessed using BUSCO [@manni_busco_2021].  
+Genome assembly is conducted with Hybracter [@bouras_hybracter_2024], which provides highly accurate bacterial genome assemblies and enables efficient plasmids recovery from de novo assemblies.  
+Taxonomic classification is performed using Kraken2 [@wood_improved_2019].  
+Assembly quality is assessed using BUSCO [@manni_busco_2021].  
 ### Antimicrobial Resistance, Virulence , and Metal Resistance  
 ARGs are detected using RGI with CARD database [@alcock_card_2023], which is well suited for environmental AMR surveillance [@papp_review_2022]. Resistance determinants for metals and biocides are identified with ABRicate using the MEGARes database [@bonin_megares_2023], and virulence factors are detected using VFDB [@dong_expanded_2024].
 ### Mobile Genetic Elements annotation 
@@ -73,3 +75,9 @@ At the global level, it generates:
 - A presence–absence matrix of ARGs across isolates, including genomic context and plasmid cluster information.
 - A list of ARG–MGE associations, highlighting genes located within mobile elements.
 - A plasmid cluster summary, grouping plasmids by sequence similarity and their associated ARGs.
+
+### Figures
+
+### Discussions
+
+### Aknowledgement
