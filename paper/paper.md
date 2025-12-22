@@ -46,7 +46,7 @@ Such analyses requires the integration of multiple specialized bioinformatics to
 Few bacterial genomics pipelines currently support comprehensive resistome or mobilome analysis. Existing tools include MobileElementFinder [@johansson_detection_2020], MGEfinder [@durrant_bioinformatic_2020], and Baargin [@hayer_baargin_2023]. MobileElementFinder relies on homology-based detection using curated MGE databases, limiting its applicability to less characterized species. MGEfinder is less dependent on genome annotations but is tailored for short-read sequencing and requires a suitable reference genome. Neither tool integrates ARGs detection nor supports comparative genome analysis. Baargin includes AMR detection and plasmid identification but is mainly oriented toward strain-level analyses rather than broader inter-species comparisons.   
 ResMobilYs fills these limitations by enabling plasmids recovery from long-read assemblies and identifying MGE while minimizing reliance on reference genomes. Its core components include (i) detection and annotation of ARGs, (ii) identification of MGEs combined with plasmid clustering and comparative analysis, and (iii) integration of MGE–AMR associations to characterize resistance dissemination. This design allows application across diverse bacterial taxa, including poorly characterized lineages, and provides a comprehensive framework for mobilome and resistome profiling.
 
-# Materials and methods
+# Workflow overview
 
 ## Features  
 The pipeline is implemented with Nextflow [@di_tommaso_nextflow_2017], which automates workflow execution and ensures reproductibility. It can run on a wide range of computing systems, including high-performance computing (HPC) clusters, and processes samples in parallel to efficiently handle large datasets. Containerized execution with Docker/Singularity/Apptainer ensures consistent software environments, making ResMobilYs portable and easy to deploy across diverse computational setups. Most required reference databases are downloaded automatically through a dedicated setup step integrated into the workflow. This ensures that users do not need to manually retrieve or configure the majority of external resources, simplifying installation and improving reproducibility across computing environments.
@@ -77,9 +77,12 @@ At the global level, it generates:
 - A plasmid cluster summary, grouping plasmids by sequence similarity and their associated ARGs.
 
 ### Figures
+![Figure 1](resmobilys_paper.png)
 
-### Discussions
+# Discussions
 ResMobiLys provides a comprehensive and scalable framework for mobilome and resistome analysis, with particular strengths in plasmid recovery, clustering, and comparative analysis across diverse bacterial taxa. However, accurate delimitation of some MGEs remains challenging, especially for elements with variable boundaries or complex architectures. As knowledge of MGEs continues to evolve, the modular Nextflow design of ResMobiLys facilitates straightforward integration of improved methods, ensuring long-term adaptability and relevance of the workflow.
 
-### Aknowledgement
+# Aknowledgement
 We are grateful to the genotoul bioinformatics platform Toulouse Occitanie (Bioinfo Genoutl, https://doi.org/10.15454/1.5572369328961167E12) for providing computing and storage ressources.
+
+# References
