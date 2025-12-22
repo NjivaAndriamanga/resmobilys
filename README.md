@@ -87,7 +87,7 @@ Most databases are downloaded automatically; however, the **PLASMe** database mu
 1. Download the database from Zenodo:  
    👉 [Download PLASMe database](https://zenodo.org/record/8046934/files/DB.zip?download=1)
 ```bash
-#Download and unzip plasme database
+#Download and unzip PLASMe database
 wget https://zenodo.org/record/8046934/files/DB.zip
 ```
 
@@ -164,20 +164,20 @@ nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c re
 
 ### **Configuration Options**
 
-Decritption of all parameters: 
+Description of all parameters: 
 ```
---help                           [boolean, string] Show the help message for all top level parameters. When a parameter is given to `--help`, the full help message of that parameter will be printed. 
+--help                           [boolean, string] Show the help message for all top-level parameters. When a parameter is given to `--help`, the full help message of that parameter will be printed. 
 --helpFull                       [boolean]         Show the help message for all non-hidden parameters. 
 --showHidden                     [boolean]         Show all hidden parameters in the help message. This needs to be used in combination with `--help` or `--helpFull`. 
 
 ##Required inputs
   --output_dir                   [string] Output directory for the pipeline [default: resmobilys_output] 
-  --index_file                   [string] The absolute path of the index file that contains estimated chomosome length for each isolate. If set to null, it will be estimated automatically and long read assembly will be performed. 
+  --index_file                   [string] The absolute path of the index file that contains estimated chromosome length for each isolate. If set to null, it will be estimated automatically and long read assembly will be performed. 
 
 ##Quality control assessment
   --trim_end_size                [integer] Number of bases to remove at each end of the read [default: 0] 
   --quality_trim                 [integer] Parameter can be used to trim low-quality ends from reads. [default: 20] 
-  --lineage_db                   [string]  Lineage database for busco. See https://busco.ezlab.org/list_of_lineages.html for a list of available lineage databases. [default: bacteria_odb10] 
+  --lineage_db                   [string]  Lineage database for BUSCO. See https://busco.ezlab.org/list_of_lineages.html for a list of available lineage databases. [default: bacteria_odb10] 
 
 ##Hybracter parameters
   --read_min_length              [integer] Minimum read length [default: 1000] 
@@ -201,8 +201,8 @@ Decritption of all parameters:
   --pident_vf                    [integer] Percent identity cutoff for VF detection [default: 80] 
 
 ##Max job request options
-  --default_cpus                 [integer] Defaul CPUs for any single job. [default: 4] 
-  --default_memory               [string]  Defaul memory for any single job. [default: 8GB] 
+  --default_cpus                 [integer] Default CPUs for any single job. [default: 4] 
+  --default_memory               [string]  Default memory for any single job. [default: 8GB] 
   --process_high_cpus            [integer] Number of CPUs requested for any process high. [default: 4] 
   --process_high_memory          [string]  Memory requested for any process high. [default: 8GB] 
 ```
@@ -217,7 +217,7 @@ Upon successful execution, **ResMobiLys** generates the following in the `resmob
 - `presence_absence_with_clusters.tsv`  
 
 ### 2. Intermediate/tool-specific outputs
-These files can be used for further analyses, allowing exploration of results from each individual tool.
+These files can be used for further analyses, allowing exploration of results from each tool.
 
 ## **Citation**
 If you use ResMobiLys in your research, please cite it as follows:
@@ -239,7 +239,7 @@ Publication in process...
 
 ## 🤝 Contributing and Support
 
-We welcome community involvement to improve and extend the **ResMobiLys pipeline**.  
+We welcome community involvement to improve and extend the **ResMobilYys pipeline**.  
 Please follow the guidelines below if you wish to contribute, report issues, or request support.
 
 ---
