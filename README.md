@@ -101,16 +101,24 @@ unzip DB.zip
 
 ## 🚀 **Usage**
 
-### 1️⃣ Run ResMobilYs on the test dataset  
+### 1️⃣ Execution profiles  
+You must select **one execution environment** and **one container engine**:
+- **Execution environment (choose one):**  
+    . **local**: run the pipeline on a local workstation or server
+    . **test**: run the pipeline on a local workstation or server with the test dataset  
+    . **slurm/PBS**: run the pipeline on an HPC cluster managed by SLURM/PBS  
+- **Container engine**  
+    . **docker/singularity/apptainer**: singularity and apptainer are recommended for HPC environments.  
 
-For your **first execution**, we strongly recommend running ResMobilYs on the provided **test dataset**.  
+### 2️⃣ Run ResMobilYs on the test dataset  
+  
 This allows you to verify that the pipeline is correctly installed and ensures that all required databases, tools, and environments are downloaded automatically.  
   
 ⚠️ The test run takes approximately 1 hour on a machine with 20 CPUs and 32 GB of RAM, with the most demanding processes using up to 8 CPUs and 16 GB of memory.  
 
 **Download the test dataset**  
 The test dataset is hosted on zenodo [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18018250.svg)](https://doi.org/10.5281/zenodo.18018250)  
-Create the test directory inside the ResMobiLys repository, then download and unzip the test dataset
+Create the **test** directory inside the ResMobiLys repository, then download and unzip the test dataset
 
 ```bash
 mkdir -p test
@@ -122,7 +130,7 @@ unzip test_data.zip
 nextflow run resmobilys -profile test,singularity/apptainer/docker -resume
 ```
 
-### 2️⃣ Run ResMobilYs on your own dataset  
+### 3️⃣ Run ResMobilYs on your own dataset  
 
 **2.1 Prepare the index_file.csv**  
 To analyze your own data, you must prepare an index_file.csv containing the input data and metadata for each sample.  
@@ -148,18 +156,10 @@ Once the index_file.csv is ready, **edit the personal.config file** by adding th
 To run ResMobilYs, only one parameter is mandatory: the path to the index_file.csv, provided either via the --index_file option or defined directly in the personal.config file. For other parameters, a default value will be assigned.  
 All other parameters—such as computing resources, input/output paths, and software options—can be customized in personal.config (see Configuration Options for details).  
 
-#### Execution profiles  
-You must select **one execution environment** and **one container engine**:
-- **Execution environment (choose one):**  
-    . **local**: run the pipeline on a local workstation or server  
-    . **slurm/PBS**: run the pipeline on an HPC cluster managed by SLURM/PBS  
-- **Container engine**  
-    . **docker/singularity/apptainer**: singularity and apptainer are recommended for HPC environments.  
-
 ```bash
 
 # Run on your dataset
-nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c resmobolys/personal.config
+nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c resmobilys/personal.config
 
 ```
 
