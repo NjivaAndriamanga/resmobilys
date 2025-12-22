@@ -20,8 +20,7 @@ ResMobilYs is a Nextflow pipeline designed for comprehensive mobilome and resist
     
 ## 🧬 Output
 
-- **Table associating species with MGEs and resistance genes**  
-  Presence–absence matrix showing antimicrobial resistance genes (ARGs) across samples.  
+- **Presence–absence matrix showing antimicrobial resistance genes (ARGs) across samples**  
   Each gene is marked according to its genomic location (chromosome or plasmid) and includes plasmid cluster information when available.
 
 | Sample  | soxR | FosA2 | TEM-1 |
@@ -41,7 +40,7 @@ ResMobilYs is a Nextflow pipeline designed for comprehensive mobilome and resist
 | sample1 | Plasmid2      | ....    | TEM-1 | Integron1 |
 
 
-- **Detailed list of plasmids and clusters**
+- **Detailed list of plasmids and clusters**  
 Summary table of plasmids with their cluster IDs and associated ARGs, providing an overview of plasmid diversity and possible roles in resistance gene dissemination.
 
 | Sample  | Plasmid      | Cluster | ARGs         |
@@ -214,7 +213,7 @@ Upon successful execution, **ResMobiLys** generates the following in the `resmob
 ### 1. Final output files
 - `args_mges.tsv`: table listing resistance genes and their MGE associations in each sample  
 - `merged_plasmid_table.tsv`: detailed list of plasmids and clusters  
-- `presence_absence_with_clusters.tsv`: table associating species with plasmids and resistance genes  
+- `presence_absence_with_clusters.tsv`: presence–absence matrix showing antimicrobial resistance genes (ARGs) across samples
 
 ### 2. Intermediate/tool-specific outputs
 These files can be used for further analysis, allowing for the exploration of results from each tool.
