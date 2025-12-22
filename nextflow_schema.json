@@ -89,6 +89,11 @@
           "description": "Plasmid prediction tool",
           "enum": ["plasme","platon"]
         },
+        "min_plasmid_length": {
+          "type": "integer",
+          "default": 1000,
+          "description": "Minimum plasmid length"
+        },
         "plasme_db": {
           "type": "string",
           "default": "${projectDir}/plasme_db",

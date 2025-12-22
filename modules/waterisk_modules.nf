@@ -282,7 +282,8 @@ process FILTER_CIRCULAR_PLASMID {
     seqkit grep -f hybracter_circular_plasmid.txt ${putative_plasmid} -o ${barID}_plasmid.fasta
 
     awk '\$5 == "False" && \$2 == "plasmid" { print \$1 }' ${tab_file} > hybracter_non_circular_plasmid.txt
-    seqkit grep -f hybracter_non_circular_plasmid.txt ${putative_plasmid} -o ${barID}_putative_plasmid.fasta
+    seqkit grep -f hybracter_non_circular_plasmid.txt ${putative_plasmid} -o putative_plasmid.fasta
+    seqkit seq -m ${params.min_plasmid_length} putative_plasmid.fasta -o ${barID}_putative_plasmid.fasta
     """    
 }
 
