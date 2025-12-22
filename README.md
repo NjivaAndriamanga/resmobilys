@@ -1,11 +1,10 @@
 
 # **ResMobiLys: A Nextflow Pipeline for Resistome and Mobilome Analysis of Field and Clinical Eubacteria Isolates**
 
-## **Introduction**
 Mobile Genetic Elements (MGEs) are DNA segments capable of moving within or between genomes, facilitating the transfer of genetic material across microbial populations. MGEs play a key role in microbial ecology by spreading genes linked to antimicrobial resistance (AMR), which poses significant public health challenges. Advances in high-throughput sequencing technologies allow large-scale studies of diverse bacterial genomes from various origins, generating vast data volumes that require efficient and integrated analysis.
 
 ## **Purpose**
-ResMobiLys is a Nextflow pipeline designed for comprehensive mobilome and resistome analysis. It provides an end-to-end solution, from de novo assembly to precise identification of MGEs such as plasmids, integrons, prophages, and transposable elements. It also detects Antibiotic Resistance Genes (ARGs) and virulence factors, whether associated with MGEs or not, enabling streamlined and detailed genomic feature analysis.
+ResMobilYs is a Nextflow pipeline designed for comprehensive mobilome and resistome analysis. It provides an end-to-end solution, from de novo assembly to precise identification of MGEs such as plasmids, integrons, prophages, integrative and conjugative elements and transposable elements. It also detects Antibiotic Resistance Genes (ARGs) and virulence factors, whether associated with MGEs or not, enabling streamlined and detailed genomic feature analysis.
 
 ## **Features**
 - **Input:**
@@ -104,7 +103,7 @@ unzip DB.zip
 ### 1️⃣ Execution profiles  
 You must select **one execution environment** and **one container engine**:
 - **Execution environment (choose one):**  
-    . **local**: run the pipeline on a local workstation or server
+    . **local**: run the pipeline on a local workstation or server  
     . **test**: run the pipeline on a local workstation or server with the test dataset  
     . **slurm/PBS**: run the pipeline on an HPC cluster managed by SLURM/PBS  
 - **Container engine**  
@@ -226,7 +225,7 @@ If you use ResMobiLys in your research, please cite it as follows:
 Publication in process...
 
  ResMobilYs integrates the following tools and databases :
-- Hybracter (Bouras et al. 2024)
+- Hybracter (Bouras et al. 2024) 
 - Kraken2 (Wood, Lu, et Langmead 2019)
 - Busco (Manni et al. 2021)
 - Abricate (https://github.com/tseemann/abricate)
@@ -247,7 +246,7 @@ Please follow the guidelines below if you wish to contribute, report issues, or 
 
 ### 🧩 Contributing
 
-Contributions are encouraged and greatly appreciated!  
+Contributions are greatly appreciated!  
 To contribute:
 
 1. **Fork** the repository on GitHub.  
