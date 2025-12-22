@@ -37,6 +37,7 @@ bibliography: paper.bib
 # Summary  
 Mobile Genetic Elements (MGEs) are DNA segments that can move within or between genomes, enabling the transfer of genetic material between cells of the same or different species. MGEs play a crucial role in microbial ecology by facilitating the spread of genes with diverse functions across microbial populations [@ranking_what_2011]. Among them, antimicrobial resistance (AMR) genes represent a major public health concern. A recent global study estimated that in 2019, approximately 5 million deaths were associated with AMR [@murray_global_2022]. Projections suggest that this could rise to 10 million deaths by 2050 [@thompson_staggering_2022]. Besides AMR, MGEs also carry virulence factors (VFs) and heavy metal resistance genes, which enhance bacterial pathogenicity and environmental adaptation [@morales_role_2023].
 Advances in high-throughput sequencing now enable large-scale sequencing of diverse bacterial isolates from human, animal, and environment sources, generating large datasets that require automated and integrated analyses to produce interpretable outputs.  
+
 For this purpose, we developed ResMobilYs, an end-to-end Nextflow workflow (https://github.com/NjivaAndriamanga/resmobilys) that performs de novo assembly and identifies MGEs, including plasmids, integrons, prophages, integrative and conjugative elements (ICEs), and transposable elements. ResMobilYs integrates tools designated to operate across the wide diversity of bacterial taxa and simultaneously detects antibiotic resistance genes (ARGs), virulence factor, and heavy metal resistance genes, providing an integrated analysis of the mobilome and associated resistome in field and clinical Eubacteria isolates.
 
 # Statement of need  
@@ -76,8 +77,7 @@ At the global level, it generates:
 - A list of ARG–MGE associations, highlighting genes located within mobile elements.
 - A plasmid cluster summary, grouping plasmids by sequence similarity and their associated ARGs.
 
-### Figures
-![Figure 1](resmobilys_paper.png)
+![**Figure 1:** Overview of ResMobilYs pipeline ](resmobilys_paper.png)
 
 # Discussions
 ResMobiLys provides a comprehensive and scalable framework for mobilome and resistome analysis, with particular strengths in plasmid recovery, clustering, and comparative analysis across diverse bacterial taxa. However, accurate delimitation of some MGEs remains challenging, especially for elements with variable boundaries or complex architectures. As knowledge of MGEs continues to evolve, the modular Nextflow design of ResMobiLys facilitates straightforward integration of improved methods, ensuring long-term adaptability and relevance of the workflow.
