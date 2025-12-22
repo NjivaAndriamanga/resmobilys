@@ -64,8 +64,8 @@ ARGs are detected using RGI with CARD database [@alcock_card_2023], which is wel
 An estimated chromosome size can be provided or inferred automatically with Hybracter. Small circular contigs below this threshold are classified as plasmids [@bouras_hybracter_2024], while small linear contigs are further analyzed using PLASMe [@tang_plasme_2023] or PLATON [@schwengers_platon_2020].These tools use hybrid approaches combining sequence similarity with additional features or models, enabling accurate discrimination between plasmidic and chromosomal contigs and detection of highly divergent plasmids without relying on classical markers such as replicons or relaxases.  
 Plasmid typing and clustering are performed with MOB-suite [@robertson_mob-suite_2018], with MOB-typer for plasmid typing and MOB-cluster to identify similar plasmids across isolates based on complete sequence comparisons.  
 Integrons are detected using IntegronFinder  [@neron_integronfinder_2022], which detects integrase using HMM profiles, predicts attC sites with sequence and structural motifs.  
-ICEs are annotated using the CONJScan module of MacSyFinder [@cury_integrative_2017].  
-Insertion sequences (ISs) are identified with ISEScan [@xie_isescan_2017].  
+ICEs are annotated using the CONJScan module of MacSyFinder [@cury_integrative_2017] and are delimited based on user-defined size thresholds.  
+Insertion sequences (ISs) are identified with ISEScan [@xie_isescan_2017]. Composite transposons and transposons flanked by insertion sequences are identified using user-defined distance thresholds between IS elements.  
 Prophages are predicted with DBSCAN-SWA [@gan_dbscan-swa_2022].  
 By prioritizing approaches that operate beyond direct pairwise homology, the workflow enhances the detection of novel MGEs and expand mobilome exploration to uncharacterized elements.  
 ### Output
@@ -79,5 +79,7 @@ At the global level, it generates:
 ### Figures
 
 ### Discussions
+ResMobiLys provides a comprehensive and scalable framework for mobilome and resistome analysis, with particular strengths in plasmid recovery, clustering, and comparative analysis across diverse bacterial taxa. However, accurate delimitation of some MGEs remains challenging, especially for elements with variable boundaries or complex architectures. As knowledge of MGEs continues to evolve, the modular Nextflow design of ResMobiLys facilitates straightforward integration of improved methods, ensuring long-term adaptability and relevance of the workflow.
 
 ### Aknowledgement
+We are grateful to the genotoul bioinformatics platform Toulouse Occitanie (Bioinfo Genoutl, https://doi.org/10.15454/1.5572369328961167E12) for providing computing and storage ressources.
