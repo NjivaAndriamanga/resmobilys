@@ -212,12 +212,12 @@ Description of all parameters:
 Upon successful execution, **ResMobiLys** generates the following in the `resmobylis_output` directory:
 
 ### 1. Final output files
-- `args_mges.tsv`  
-- `merged_plasmid_table.tsv`  
-- `presence_absence_with_clusters.tsv`  
+- `args_mges.tsv`: table listing resistance genes and their MGE associations in each sample  
+- `merged_plasmid_table.tsv`: detailed list of plasmids and clusters  
+- `presence_absence_with_clusters.tsv`: table associating species with plasmids and resistance genes  
 
 ### 2. Intermediate/tool-specific outputs
-These files can be used for further analyses, allowing exploration of results from each tool.
+These files can be used for further analysis, allowing for the exploration of results from each tool.
 
 ## **Citation**
 If you use ResMobiLys in your research, please cite it as follows:
