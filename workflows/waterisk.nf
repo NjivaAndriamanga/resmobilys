@@ -118,8 +118,6 @@ include { DELIMIT_ICE }                     from '../modules/waterisk_modules.nf
 workflow RESMOBILYS {
 
     //download tools and databases
-    CHECK_PLASME_DATABASE().view()
-    DOWNLOAD_PLATON_DATABASE().view()
     DOWNLOAD_VF_DATABASE().view()
     PREPROCESSING_DBSCANDB_CHMOD().view()
     DOWNLOAD_RGI_DATABASE()
@@ -161,6 +159,7 @@ workflow RESMOBILYS {
     FILTER_CIRCULAR_PLASMID(putitative_plasmid_ch)
 
     if(params.plasmid == "plasme") {
+        CHECK_PLASME_DATABASE().view()
         PLASME_COMPLETE(FILTER_CIRCULAR_PLASMID.out, CHECK_PLASME_DATABASE.out)
         plasme_complete_chrm_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, chromosome, "chromosome"]}
         plasme_complete_plasmid_ch = PLASME_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, plasmid, "plasmid"]}
@@ -168,19 +167,18 @@ workflow RESMOBILYS {
         //For incomplete assembly, use plasme to infer chrm and plasmid contig
         PLASME(incomplete_assembly_ch, CHECK_PLASME_DATABASE.out)
 
-        //AMR detection
         chrm_amr_ch = complete_circular_chrm_ch.concat(plasme_complete_chrm_ch).concat(PLASME.out.inferred_chrm)
         plasmid_amr_ch = complete_circular_plasmid_ch.concat(plasme_complete_plasmid_ch).concat(PLASME.out.inferred_plasmid)
     }
     if(params.plasmid == "platon") {
-        PLATON_COMPLETE(FILTER_CIRCULAR_PLASMID.out, CHECK_PLATON_DATABASE.out)
+        DOWNLOAD_PLATON_DATABASE().view()
+        PLATON_COMPLETE(FILTER_CIRCULAR_PLASMID.out, DOWNLOAD_PLATON_DATABASE.out)
         platon_complete_chrm_ch = PLATON_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, chromosome, "chromosome"]}
         platon_complete_plasmid_ch = PLATON_COMPLETE.out.map{ barID, chromosome, plasmid -> [barID, plasmid, "plasmid"]}
         
         //For incomplete assembly, use plasme to infer chrm and plasmid contig
         PLATON(incomplete_assembly_ch, DOWNLOAD_PLATON_DATABASE.out)
         
-        //AMR detection
         chrm_amr_ch = complete_circular_chrm_ch.concat(platon_complete_chrm_ch).concat(PLATON.out.inferred_chrm)
         plasmid_amr_ch = complete_circular_plasmid_ch.concat(platon_complete_plasmid_ch).concat(PLATON.out.inferred_plasmid)
     }

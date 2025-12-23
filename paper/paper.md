@@ -76,9 +76,9 @@ By prioritizing approaches that operate beyond direct pairwise homology, the wor
 ### Output
 ResMobiLys produces both isolate-specific and global results, summarizing antimicrobial resistance and mobility features.
 At the isolate level, the pipeline identifies ARGs, their genomic locations (chromosomal or plasmid), and associated MGEs while retaining individual outputs from each integrated tool for further downstream analyses.
-At the global level, it generates:
-- A presence–absence matrix of ARGs across isolates, including genomic context and plasmid cluster information.
-- A list of ARG–MGE associations, highlighting genes located within mobile elements.
+At the global level, it generates:  
+- A presence–absence matrix of ARGs across isolates, including genomic context and plasmid cluster information.  
+- A list of ARG–MGE associations, highlighting genes located within mobile elements.  
 - A plasmid cluster summary, grouping plasmids by sequence similarity and their associated ARGs.
 
 ![ Overview of ResMobilYs pipeline ](resmobilys_paper.png)
