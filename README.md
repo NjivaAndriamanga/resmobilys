@@ -115,7 +115,7 @@ This allows you to verify that the pipeline is correctly installed and ensures t
 ⚠️ The test run takes approximately 1 hour on a machine with 20 CPUs and 32 GB of RAM, with the most demanding processes using up to 8 CPUs and 16 GB of memory.  
 
 **Download the test dataset**  
-The test dataset is hosted on zenodo [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18018250.svg)](https://doi.org/10.5281/zenodo.18018250)  
+The test dataset is hosted on zenodo [![DOI](https://zenodo.org/api/records/18034584/files-archive)]  
 Create the **test** directory inside the ResMobiLys repository, then download and unzip the test dataset
 
 ```bash
