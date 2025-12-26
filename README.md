@@ -2,16 +2,16 @@
 # **ResMobiLys: A Nextflow Pipeline for Resistome and Mobilome Analysis of Field and Clinical Eubacteria Isolates**  
 ResMobilYs is a Nextflow pipeline designed for comprehensive mobilome and resistome analysis. It provides an end-to-end solution, from de novo assembly to precise identification of MGEs such as plasmids, integrons, prophages, integrative and conjugative elements and transposable elements. It also detects Antibiotic Resistance Genes (ARGs) and virulence factors, whether associated with MGEs or not, enabling streamlined and detailed genomic feature analysis.
 
-## **Features**
-- **Input:**
-  - Mandatory: Long-read FASTQ files
-  - Optional: Short-read FASTQ files
-- **Workflow Overview:**
-  - De novo assembly with Hybacter
-  - Taxonomy assignment with Kraken2
+**Workflow Overview:**
+  - De novo assembly
   - Identification of antimicrobial resistance genes (ARGs) with RGI/CARD, biocide and heavy metal resistance genes, and virulence factors
   - Identification of MGEs (plasmids, transposable elements, integrons, prophages)
   - Detection of similar plasmids
+  - MGEs and ARGs associations
+
+## Input
+  - **Mandatory**: Long-read FASTQ files
+  - Optional: Short-read FASTQ files
     
 ## 🧬 Output
 
