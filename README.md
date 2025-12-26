@@ -1,9 +1,5 @@
 
-# **ResMobiLys: A Nextflow Pipeline for Resistome and Mobilome Analysis of Field and Clinical Eubacteria Isolates**
-
-Mobile Genetic Elements (MGEs) are DNA segments capable of moving within or between genomes, facilitating the transfer of genetic material across microbial populations. MGEs play a key role in microbial ecology by spreading genes linked to antimicrobial resistance (AMR), which poses significant public health challenges. Advances in high-throughput sequencing technologies allow large-scale studies of diverse bacterial genomes from various origins, generating vast data volumes that require efficient and integrated analysis.
-
-## **Purpose**
+# **ResMobiLys: A Nextflow Pipeline for Resistome and Mobilome Analysis of Field and Clinical Eubacteria Isolates**  
 ResMobilYs is a Nextflow pipeline designed for comprehensive mobilome and resistome analysis. It provides an end-to-end solution, from de novo assembly to precise identification of MGEs such as plasmids, integrons, prophages, integrative and conjugative elements and transposable elements. It also detects Antibiotic Resistance Genes (ARGs) and virulence factors, whether associated with MGEs or not, enabling streamlined and detailed genomic feature analysis.
 
 ## **Features**
@@ -13,7 +9,6 @@ ResMobilYs is a Nextflow pipeline designed for comprehensive mobilome and resist
 - **Workflow Overview:**
   - De novo assembly with Hybacter
   - Taxonomy assignment with Kraken2
-  - Assembly assessment with busco
   - Identification of antimicrobial resistance genes (ARGs) with RGI/CARD, biocide and heavy metal resistance genes, and virulence factors
   - Identification of MGEs (plasmids, transposable elements, integrons, prophages)
   - Detection of similar plasmids
@@ -21,7 +16,7 @@ ResMobilYs is a Nextflow pipeline designed for comprehensive mobilome and resist
 ## 🧬 Output
 
 - **Presence–absence matrix showing antimicrobial resistance genes (ARGs) across samples**  
-  Each gene is marked according to its genomic location (chromosome or plasmid) and includes plasmid cluster information when available.
+  Each gene is marked according to its genomic location (chromosome or plasmid) and includes plasmid cluster information.  
 
 | Sample  | soxR | FosA2 | TEM-1 |
 |----------|------|-------|-------|
@@ -68,7 +63,7 @@ Install Nextflow by following the instructions [here](https://www.nextflow.io/do
 - To install **Apptainer/Singularity**, follow the guide [here](https://apptainer.org/docs/admin/main/installation.html)
 - To install **Docker**, follow the guide [here](https://www.docker.com/get-started/)
 
-### ✅ Clone the ResMobiLys Repository and submodule
+### ✅ Clone the ResMobiLys repository and submodule
 
 To install **git** : [here](https://git-scm.com/install)  
 Then, clone ResMobiLys repository:
@@ -90,12 +85,11 @@ Most databases are downloaded automatically; however, the **PLASMe** database mu
 wget https://zenodo.org/record/8046934/files/DB.zip
 ```
 
-2. Move and unzip the database inside the `ResMobiLys` directory
+2. Move and unzip the database inside the `ResMobiLys` directory and unzip
 ```bash
 export UNZIP_DISABLE_ZIPBOMB_DETECTION=TRUE
 unzip DB.zip
 ```
-
 
 ## 🚀 **Usage**
 
@@ -108,8 +102,7 @@ You must select **one execution environment** and **one container engine**:
 - **Container engine**  
     . **docker/singularity/apptainer**: singularity and apptainer are recommended for HPC environments.  
 
-### 2️⃣ Run ResMobilYs on the test dataset  
-  
+### 2️⃣ Run ResMobilYs on the test dataset   
 This allows you to verify that the pipeline is correctly installed and ensures that all required databases, tools, and environments are downloaded automatically.  
   
 ⚠️ The test run takes approximately 1 hour on a machine with 20 CPUs and 32 GB of RAM, with the most demanding processes using up to 8 CPUs and 16 GB of memory.  
@@ -155,14 +148,11 @@ To run ResMobilYs, only one parameter is mandatory: the path to the index_file.c
 All other parameters—such as computing resources, input/output paths, and software options—can be customized in personal.config (see Configuration Options for details).  
 
 ```bash
-
 # Run on your dataset
 nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c resmobilys/personal.config
-
 ```
 
 ### **Configuration Options**
-
 Description of all parameters: 
 ```
 --help                           [boolean, string] Show the help message for all top-level parameters. When a parameter is given to `--help`, the full help message of that parameter will be printed. 
@@ -219,7 +209,7 @@ Upon successful execution, **ResMobiLys** generates the following in the `resmob
 These files can be used for further analysis, allowing for the exploration of results from each tool.
 
 ## **Citation**
-If you use ResMobiLys in your research, please cite it as follows:
+If you use ResMobilYs in your research, please cite it as follows:
 
 Publication in process...
 
