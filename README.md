@@ -63,10 +63,10 @@ Install Nextflow by following the instructions [here](https://www.nextflow.io/do
 - To install **Apptainer/Singularity**, follow the guide [here](https://apptainer.org/docs/admin/main/installation.html)
 - To install **Docker**, follow the guide [here](https://www.docker.com/get-started/)
 
-### ✅ Clone the ResMobiLys repository and submodule
+### ✅ Clone the ResMobilYs repository and submodule
 
 To install **git** : [here](https://git-scm.com/install)  
-Then, clone ResMobiLys repository:
+Then, clone ResMobilYs repository:
 ```bash
 # Clone the project repository
 git clone https://github.com/NjivaAndriamanga/resmobilys.git
@@ -85,7 +85,7 @@ Most databases are downloaded automatically; however, the **PLASMe** database mu
 wget https://zenodo.org/record/8046934/files/DB.zip
 ```
 
-2. Move and unzip the database inside the `ResMobiLys` directory and unzip
+2. Move and unzip the database inside the `ResMobilYs` directory and unzip
 ```bash
 export UNZIP_DISABLE_ZIPBOMB_DETECTION=TRUE
 unzip DB.zip
@@ -109,7 +109,7 @@ This allows you to verify that the pipeline is correctly installed and ensures t
 
 **Download the test dataset**  
 The test dataset is hosted on zenodo [![DOI](https://zenodo.org/api/records/18034584/files-archive)]  
-Create the **test** directory inside the ResMobiLys repository, then download and unzip the test dataset
+Create the **test** directory inside the ResMobilYs repository, then download and unzip the test dataset
 
 ```bash
 mkdir -p test
@@ -198,7 +198,7 @@ Description of all parameters:
 
 ## Outputs
 
-Upon successful execution, **ResMobiLys** generates the following in the `resmobylis_output` directory:
+Upon successful execution, **ResMobilYs** generates the following in the `resmobylis_output` directory:
 
 ### 1. Final output files
 - `args_mges.tsv`: table listing resistance genes and their MGE associations in each sample  
