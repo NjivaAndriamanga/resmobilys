@@ -9,16 +9,16 @@ process CHECK_PLASME_DATABASE {
 
     script:
     
-    log.info "Downloading plasme database..."
+    log.info "Checking plasme database..."
     """
     cd ${projectDir}
-    if [ ! -d DB ]; then 
-        echo " ERROR: 'DB' directory not found in ${projectDir}!"
-        echo "Please download the plasme database before running this workflow."
+    if [ ! -d ${plasme_db} ]; then 
+        echo " ERROR: PLASMe db directory not found in ${projectDir}!"
+        echo "Please download the plasme database before running ResMobilYs."
         exit 1
     else
-        echo "✅ DB directory already exists."
-        output=" DB directory already exist"
+        echo "✅ ${plasme_db} directory already exists."
+        output=" ${plasme_db} directory already exist"
     fi
     """
 }
@@ -126,7 +126,7 @@ process DOWNLOAD_CONJSCAN {
 /*
 This process will prepare the DBSCAN tools and database
 */
-process PREPROCESSING_DBSCANDB_CHMOD {
+process PREPARE_DBSCAN {
 
     output:
     env output
@@ -307,7 +307,7 @@ process PLASME {
     """
 }
 
-//Infer contig from a fasta file
+//Infer contig from a fasta file and extract sequences if hybracter marked as complete assembly
 process PLASME_COMPLETE {
     tag "${barID}"
     label 'plasme'
@@ -358,7 +358,7 @@ process PLATON {
     """
 }
 
-//Infer plasmid from a fasta file
+//Infer plasmid from a fasta file if hybracter marked as complete assembly
 process PLATON_COMPLETE {
 
     tag "${barID}"
@@ -393,6 +393,9 @@ process PLATON_COMPLETE {
         """
 }
 
+/*
+Infer contig from a fasta file and extract sequences if hybracter marked as incomplete assembly
+*/
 process PLASME_INCOMPLETE {
     scratch false
     tag "${barID}"
@@ -481,6 +484,9 @@ process ICE_CONJSCAN {
     """
 }
 
+/*
+Delimit ICEs
+*/
 process DELIMIT_ICE {
     tag "${barID}_${type}"
     cache true
@@ -690,7 +696,7 @@ process CHANGE_PLASMID_NAME {
 }
 
 /*
-Identify plasmid type
+Plasmid typing
 */
 process MOB_TYPER {
     tag "${barID}"

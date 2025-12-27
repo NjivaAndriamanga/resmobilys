@@ -74,7 +74,7 @@ include { DOWNLOAD_PLATON_DATABASE}         from '../modules/waterisk_modules.nf
 include { DOWNLOAD_KRAKEN_DATABASE }        from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_VF_DATABASE }            from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_CONJSCAN }               from '../modules/waterisk_modules.nf'
-include { PREPROCESSING_DBSCANDB_CHMOD }    from '../modules/waterisk_modules.nf'
+include { PREPARE_DBSCAN }                  from '../modules/waterisk_modules.nf'
 include { DOWNLOAD_RGI_DATABASE }           from '../modules/waterisk_modules.nf'
 include { IDENTIFIED_SAMPLES}               from '../modules/waterisk_modules.nf'
 include { CLEAN_LONG_READS }                from '../modules/waterisk_modules.nf'
@@ -119,7 +119,7 @@ workflow RESMOBILYS {
 
     //download tools and databases
     DOWNLOAD_VF_DATABASE().view()
-    PREPROCESSING_DBSCANDB_CHMOD().view()
+    PREPARE_DBSCAN().view()
     DOWNLOAD_RGI_DATABASE()
     DOWNLOAD_CONJSCAN().view()
 
@@ -202,7 +202,7 @@ workflow RESMOBILYS {
     BUSCO( chrm_amr_ch.map{barID, contig, type -> [barID, contig]} )
 
     //DBSCAN
-    DBSCAN( contig_ch , PREPROCESSING_DBSCANDB_CHMOD.out )
+    DBSCAN( contig_ch , PREPARE_DBSCAN.out )
 
     //DBSCAN2GFF
     DBSCAN2GFF( DBSCAN.out )
