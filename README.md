@@ -1,6 +1,6 @@
 
 # **ResMobilYs: A Nextflow Pipeline for Resistome and Mobilome Analysis of Field and Clinical Eubacteria Isolates**  
-ResMobilYs is a Nextflow pipeline designed for comprehensive mobilome and resistome analysis. It provides an end-to-end solution, from de novo assembly to precise identification of MGEs such as plasmids, integrons, prophages, integrative and conjugative elements and transposable elements. It also detects Antibiotic Resistance Genes (ARGs) and virulence factors, whether associated with MGEs or not, enabling streamlined and detailed genomic feature analysis.
+ResMobilYs is a Nextflow pipeline designed for comprehensive mobilome and resistome analysis. It provides an end-to-end solution, from de novo assembly to precise identification of Mobile Genetics Elements (MGEs) such as plasmids, integrons, prophages, integrative and conjugative elements and transposable elements. It also detects Antibiotic Resistance Genes (ARGs), whether associated with MGEs or not, enabling streamlined and detailed genomic feature analysis.
 
 **Workflow Overview:**
   - De novo assembly
@@ -66,7 +66,7 @@ Install Nextflow by following the instructions [here](https://www.nextflow.io/do
 ### ✅ Clone the ResMobilYs repository and submodule
 
 To install **git** : [here](https://git-scm.com/install)  
-Then, clone ResMobilYs repository:
+Then, clone ResMobilYs repository and submodule:
 ```bash
 # Clone the project repository
 git clone https://github.com/NjivaAndriamanga/resmobilys.git
@@ -85,7 +85,7 @@ Most databases are downloaded automatically; however, the **PLASMe** database mu
 wget https://zenodo.org/record/8046934/files/DB.zip
 ```
 
-2. Move and unzip the database inside the `ResMobilYs` directory and unzip
+2. Move and unzip the database **inside the `ResMobilYs`** directory and unzip
 ```bash
 export UNZIP_DISABLE_ZIPBOMB_DETECTION=TRUE
 unzip DB.zip
@@ -252,7 +252,7 @@ If you encounter a bug or unexpected behavior:
 2. If not, open a **new issue** and include:
    - A clear description of the problem
    - The command or configuration you used
-   - Relevant log or error messages (if available)
+   - Relevant log or error messages (if available)  
 This helps us reproduce and fix the issue efficiently.
 
 ### 💬 Seeking support
