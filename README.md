@@ -149,7 +149,7 @@ To run ResMobilYs, only one parameter is mandatory: the path to the index_file.c
 All other parameters—such as computing resources, input/output paths, and software options—can be customized in personal.config (see Configuration Options for details).  
 
 ```bash
-# Run on your dataset
+# Run on your dataset with personal.config
 nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c resmobilys/personal.config
 ```
 
