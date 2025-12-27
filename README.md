@@ -128,13 +128,11 @@ nextflow run resmobilys -profile test,singularity/apptainer/docker -resume
 
 **2.1 Prepare the index_file.csv**  
 To analyze your own data, you must prepare an index_file.csv containing the input data and metadata for each sample.  
-Each row corresponds to one sample.  
-
-An example file is available in the test/ directory.  
+Each row corresponds to one sample and separated by ",".  
 
 The file must include the following columns:  
 - **LR_fastq**: Path to the long-read FASTQ file
-- **genome_size**: Estimated chromosome size in base pairs. If unknown, use 0.
+- **chrm_size**: Estimated chromosome size in base pairs. If unknown, use 0.
 - **SR1** (optional): Path to the first short-read pair (R1). Leave empty if no short reads are available.
 - **SR2** (optional): Path to the second short-read pair (R2). Leave empty if no short reads are available.
 
@@ -146,7 +144,7 @@ resmobilys/test/31_03_bar52.fastq.gz,0,,
 resmobilys/test/NB10_LR.fastq.gz,1000000,resmobilys/test/NB10_1.fastq.gz,resmobilys/test/NB10_2.fastq.gz
 ```
 **2.2 Configure and run the pipeline**  
-Once the index_file.csv is ready, **edit the personal.config file** by adding the path to your index file in the **index_file** field.  
+Once the `index_file.csv` is ready, edit the **personal.config** file by adding the path to your index file in the **index_file** field.  
 To run ResMobilYs, only one parameter is mandatory: the path to the index_file.csv, provided either via the --index_file option or defined directly in the personal.config file. For other parameters, a default value will be assigned.  
 All other parameters—such as computing resources, input/output paths, and software options—can be customized in personal.config (see Configuration Options for details).  
 
