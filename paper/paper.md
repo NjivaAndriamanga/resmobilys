@@ -3,9 +3,11 @@ title: 'ResMobilYs: a nextflow pipeline for Resistome and associated Mobilome an
 
 tags:
     - Nextflow
-    - Genomics
     - Antimicrobial resistance
     - Mobile genetic elements
+    - De novo assembly
+    - Long read sequencing
+    - Bacterial genomics
 
 authors:
     - name: Vahiniaina Andriamanga
@@ -30,7 +32,7 @@ affiliations:
       index: 2
     - name: HSM, Univ Montpellier, CNRS, IRD, CHU Montpellier, Montpellier, France
       index: 3
-date: 19 December 2025
+date: 27 December 2025
 bibliography: paper.bib
 ---
 
