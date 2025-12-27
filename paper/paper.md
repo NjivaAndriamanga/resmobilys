@@ -76,7 +76,7 @@ Prophages are predicted with DBSCAN-SWA [@gan_dbscan-swa_2022].
 By prioritizing approaches that operate beyond direct pairwise homology, the workflow enhances the detection of novel MGEs and expand mobilome exploration to uncharacterized elements.  
 
 ### Output
-ResMobiLys produces both isolate-specific and global results, summarizing antimicrobial resistance and mobility features.
+ResMobilYs produces both isolate-specific and global results, summarizing antimicrobial resistance and mobility features.
 At the isolate level, the pipeline identifies ARGs, their genomic locations (chromosomal or plasmid), and associated MGEs while retaining individual outputs from each integrated tool for further downstream analyses.
 At the global level, it generates:  
 - A presence–absence matrix of ARGs across isolates, including genomic context and plasmid cluster information.  
