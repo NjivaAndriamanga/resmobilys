@@ -109,7 +109,7 @@ This allows you to verify that the pipeline is correctly installed and ensures t
 
 **Download the test dataset**  
 The test dataset is hosted on zenodo [Here](https://zenodo.org/api/records/18034584/files-archive)  
-1- Use the provided Zenodo link to download the dataset archive.  
+1- Use the provided Zenodo link to download the dataset archive  
 2- Unzip the archive  
 3- After extraction the directory must be named **test**  
 4- Move directory inside `resmobilys`  
@@ -131,7 +131,7 @@ To analyze your own data, you must prepare an index_file.csv containing the inpu
 Each row corresponds to one sample and separated by ",".  
 
 The file must include the following columns:  
-- **LR_fastq**: Path to the long-read FASTQ file
+- **LR_fastq**: Path to the long-read FASTQ file.
 - **chrm_size**: Estimated chromosome size in base pairs. If unknown, use 0.
 - **SR1** (optional): Path to the first short-read pair (R1). Leave empty if no short reads are available.
 - **SR2** (optional): Path to the second short-read pair (R2). Leave empty if no short reads are available.
@@ -239,7 +239,7 @@ Please follow the guidelines below if you wish to contribute, report issues, or 
 Contributions are greatly appreciated!  
 To contribute:
 
-1. **Fork** the repository on GitHub.  
+1. **Fork** the repository on GitHub  
 2. **Create a new branch** for your feature or bugfix:  
    ```bash
    git checkout -b feature/new-feature-name
@@ -259,6 +259,6 @@ This helps us reproduce and fix the issue efficiently.
 ### 💬 Seeking support
 For questions about usage, workflow customization, or interpretation of results:
   - Open an issue
-  - Or contact the maintainers directly
-We will do our best to provide assistance and improve the documentation based on user feedback
+  - Or contact the maintainers directly: vahiniaina.andriamanga@umontpellier.fr  
+We will do our best to provide assistance and improve the documentation based on user feedback.
   
