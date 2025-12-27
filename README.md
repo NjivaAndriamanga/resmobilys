@@ -1,6 +1,6 @@
 
 # **ResMobilYs: A Nextflow Pipeline for Resistome and Mobilome Analysis of Field and Clinical Eubacteria Isolates**  
-ResMobilYs is a Nextflow pipeline designed for comprehensive mobilome and resistome analysis. It provides an end-to-end solution, from de novo assembly to precise identification of MGEs such as plasmids, integrons, prophages, integrative and conjugative elements and transposable elements. It also detects Antibiotic Resistance Genes (ARGs) and virulence factors, whether associated with MGEs or not, enabling streamlined and detailed genomic feature analysis.
+ResMobilYs is a Nextflow pipeline designed for comprehensive mobilome and resistome analysis. It provides an end-to-end solution, from de novo assembly to precise identification of Mobile Genetics Elements (MGEs) such as plasmids, integrons, prophages, integrative and conjugative elements and transposable elements. It also detects Antibiotic Resistance Genes (ARGs), whether associated with MGEs or not, enabling streamlined and detailed genomic feature analysis.
 
 **Workflow Overview:**
   - De novo assembly
@@ -66,7 +66,7 @@ Install Nextflow by following the instructions [here](https://www.nextflow.io/do
 ### ✅ Clone the ResMobilYs repository and submodule
 
 To install **git** : [here](https://git-scm.com/install)  
-Then, clone ResMobilYs repository:
+Then, clone ResMobilYs repository and submodule:
 ```bash
 # Clone the project repository
 git clone https://github.com/NjivaAndriamanga/resmobilys.git
@@ -85,7 +85,7 @@ Most databases are downloaded automatically; however, the **PLASMe** database mu
 wget https://zenodo.org/record/8046934/files/DB.zip
 ```
 
-2. Move and unzip the database inside the `ResMobilYs` directory and unzip
+2. Move and unzip the database **inside the `ResMobilYs`** directory and unzip
 ```bash
 export UNZIP_DISABLE_ZIPBOMB_DETECTION=TRUE
 unzip DB.zip
@@ -109,8 +109,11 @@ This allows you to verify that the pipeline is correctly installed and ensures t
 
 **Download the test dataset**  
 The test dataset is hosted on zenodo [Here](https://zenodo.org/api/records/18034584/files-archive)  
-Create the **test** directory inside the ResMobilYs repository, then download and unzip the test dataset
-
+1- Use the provided Zenodo link to download the dataset archive.  
+2- Unzip the archive  
+3- After extraction the directory must be named **test**  
+4- Move directory inside `resmobilys`  
+5- Run ResMobilYs on the test dataset  
 ```bash
 mkdir -p test
 cd test
@@ -125,13 +128,11 @@ nextflow run resmobilys -profile test,singularity/apptainer/docker -resume
 
 **2.1 Prepare the index_file.csv**  
 To analyze your own data, you must prepare an index_file.csv containing the input data and metadata for each sample.  
-Each row corresponds to one sample.  
-
-An example file is available in the test/ directory.  
+Each row corresponds to one sample and separated by ",".  
 
 The file must include the following columns:  
 - **LR_fastq**: Path to the long-read FASTQ file
-- **genome_size**: Estimated chromosome size in base pairs. If unknown, use 0.
+- **chrm_size**: Estimated chromosome size in base pairs. If unknown, use 0.
 - **SR1** (optional): Path to the first short-read pair (R1). Leave empty if no short reads are available.
 - **SR2** (optional): Path to the second short-read pair (R2). Leave empty if no short reads are available.
 
@@ -143,12 +144,12 @@ resmobilys/test/31_03_bar52.fastq.gz,0,,
 resmobilys/test/NB10_LR.fastq.gz,1000000,resmobilys/test/NB10_1.fastq.gz,resmobilys/test/NB10_2.fastq.gz
 ```
 **2.2 Configure and run the pipeline**  
-Once the index_file.csv is ready, **edit the personal.config file** by adding the path to your index file in the **index_file** field.  
+Once the `index_file.csv` is ready, edit the **personal.config** file by adding the path to your index file in the **index_file** field.  
 To run ResMobilYs, only one parameter is mandatory: the path to the index_file.csv, provided either via the --index_file option or defined directly in the personal.config file. For other parameters, a default value will be assigned.  
 All other parameters—such as computing resources, input/output paths, and software options—can be customized in personal.config (see Configuration Options for details).  
 
 ```bash
-# Run on your dataset
+# Run on your dataset with personal.config
 nextflow run resmobilys -profile slurm/local,singularity/apptainer -resume -c resmobilys/personal.config
 ```
 
@@ -252,7 +253,7 @@ If you encounter a bug or unexpected behavior:
 2. If not, open a **new issue** and include:
    - A clear description of the problem
    - The command or configuration you used
-   - Relevant log or error messages (if available)
+   - Relevant log or error messages (if available)  
 This helps us reproduce and fix the issue efficiently.
 
 ### 💬 Seeking support
