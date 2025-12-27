@@ -109,8 +109,11 @@ This allows you to verify that the pipeline is correctly installed and ensures t
 
 **Download the test dataset**  
 The test dataset is hosted on zenodo [Here](https://zenodo.org/api/records/18034584/files-archive)  
-Create the **test** directory inside the ResMobilYs repository, then download and unzip the test dataset
-
+1- Use the provided Zenodo link to download the dataset archive.  
+2- Unzip the archive  
+3- After extraction the directory must be named **test**  
+4- Move directory inside `resmobilys`  
+5- Run ResMobilYs on the test dataset  
 ```bash
 mkdir -p test
 cd test
