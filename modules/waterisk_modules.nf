@@ -12,13 +12,13 @@ process CHECK_PLASME_DATABASE {
     log.info "Checking plasme database..."
     """
     cd ${projectDir}
-    if [ ! -d ${plasme_db} ]; then 
+    if [ ! -d ${params.plasme_db} ]; then 
         echo " ERROR: PLASMe db directory not found in ${projectDir}!"
         echo "Please download the plasme database before running ResMobilYs."
         exit 1
     else
-        echo "✅ ${plasme_db} directory already exists."
-        output=" ${plasme_db} directory already exist"
+        echo "✅ ${params.plasme_db} directory already exists."
+        output=" ${params.plasme_db} directory already exist"
     fi
     """
 }
