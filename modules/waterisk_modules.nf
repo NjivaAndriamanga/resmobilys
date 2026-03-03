@@ -236,7 +236,7 @@ process ASSEMBLE_GENOME {
     script:
     def args = " "
     if (sr1 == [] || sr2 == []){ //if no short reads
-        args = "long-single -l $fastq -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel ${params.flyeModel} --subsample_depth 1000"
+        args = "long-single -l $fastq -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel ${params.flyeModel}"
     }
     else {
         args = "hybrid-single -l $fastq -1 $sr1 -2 $sr2 -t ${task.cpus} --min_length ${params.read_min_length} --flyeModel ${params.flyeModel}"        
