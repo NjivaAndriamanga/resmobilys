@@ -13,7 +13,7 @@ authors:
     - name: Vahiniaina Andriamanga
       orcid: 0000-0001-6165-4858
       corresponding: true
-      affiliation: 1,2
+      affiliation: "1,2"
     - name: Patricia Licznar-Fajardo
       orcid: 0000-0001-8725-2937
       affiliation: 3
