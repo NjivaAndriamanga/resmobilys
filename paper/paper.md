@@ -51,8 +51,8 @@ ResMobilYs fills these limitations by enabling plasmids recovery from long-read 
 
 # Workflow overview
 
-## Features  
-The pipeline is implemented with Nextflow [@di_tommaso_nextflow_2017], which automates workflow execution and ensures reproductibility. It can run on a wide range of computing systems, including high-performance computing (HPC) clusters, and processes samples in parallel to efficiently handle large datasets. Containerized execution with Docker/Singularity/Apptainer ensures consistent software environments, making ResMobilYs portable and easy to deploy across diverse computational setups. Most required reference databases are downloaded automatically through a dedicated setup step integrated into the workflow. This ensures that users do not need to manually retrieve or configure the majority of external resources, simplifying installation and improving reproducibility across computing environments.
+## Software design
+ResMobilYs is implemented using Nextflow [@di_tommaso_nextflow_2017], which automates workflow execution and ensures reproductibility. It can run on a wide range of computing systems, including high-performance computing (HPC) clusters, and processes samples in parallel to efficiently handle large datasets. The workflow is designed in a modular structure, where each analysis step is implemented as an independent and reusable process, facilitating maintenance, extensibility, and the integration of new methods. Containerized execution with Docker/Singularity/Apptainer ensures consistent software environments, making ResMobilYs portable and easy to deploy across diverse computational setups. Most required reference databases are downloaded automatically through a dedicated setup step integrated into the workflow. This ensures that users do not need to manually retrieve or configure the majority of external resources, simplifying installation and improving reproducibility across computing environments.
 
 ## The workflow  
 ### Input Data
@@ -85,8 +85,13 @@ At the global level, it generates:
 
 ![ Overview of ResMobilYs pipeline ](resmobilys_paper.png)
 
-# Discussions
-ResMobilYs provides a comprehensive and scalable framework for mobilome and resistome analysis, with particular strengths in plasmid recovery, clustering, and comparative analysis across diverse bacterial taxa. However, accurate delimitation of some MGEs remains challenging, especially for elements with variable boundaries or complex architectures. As knowledge of MGEs continues to evolve, the modular Nextflow design of ResMobilYs facilitates straightforward integration of improved methods, ensuring long-term adaptability and relevance of the workflow.
+# Research impact statement
+ResMobiLys has been developed and initially applied to genomic datasets from the WATERISK project (https://www.cefe.cnrs.fr/fr/component/content/article/2759-projets?catid=1038) illustrating its use for large-scale bacterial genomic analyses. The workflow components were developed iteratively alongside the project, with inputs, outputs, and analytical modules refined based on feedback from microbiologists involved in the study. The tools integrated into the workflow were selected based on their robustness and widespread use in the field, ensuring reliable and relevant results.
+Its modular design enables straightforward integration of new tools and updated knowledge on mobile genetic elements, allowing the workflow to evolve alongside advances in the field. Combined with its ease of deployment and reproducibility, this makes ResMobiLys immediately applicable to studies in antimicrobial resistance and mobile genetics associations and dissemination.
+
+# AI Usage Disclosure
+AI-based tools were used to assist with grammar correction and to improve the clarity of the documentation and manuscript. In addition, some scripting components (e.g., Bash and Python scripts) were developed with the assistance of AI-powered coding tools integrated into the development environment.
+All AI-assisted outputs were carefully reviewed, tested, and validated by the authors to ensure their correctness, relevance, and consistency with the intended workflow design and scientific objectives.
 
 # Aknowledgement
 We are grateful to the genotoul bioinformatics platform Toulouse Occitanie (Bioinfo Genoutl, https://doi.org/10.15454/1.5572369328961167E12) for providing computing and storage ressources.
