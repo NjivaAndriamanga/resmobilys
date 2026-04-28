@@ -14,7 +14,8 @@ parser.add_argument("--integrons", required=True, help="Path to integrons input 
 parser.add_argument("--prophages", required=True, help="Path to prophages input file (GFF-like TSV)")
 parser.add_argument("--ices", required=True, help="Path to ICEs input file (GFF-like TSV)")
 parser.add_argument("--ises", required=True, help="Path to IS input file (GFF-like TSV)")
-parser.add_argument("--compositeIS_size", required=True, type=int, help="Maximum size of a composite transposon")
+parser.add_argument("--compositeIS_size", required=True, type=int, help="Maximum size for candidate composite transposon")
+parser.add_argument("--transposon_size",required=True, type=int ,help="window for candidate a transposon + cargo genes")
 args = parser.parse_args()
 
 # ----------------------------
@@ -91,17 +92,29 @@ with open(args.args) as f:
 
         # ----------------------------
         # Detect MGE hits (Integron, Prophage, ICE, IS)
+        # For IS, due to the absence of windows, a manual one is provided
         # ----------------------------
         mge_hit = []
         for mge_type, mge_dict in [
             ("Integron", integrons),
             ("Prophage", prophages),
             ("IS", ises),
-            ("ICE", ices),
-        ]:
+            ("ICE", ices)]:
+            
             for region in mge_dict.get((sample, loc_type), []):
-                if start >= region["start"] and end <= region["end"]:
-                    mge_hit.append(f"{mge_type}:{region['id']}")
+
+                if mge_type == "IS":
+                    # extend IS region by tr_size on both sides
+                    extended_start = region["start"] - args.transposon_size
+                    extended_end = region["end"] + args.transposon_size
+
+                    if start >= extended_start or end <= extended_end:
+                        mge_hit.append(f"{mge_type}:{region['id']}")
+
+                else:
+                    # original behavior
+                    if start >= region["start"] and end <= region["end"]:
+                        mge_hit.append(f"{mge_type}:{region['id']}")
 
         # ----------------------------
         # Detect composite transposons

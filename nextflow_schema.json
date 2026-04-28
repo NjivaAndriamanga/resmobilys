@@ -140,12 +140,17 @@
         "ice_avg_size": {
           "type": "integer",
           "default": 80000,
-          "description": "ICE average size in bp"
+          "description": "Candidate ICE average size in bp"
         },
         "compositeIS_size": {
           "type": "integer",
           "default": 20000,
-          "description": "Distance between two identical IS to be considered as composite transposon in bp"
+          "description": "Distance between two identical IS to be considered as candidate for composite transposon in bp"
+        },
+        "transposon_size": {
+          "type": "integer",
+          "default": 2500,
+          "description": "Windows for candidate mobility-associated gene"
         }
       }
     },

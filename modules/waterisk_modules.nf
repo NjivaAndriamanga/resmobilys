@@ -951,7 +951,7 @@ process ARGS_MGES {
 
     script:
     """
-    python3 ${projectDir}/bin/args_mges.py --args $rgi --integrons $integrons --prophages $prophages --ises $ises --ices $ices --compositeIS_size ${params.compositeIS_size}
+    python3 ${projectDir}/bin/args_mges.py --args $rgi --integrons $integrons --prophages $prophages --ises $ises --ices $ices --compositeIS_size ${params.compositeIS_size} --transposon_size ${params.transposon_size}
     echo "test"
     """
 }
