@@ -117,7 +117,7 @@ The test dataset is hosted on zenodo [Here](https://zenodo.org/api/records/18034
 ```bash
 mkdir -p test
 cd test
-wget https://zenodo.org/api/records/18018250/files-archive -O test_data.zip
+wget https://zenodo.org/api/records/18034584/files-archive -O test_data.zip
 unzip test_data.zip
 
 # First run with test dataset
