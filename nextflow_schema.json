@@ -149,7 +149,7 @@
         },
         "transposon_size": {
           "type": "integer",
-          "default": 2500,
+          "default": 1000,
           "description": "Windows for candidate mobility-associated gene"
         }
       }
