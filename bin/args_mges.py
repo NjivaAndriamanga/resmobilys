@@ -108,7 +108,7 @@ with open(args.args) as f:
                     extended_start = region["start"] - args.transposon_size
                     extended_end = region["end"] + args.transposon_size
 
-                    if start >= extended_start or end <= extended_end:
+                    if start <= extended_end and end >= extended_start:
                         mge_hit.append(f"{mge_type}:{region['id']}")
 
                 else:
