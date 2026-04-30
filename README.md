@@ -203,7 +203,7 @@ Upon successful execution, **ResMobilYs** generates the following in the `resmob
 
 ### 1. Final output files
 - `args_mges.tsv`: table listing resistance genes and their MGE associations in each sample  
-- `merged_plasmid_table.tsv`: detailed list of plasmids and clusters  
+- `plasmid_cluster.tsv`: detailed list of plasmids and clusters  
 - `presence_absence_with_clusters.tsv`: presence–absence matrix showing antimicrobial resistance genes (ARGs) across samples
 
 ### 2. Intermediate/tool-specific outputs

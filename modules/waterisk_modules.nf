@@ -900,7 +900,7 @@ process PLASMID_CLUSTER_ARG {
     path(plasmid_cluster)
 
     output:
-    path("merged_plasmid_table.tsv")
+    path("plasmid_cluster.tsv")
 
     script:
     """
@@ -917,7 +917,7 @@ process PLASMID_CLUSTER_ARG {
         val = (\$1 in amr ? amr[\$1] : "NA");
         print \$0, val;
     }
-    ' plasmid_amr.csv plasmid_cluster2.txt > merged_plasmid_table.tsv
+    ' plasmid_amr.csv plasmid_cluster2.txt > plasmid_cluster.tsv
 
     """
 }
