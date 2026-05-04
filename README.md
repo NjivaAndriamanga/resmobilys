@@ -18,21 +18,24 @@ ResMobilYs is a Nextflow pipeline designed for comprehensive mobilome and resist
 - **Presence–absence matrix showing antimicrobial resistance genes (ARGs) across samples**  
   Each gene is marked according to its genomic location (chromosome or plasmid) and includes plasmid cluster information.  
 
-| Sample  | soxR | FosA2 | TEM-1 |
+| Sample  | PDC-474 | AAC(6) | KPC-2 |
 |----------|------|-------|-------|
-| sample1  | 0 | C | P1(AA019) |
-| sample2  | C | 0 | P2(AA019) |
+| test1  | 0 | C | P3(AA006) |
+| test2  | 0 | C | P3(AA006) |
+| vibrio | C | 0 | 0 |  
 
 
 - **Table listing resistance genes and their MGE associations**  
   Detailed list of all identified ARGs with genomic positions and associations with mobile genetic elements (MGEs) such as integrons, prophages, and ICEs.
 
-| Sample   | Localisation | Other informations | ARG | MGEs |
+| Sample   | Localisation | Other informations | ARG | otherMGEs |
 |----------|--------------|---------|--------------|--------|
-| sample1 | Chromosome    | ....    | FosA2 | Integron1 |
-| sample1 | Plasmid1      | ....    | TEM-1 | Integron2 |
-| sample2 | Chromosome    | ....    | soxR | prophage |
-| sample1 | Plasmid2      | ....    | TEM-1 | Integron1 |
+| test1 | Chromosome    | ....    | AAC(6) | Integron |
+| test2 | Chromosome    | ....    | AAC(6) | Integron |
+| test1 |  Plasmid   | ....    | KPC-2| Integron,IS481 |
+| test2 |  Plasmid   | ....    | KPC-2| Integron,IS481 |
+| test2 | Chromosome    | ....    | AAC(6) | Integron |
+| vibrio | Chromosome   | ....    | PDC-474 | prophage,IS66 |  
 
 
 - **Detailed list of plasmids and clusters**  
@@ -40,10 +43,10 @@ Summary table of plasmids with their cluster IDs and associated ARGs, providing 
 
 | Sample  | Plasmid      | Cluster | ARGs         |
 |----------|--------------|---------|--------------|
-| sample1  | plasmid00001 | AA015   |              |
-| sample1  | plasmid00002 | AA019   | TEM-1        |
-| sample2  | plasmid00001 | AA003   |              |
-| sample2  | plasmid00002 | AA019   | TEM-1        |
+| test1  | plasmid00001 | AA006   |              |
+| test1  | plasmid00002 | AA019   | KPC-2        |
+| test2  | plasmid00001 | AA003   |              |
+| test2  | plasmid00002 | AA006   | KPC-2        |
 
 
 ## 🚀 Installation
@@ -184,7 +187,8 @@ Description of all parameters:
   --vf_db                        [string]  VF database directory [default: ${projectDir}/vf_db] 
   --rgi_include_nudge            [boolean] include hits nudged from loose to strict hits in the rgi output [default: true] 
   --ice_avg_size                 [integer] ICE average size in bp [default: 80000] 
-  --compositeIS_size             [integer] Distance between two identical IS to be considered as composite transposon in bp [default: 20000] 
+  --compositeIS_size             [integer] Distance between two identical IS to be considered as composite transposon in bp [default: 20000]  
+  --trnasposon-size              [integer] Windows for transpospon candidate gene
 
 ##blastn parameters
   --evalue_vf                    [number]  E-value cutoff for VF detection [default: 1E-10] 
