@@ -88,7 +88,7 @@ At the global level, it generates:
 
 # Research impact statement
 ResMobilYs has been developed and initially applied to genomic datasets from the WATERISK project (https://www.cefe.cnrs.fr/fr/component/content/article/2759-projets?catid=1038), illustrating its use for large-scale bacterial genomic analyses. The workflow components were developed iteratively alongside the project, with inputs, outputs, and analytical modules refined based on feedback from microbiologists involved in the study. The tools integrated into the workflow were selected based on their robustness and widespread use in the field, ensuring reliable and relevant results.
-Its modular design enables straightforward integration of new tools and updated knowledge on mobile genetic elements, allowing the workflow to evolve alongside advances in the field. Combined with its ease of deployment and reproducibility, this makes ResMobiLys immediately applicable to studies in antimicrobial resistance and mobile genetics associations and dissemination.
+Its modular design enables straightforward integration of new tools and updated knowledge on mobile genetic elements, allowing the workflow to evolve alongside advances in the field. Combined with its ease of deployment and reproducibility, this makes ResMobiLys immediately applicable to studies in antimicrobial resistance and mobile genetics associations and dissemination in Eubacteria.
 
 # AI Usage Disclosure
 AI-based tools were used to assist with grammar correction and to improve the clarity of the documentation and manuscript. In addition, some scripting components (e.g., Bash and Python scripts) were developed with the assistance of AI-powered coding tools integrated into the development environment.
